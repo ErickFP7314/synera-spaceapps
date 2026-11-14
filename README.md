@@ -1,7 +1,14 @@
 # 🚀 Synera — Galley Health Monitor
 ### *Autonomous Biomedical Copilot & Mission Health Intelligence*
 **NASA Space Apps Challenge 2026**
-*Monitor de salud para astronautas: el chequeo que se hace solo*
+
+Integrantes:
+Fidel Willca
+Ana Nuñez
+Katherine Meneces
+Luana Ojopi
+Brenda Callzaya
+Erick Flores
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Architecture: Hexagonal](https://img.shields.io/badge/Architecture-Hexagonal%20%2F%20Ports%20%26%20Adapters-orange.svg)](#arquitectura-de-software-y-trade-offs)
@@ -27,7 +34,7 @@
 
 ---
 
-## 🌟 Visión y Concepto "Galley": El Chequeo que se Hace Solo
+## 🌟 Visión y Concepto "Galley"
 
 **Synera** (Equipo) presenta **Galley** (Prototipo), una plataforma biomédica autónoma diseñada para misiones de exploración espacial profunda (Luna / Artemis y Marte) donde el desfase de telecomunicaciones (hasta 44 minutos de retardo) o los apagones de enlace imposibilitan la asistencia médica interactiva en tiempo real desde la Tierra.
 
