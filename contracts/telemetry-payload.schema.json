@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AstronautTelemetryPayload",
-  "description": "Contrato de datos para lecturas de telemetría biomédica y ambiental de la misión espacial (BLE, Serial o Ingesta Manual)",
+  "description": "Contrato de telemetría biomédica, nutricional y ambiental para el proyecto Synera - Galley (Web Serial, BLE o Simulador)",
   "type": "object",
   "properties": {
     "astronaut_id": {
@@ -15,14 +15,14 @@
     },
     "capture_source": {
       "type": "string",
-      "enum": ["wearable_ble", "serial_uart", "manual_entry", "simulator"],
+      "enum": ["web_serial_usb", "wearable_ble", "manual_entry", "simulator"],
       "description": "Origen de los datos capturados"
     },
     "environment": {
       "type": "string",
-      "enum": ["ISS", "DeepSpaceTransit", "LunarBase"],
+      "enum": ["ISS", "DeepSpaceTransit", "LunarBase", "MarsMission"],
       "default": "ISS",
-      "description": "Entorno operacional actual"
+      "description": "Entorno operacional actual (ISS vs. Marte)"
     },
     "metrics": {
       "type": "object",
@@ -39,10 +39,9 @@
         "blood_pressure": {
           "type": "object",
           "properties": {
-            "systolic": { "type": "number", "minimum": 50, "maximum": 260, "description": "Presión sistólica mmHg" },
-            "diastolic": { "type": "number", "minimum": 30, "maximum": 160, "description": "Presión diastólica mmHg" }
-          },
-          "required": ["systolic", "diastolic"]
+            "systolic": { "type": "number", "minimum": 50, "maximum": 260 },
+            "diastolic": { "type": "number", "minimum": 30, "maximum": 160 }
+          }
         },
         "body_temperature": {
           "type": "object",
@@ -51,41 +50,45 @@
           },
           "required": ["celsius"]
         },
-        "glucose": {
-          "type": "object",
-          "properties": {
-            "mg_dl": { "type": "number", "minimum": 20, "maximum": 600, "description": "Glucosa intersticial/capilar en mg/dL" }
-          },
-          "required": ["mg_dl"]
-        },
         "sleep": {
           "type": "object",
           "properties": {
-            "duration_hours": { "type": "number", "minimum": 0, "maximum": 24, "description": "Horas de sueño acumuladas en las últimas 24h" },
-            "deep_sleep_hours": { "type": "number", "minimum": 0, "maximum": 24 },
-            "rem_sleep_hours": { "type": "number", "minimum": 0, "maximum": 24 },
-            "efficiency_percentage": { "type": "number", "minimum": 0, "maximum": 100 }
+            "duration_hours": { "type": "number", "minimum": 0, "maximum": 24, "description": "Horas de sueño acumuladas" },
+            "quality_score": { "type": "integer", "minimum": 1, "maximum": 10 }
           },
           "required": ["duration_hours"]
         },
         "mood": {
           "type": "object",
           "properties": {
-            "score": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Puntaje subjetivo de estado de ánimo (1: Crítico / Agotado, 10: Óptimo)" },
-            "stress_level": { "type": "integer", "minimum": 1, "maximum": 10 },
-            "pvt_reaction_time_ms": { "type": "number", "description": "Test de vigilancia psicomotora (PVT) en ms" }
+            "score": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Puntaje de ánimo y alerta subjetiva (1 a 10)" },
+            "pvt_reaction_time_ms": { "type": "number" }
           },
           "required": ["score"]
+        },
+        "nutrition": {
+          "type": "object",
+          "properties": {
+            "meal_intake_percentage": { "type": "number", "minimum": 0, "maximum": 100, "description": "Porcentaje de porciones de menú consumidas según plan calórico" },
+            "hydration_liters": { "type": "number", "minimum": 0, "maximum": 10 }
+          }
+        },
+        "exercise": {
+          "type": "object",
+          "properties": {
+            "duration_minutes": { "type": "number", "minimum": 0, "maximum": 360, "description": "Minutos de contramedida física en ARED/Cicloergómetro" },
+            "intensity": { "type": "string", "enum": ["REST", "LIGHT", "MODERATE", "VIGOROUS"] }
+          }
         },
         "radiation": {
           "type": "object",
           "properties": {
-            "dose_rate_uSv_h": { "type": "number", "minimum": 0, "description": "Tasa de dosis instantánea en µSv/h" },
-            "cumulative_dose_mSv": { "type": "number", "minimum": 0, "description": "Dosis acumulada en misión en mSv" }
+            "dose_rate_uSv_h": { "type": "number", "minimum": 0 },
+            "cumulative_dose_mSv": { "type": "number", "minimum": 0 }
           }
         }
       },
-      "required": ["heart_rate", "blood_pressure", "body_temperature", "glucose", "sleep", "mood"]
+      "required": ["heart_rate", "body_temperature", "sleep", "mood"]
     }
   },
   "required": ["astronaut_id", "timestamp", "capture_source", "metrics"]

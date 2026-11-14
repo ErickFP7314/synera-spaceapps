@@ -1,76 +1,59 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "EarthReportSchema",
-  "description": "Formato de resumen de salud de 1 página ('Parte para Tierra') optimizado para transmisión asíncrona con ancho de banda limitado (Store-and-Forward)",
+  "title": "EarthReportSBARSchema",
+  "description": "Reporte clínico aeroespacial en formato estándar S-B-A-R (Situation, Background, Assessment, Recommendation) para el Cirujano de Vuelo y Control de Misión",
   "type": "object",
   "properties": {
     "report_id": { "type": "string" },
     "astronaut_id": { "type": "string" },
     "mission_day": { "type": "integer", "minimum": 1 },
     "generated_at": { "type": "string", "format": "date-time" },
-    "escalation_level": {
-      "type": "integer",
-      "enum": [1, 2, 3, 4],
-      "description": "Nivel de escalamiento actual: 1=Autocuidado, 2=Aviso tripulación, 3=Consulta médica de vuelo, 4=Urgencia médica"
-    },
-    "traffic_light_summary": {
+    "environment": { "type": "string", "enum": ["ISS", "DeepSpaceTransit", "LunarBase", "MarsMission"] },
+    "escalation_level": { "type": "integer", "enum": [1, 2, 3, 4] },
+    "sbar": {
       "type": "object",
       "properties": {
-        "heart_rate": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
-        "blood_pressure": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
-        "body_temperature": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
-        "glucose": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
-        "sleep": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
-        "mood": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
-        "radiation": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] }
+        "situation": {
+          "type": "string",
+          "description": "S: Qué está ocurriendo en este momento con el astronauta y motivo del reporte"
+        },
+        "background": {
+          "type": "string",
+          "description": "B: Contexto clínico, línea base personal individual y tendencias de los últimos días"
+        },
+        "assessment": {
+          "type": "object",
+          "properties": {
+            "traffic_light_summary": {
+              "type": "object",
+              "additionalProperties": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] }
+            },
+            "active_alerts": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "clinical_inference": {
+              "type": "string",
+              "description": "Inferencia determinista de causa fisiológica (fatiga, infección, desacondicionamiento)"
+            }
+          },
+          "required": ["traffic_light_summary", "clinical_inference"]
+        },
+        "recommendation": {
+          "type": "object",
+          "properties": {
+            "immediate_crew_actions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "flight_surgeon_consult_request": { "type": "string" },
+            "contingency_protocol": { "type": "string" }
+          },
+          "required": ["immediate_crew_actions"]
+        }
       },
-      "required": ["heart_rate", "blood_pressure", "body_temperature", "glucose", "sleep", "mood"]
-    },
-    "active_alerts": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" },
-          "type": { "type": "string", "enum": ["COMBINATION", "TREND", "THRESHOLD", "BASELINE_DEVIATION"] },
-          "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
-          "message": { "type": "string" },
-          "trigger_factors": { "type": "array", "items": { "type": "string" } }
-        },
-        "required": ["id", "type", "severity", "message"]
-      }
-    },
-    "baseline_deviations": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "metric": { "type": "string" },
-          "current_value": { "type": "number" },
-          "baseline_mean": { "type": "number" },
-          "z_score": { "type": "number" },
-          "trend_direction": { "type": "string", "enum": ["IMPROVING", "STABLE", "DEGRADING"] }
-        },
-        "required": ["metric", "current_value", "baseline_mean", "z_score"]
-      }
-    },
-    "actionable_recommendations": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "explanation_statement": {
-      "type": "string",
-      "description": "Texto determinista justificando el nivel de escalamiento y diagnóstico preliminar sin caja negra"
+      "required": ["situation", "background", "assessment", "recommendation"]
     }
   },
-  "required": [
-    "report_id",
-    "astronaut_id",
-    "mission_day",
-    "generated_at",
-    "escalation_level",
-    "traffic_light_summary",
-    "active_alerts",
-    "explanation_statement"
-  ]
+  "required": ["report_id", "astronaut_id", "mission_day", "generated_at", "environment", "escalation_level", "sbar"]
 }

@@ -1,8 +1,8 @@
 /**
- * Entidades y tipos de dominio para el Copiloto de Salud de Astronautas (Synera)
+ * Entidades y tipos de dominio para el Copiloto de Salud de Astronautas (Synera - Galley)
  */
 
-export type EnvironmentType = 'ISS' | 'DeepSpaceTransit' | 'LunarBase';
+export type EnvironmentType = 'ISS' | 'DeepSpaceTransit' | 'LunarBase' | 'MarsMission';
 
 export type TrafficLightColor = 'GREEN' | 'YELLOW' | 'RED';
 
@@ -10,12 +10,14 @@ export type EscalationLevel = 1 | 2 | 3 | 4;
 
 export interface VitalsReading {
   heartRateBpm: number;
-  bloodPressureSystolic: number;
-  bloodPressureDiastolic: number;
+  bloodPressureSystolic?: number;
+  bloodPressureDiastolic?: number;
   bodyTemperatureCelsius: number;
-  glucoseMgDl: number;
+  glucoseMgDl?: number;
   sleepHours: number;
   moodScore: number; // 1-10
+  mealIntakePercentage?: number; // 0-100% de la ingesta de menú
+  exerciseMinutes?: number; // minutos de contramedida física
   radiationDoseRateUSvH?: number;
   cumulativeRadiationMSv?: number;
 }
@@ -25,7 +27,7 @@ export interface DailyHealthRecord {
   astronautId: string;
   timestamp: string;
   vitals: VitalsReading;
-  captureSource: 'wearable_ble' | 'serial_uart' | 'manual_entry' | 'simulator';
+  captureSource: 'web_serial_usb' | 'wearable_ble' | 'manual_entry' | 'simulator';
   environment: EnvironmentType;
 }
 
@@ -49,10 +51,25 @@ export interface HealthAlert {
   triggerFactors: string[];
 }
 
+export interface SBARReport {
+  situation: string;
+  background: string;
+  assessment: {
+    trafficLightSummary: Record<string, TrafficLightColor>;
+    activeAlerts: string[];
+    clinicalInference: string;
+  };
+  recommendation: {
+    immediateCrewActions: string[];
+    flightSurgeonConsultRequest?: string;
+  };
+}
+
 export interface EscalationStatus {
   level: EscalationLevel;
   title: string;
   recommendations: string[];
   explanation: string;
   activeAlerts: HealthAlert[];
+  sbar?: SBARReport;
 }
