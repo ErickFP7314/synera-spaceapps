@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "description": "Rangos de referencia fisiológicos y umbrales por entorno espacial (NASA Clinical Practice Guidelines & Artemis Medical Standards)",
+  "environments": {
+    "ISS": {
+      "name": "Estación Espacial Internacional (LEO)",
+      "gravity_g": 0.0,
+      "radiation_nominal_uSv_day": 300,
+      "metrics": {
+        "heart_rate_bpm": { "green_min": 50, "green_max": 90, "yellow_low": 45, "yellow_high": 105, "red_low": 40, "red_high": 120 },
+        "blood_pressure_systolic": { "green_min": 95, "green_max": 130, "yellow_low": 90, "yellow_high": 140, "red_low": 85, "red_high": 160 },
+        "blood_pressure_diastolic": { "green_min": 60, "green_max": 85, "yellow_low": 55, "yellow_high": 90, "red_low": 50, "red_high": 100 },
+        "body_temperature_celsius": { "green_min": 36.1, "green_max": 37.3, "yellow_low": 35.8, "yellow_high": 37.8, "red_low": 35.0, "red_high": 38.5 },
+        "glucose_mg_dl": { "green_min": 70, "green_max": 140, "yellow_low": 60, "yellow_high": 180, "red_low": 50, "red_high": 250 },
+        "sleep_hours": { "green_min": 7.0, "green_max": 9.5, "yellow_low": 5.5, "yellow_high": 7.0, "red_low": 0.0, "red_high": 5.5 },
+        "mood_score": { "green_min": 7, "green_max": 10, "yellow_low": 5, "yellow_high": 6, "red_low": 1, "red_high": 4 }
+      }
+    },
+    "DeepSpaceTransit": {
+      "name": "Nave en Tránsito a la Luna o Marte",
+      "gravity_g": 0.0,
+      "radiation_nominal_uSv_day": 1300,
+      "metrics": {
+        "heart_rate_bpm": { "green_min": 50, "green_max": 90, "yellow_low": 45, "yellow_high": 105, "red_low": 40, "red_high": 120 },
+        "blood_pressure_systolic": { "green_min": 95, "green_max": 130, "yellow_low": 90, "yellow_high": 140, "red_low": 85, "red_high": 160 },
+        "blood_pressure_diastolic": { "green_min": 60, "green_max": 85, "yellow_low": 55, "yellow_high": 90, "red_low": 50, "red_high": 100 },
+        "body_temperature_celsius": { "green_min": 36.1, "green_max": 37.3, "yellow_low": 35.8, "yellow_high": 37.8, "red_low": 35.0, "red_high": 38.5 },
+        "glucose_mg_dl": { "green_min": 70, "green_max": 140, "yellow_low": 60, "yellow_high": 180, "red_low": 50, "red_high": 250 },
+        "sleep_hours": { "green_min": 7.0, "green_max": 9.5, "yellow_low": 5.5, "yellow_high": 7.0, "red_low": 0.0, "red_high": 5.5 },
+        "mood_score": { "green_min": 7, "green_max": 10, "yellow_low": 5, "yellow_high": 6, "red_low": 1, "red_high": 4 }
+      }
+    },
+    "LunarBase": {
+      "name": "Base de Superficie Lunar (Artemis Base Camp)",
+      "gravity_g": 0.166,
+      "radiation_nominal_uSv_day": 700,
+      "metrics": {
+        "heart_rate_bpm": { "green_min": 52, "green_max": 95, "yellow_low": 48, "yellow_high": 110, "red_low": 42, "red_high": 125 },
+        "blood_pressure_systolic": { "green_min": 95, "green_max": 135, "yellow_low": 90, "yellow_high": 145, "red_low": 85, "red_high": 165 },
+        "blood_pressure_diastolic": { "green_min": 60, "green_max": 88, "yellow_low": 55, "yellow_high": 92, "red_low": 50, "red_high": 105 },
+        "body_temperature_celsius": { "green_min": 36.1, "green_max": 37.3, "yellow_low": 35.8, "yellow_high": 37.8, "red_low": 35.0, "red_high": 38.5 },
+        "glucose_mg_dl": { "green_min": 70, "green_max": 140, "yellow_low": 60, "yellow_high": 180, "red_low": 50, "red_high": 250 },
+        "sleep_hours": { "green_min": 7.0, "green_max": 9.5, "yellow_low": 5.5, "yellow_high": 7.0, "red_low": 0.0, "red_high": 5.5 },
+        "mood_score": { "green_min": 7, "green_max": 10, "yellow_low": 5, "yellow_high": 6, "red_low": 1, "red_high": 4 }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@synera/health-copilot",
+  "version": "0.1.0",
+  "description": "Copiloto de salud para astronautas en misiones espaciales (NASA Space Apps)",
+  "type": "module",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-strip-types --test tests/rules.test.ts"
+  },
+  "keywords": [
+    "nasa",
+    "spaceapps",
+    "astronaut-health",
+    "edge-computing",
+    "hexagonal-architecture"
+  ],
+  "author": "Synera Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

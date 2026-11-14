@@ -1,0 +1,2 @@
+# Requirements for hardware-simulator
+# Standard library json, time, random, argparse are used by default.

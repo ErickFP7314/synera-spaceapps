@@ -1,0 +1,45 @@
+# Perfil GATT Bluetooth Low Energy (BLE) para Nodo Wearable - Synera Health Copilot
+profile_name: "SyneraAstronautHealthGATT"
+version: "1.0.0"
+
+services:
+  # Servicio de Telemetría Consolidada
+  - service_name: "SyneraTelemetryService"
+    uuid: "1826" # Custom 16-bit or 128-bit base: 00001826-0000-1000-8000-00805f9b34fb
+    description: "Transmisión consolidada de telemetría de biosensores y estado"
+    characteristics:
+      - name: "ConsolidatedTelemetryPayload"
+        uuid: "2A37" # Stream de paquetes JSON compactos o binarios CBOR
+        properties: ["READ", "NOTIFY"]
+        format: "UTF-8 JSON string or CBOR buffer"
+
+  # Servicio Estándar de Frecuencia Cardíaca (Bluetooth SIG Standard)
+  - service_name: "HeartRateService"
+    uuid: "180D"
+    characteristics:
+      - name: "HeartRateMeasurement"
+        uuid: "2A37"
+        properties: ["NOTIFY"]
+        format: "UINT8 BPM + UINT16 RR-Intervals"
+
+  # Servicio de Termometría de Salud (Bluetooth SIG Standard)
+  - service_name: "HealthThermometerService"
+    uuid: "1809"
+    characteristics:
+      - name: "TemperatureMeasurement"
+        uuid: "2A1C"
+        properties: ["NOTIFY", "READ"]
+        format: "IEEE-11073 32-bit float Celsius"
+
+  # Servicio de Dosimetría de Radiación y Sensores Ambientales
+  - service_name: "SpaceEnvironmentalService"
+    uuid: "e2c30001-4321-4def-9876-000000000001"
+    characteristics:
+      - name: "RadiationDoseRate"
+        uuid: "e2c30002-4321-4def-9876-000000000001"
+        properties: ["READ", "NOTIFY"]
+        format: "FLOAT32 uSv/h"
+      - name: "CumulativeDose"
+        uuid: "e2c30003-4321-4def-9876-000000000001"
+        properties: ["READ", "NOTIFY"]
+        format: "FLOAT32 mSv"

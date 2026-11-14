@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AstronautTelemetryPayload",
+  "description": "Contrato de datos para lecturas de telemetría biomédica y ambiental de la misión espacial (BLE, Serial o Ingesta Manual)",
+  "type": "object",
+  "properties": {
+    "astronaut_id": {
+      "type": "string",
+      "description": "Identificador único del astronauta (ej. ASTRO-001)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Marca de tiempo ISO 8601 (UTC)"
+    },
+    "capture_source": {
+      "type": "string",
+      "enum": ["wearable_ble", "serial_uart", "manual_entry", "simulator"],
+      "description": "Origen de los datos capturados"
+    },
+    "environment": {
+      "type": "string",
+      "enum": ["ISS", "DeepSpaceTransit", "LunarBase"],
+      "default": "ISS",
+      "description": "Entorno operacional actual"
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "heart_rate": {
+          "type": "object",
+          "properties": {
+            "bpm": { "type": "number", "minimum": 25, "maximum": 240, "description": "Frecuencia cardíaca en lpm" },
+            "spo2": { "type": "number", "minimum": 60, "maximum": 100, "description": "Saturación de oxígeno %" },
+            "hrv_rmssd": { "type": "number", "minimum": 0, "maximum": 300, "description": "Variabilidad de la frecuencia cardíaca en ms" }
+          },
+          "required": ["bpm"]
+        },
+        "blood_pressure": {
+          "type": "object",
+          "properties": {
+            "systolic": { "type": "number", "minimum": 50, "maximum": 260, "description": "Presión sistólica mmHg" },
+            "diastolic": { "type": "number", "minimum": 30, "maximum": 160, "description": "Presión diastólica mmHg" }
+          },
+          "required": ["systolic", "diastolic"]
+        },
+        "body_temperature": {
+          "type": "object",
+          "properties": {
+            "celsius": { "type": "number", "minimum": 30.0, "maximum": 44.0, "description": "Temperatura corporal cutánea/núcleo en °C" }
+          },
+          "required": ["celsius"]
+        },
+        "glucose": {
+          "type": "object",
+          "properties": {
+            "mg_dl": { "type": "number", "minimum": 20, "maximum": 600, "description": "Glucosa intersticial/capilar en mg/dL" }
+          },
+          "required": ["mg_dl"]
+        },
+        "sleep": {
+          "type": "object",
+          "properties": {
+            "duration_hours": { "type": "number", "minimum": 0, "maximum": 24, "description": "Horas de sueño acumuladas en las últimas 24h" },
+            "deep_sleep_hours": { "type": "number", "minimum": 0, "maximum": 24 },
+            "rem_sleep_hours": { "type": "number", "minimum": 0, "maximum": 24 },
+            "efficiency_percentage": { "type": "number", "minimum": 0, "maximum": 100 }
+          },
+          "required": ["duration_hours"]
+        },
+        "mood": {
+          "type": "object",
+          "properties": {
+            "score": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Puntaje subjetivo de estado de ánimo (1: Crítico / Agotado, 10: Óptimo)" },
+            "stress_level": { "type": "integer", "minimum": 1, "maximum": 10 },
+            "pvt_reaction_time_ms": { "type": "number", "description": "Test de vigilancia psicomotora (PVT) en ms" }
+          },
+          "required": ["score"]
+        },
+        "radiation": {
+          "type": "object",
+          "properties": {
+            "dose_rate_uSv_h": { "type": "number", "minimum": 0, "description": "Tasa de dosis instantánea en µSv/h" },
+            "cumulative_dose_mSv": { "type": "number", "minimum": 0, "description": "Dosis acumulada en misión en mSv" }
+          }
+        }
+      },
+      "required": ["heart_rate", "blood_pressure", "body_temperature", "glucose", "sleep", "mood"]
+    }
+  },
+  "required": ["astronaut_id", "timestamp", "capture_source", "metrics"]
+}
