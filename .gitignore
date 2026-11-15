@@ -57,7 +57,9 @@ _autosave-*
 
 # Local reference PDFs (copyright / personal) — cite DOI instead
 *.pdf
-!PROYECTO_GALLEY_ES.pdf
+*.docx
+*.xlsx
+!data/synthetic/archive/*.xlsx
 *.zip
 ISS Internal Radiation Monitoring_Excel/
 

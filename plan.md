@@ -100,7 +100,7 @@
 | Número de miembros | PDF: duda entre 6 y 7 | Confirmar en reglas/registro (máximo por equipo: VERIFICAR) |
 
 > ✅ **v2.1:** todas las filas de esta tabla quedaron corregidas en el repo. La única pendiente es que Software decida mover el prototipo a este repo (Trello).
-> ✅ **Privacidad:** el documento de identidad se retiró, y `.gitignore` bloquea `*.pdf` y `*.zip` (salvo `PROYECTO_GALLEY_ES.pdf`). Para los artículos se cita el DOI.
+> ✅ **Privacidad:** el documento de identidad se retiró, y `.gitignore` bloquea `*.pdf`, `*.docx` y `*.zip`; los informes del equipo (`PROYECTO_GALLEY_ES.pdf`, `INFORME 2.docx`) se retiraron del repo y se comparten por Drive. Para los artículos se cita el DOI.
 
 ---
 

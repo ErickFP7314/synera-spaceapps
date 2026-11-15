@@ -1,6 +1,8 @@
 # Galley web app (Software team)
 
-Static web app, no build step and no server. Everything runs in the browser (Chrome or Edge).
+Static web app, no build step and no backend. Everything runs in the browser.
+
+**Public link (GitHub Pages):** https://erickfp7314.github.io/synera-spaceapps/
 
 ## Run it
 
@@ -11,11 +13,11 @@ cd software
 npm start
 ```
 
-Open http://127.0.0.1:5174 in Chrome or Edge. Use another port with `PORT=5180 npm start` (PowerShell: `$env:PORT=5180; npm start`).
+Open http://127.0.0.1:5174 (it redirects to `/software/app/`). The server serves the whole repo because the app reads `data/` and `contracts/`, exactly like GitHub Pages. Use another port with `PORT=5180 npm start` (PowerShell: `$env:PORT=5180; npm start`).
 
 The camera only works on `127.0.0.1`, `localhost` or HTTPS (GitHub Pages). Opening `index.html` by double-click (`file://`) does not work, because the page uses ES modules.
 
-Alternative without Node: `python -m http.server 5174 --bind 127.0.0.1 --directory software/app`.
+Alternative without Node, from the repo root: `python -m http.server 5174 --bind 127.0.0.1`, then open http://127.0.0.1:5174/software/app/.
 
 ## Flow
 
