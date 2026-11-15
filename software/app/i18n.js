@@ -196,8 +196,8 @@ export const ADVICE = {
 
 /* how each unit is read aloud */
 export const SPOKEN_UNIT = {
-  en: { bpm: "beats per minute", "%": "percent", "°C": "degrees", h: "hours", "score 1-5": "out of 5", lapses: "lapses", "% of plan": "percent" },
-  es: { bpm: "latidos por minuto", "%": "por ciento", "°C": "grados", h: "horas", "score 1-5": "de 5", lapses: "lapsos", "% of plan": "por ciento" }
+  en: { bpm: "beats per minute", "%": "percent", "°C": "degrees", h: "hours", "/5": "out of 5", lapses: "lapses" },
+  es: { bpm: "latidos por minuto", "%": "por ciento", "°C": "grados", h: "horas", "/5": "de 5", lapsos: "lapsos", lapses: "lapsos" }
 };
 
 export function makeT(getLang) {

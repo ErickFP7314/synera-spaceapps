@@ -96,7 +96,7 @@
       </div>
 
       <div class="crew">
-        <h3><span id="crewTitle"></span></h3>
+        <h2 class="crew-h"><span id="crewTitle"></span></h2>
         <div class="crewlist" id="crewList"></div>
       </div>
       <button class="btn primary" id="proceed" type="button"><svg data-icon="scan"></svg><span id="proceedText"></span></button>
@@ -107,7 +107,7 @@
   <!-- ============ SCAN ============ -->
   <section id="scan" class="sec" aria-labelledby="h-scan">
     <div class="sec-head">
-      <div><h2 id="h-scan" data-t="scan_title"></h2><p data-t="scan_sub"></p></div>
+      <div><h2 id="h-scan"><span data-t="scan_title"></span><span class="loc">LAB1·02</span></h2><p data-t="scan_sub"></p></div>
       <p class="src-line" id="dataSource"></p>
     </div>
 
@@ -134,6 +134,8 @@
       <div class="livestrip" id="live" hidden></div>
     </div>
 
+    <div class="next" id="next" hidden></div>
+
     <div class="scan-grid">
       <div class="panel figure-panel" data-code="BODY·A1">
         <div class="viewtoggle">
@@ -149,12 +151,11 @@
       </div>
       <div class="readouts" id="readout"></div>
     </div>
-    <div class="next" id="next" hidden></div>
   </section>
 
   <!-- ============ EARTH LINK ============ -->
   <section id="earth" class="sec" aria-labelledby="h-earth">
-    <div class="sec-head"><div><h2 id="h-earth" data-t="earth_title"></h2><p data-t="earth_sub"></p></div><p class="src-line" data-t="earth_src"></p></div>
+    <div class="sec-head"><div><h2 id="h-earth"><span data-t="earth_title"></span><span class="loc">COMM·S1</span></h2><p data-t="earth_sub"></p></div><p class="src-line" data-t="earth_src"></p></div>
     <div class="earth">
       <div class="panel delay" data-code="COMM·S1" data-reveal id="delayPanel"></div>
       <div class="panel sbar" data-code="SBAR·F1" data-reveal id="sbarPanel"></div>
@@ -163,7 +164,7 @@
 
   <!-- ============ SPACE WEATHER ============ -->
   <section id="weather" class="sec" aria-labelledby="h-weather">
-    <div class="sec-head"><div><h2 id="h-weather" data-t="wx_title"></h2><p data-t="wx_sub"></p></div><p class="src-line" data-t-html="wx_src"></p></div>
+    <div class="sec-head"><div><h2 id="h-weather"><span data-t="wx_title"></span><span class="loc">RAD·W1</span></h2><p data-t="wx_sub"></p></div><p class="src-line" data-t-html="wx_src"></p></div>
     <div class="weather">
       <div class="panel timeline draw" data-code="RAD·W2" data-reveal id="wxTimeline"></div>
       <div class="panel wx-side" data-code="RAD·W3" data-reveal id="wxSide"></div>
@@ -172,14 +173,14 @@
 
   <!-- ============ TRENDS ============ -->
   <section id="trends" class="sec" aria-labelledby="h-trends">
-    <div class="sec-head"><div><h2 id="h-trends" data-t="trends_title"></h2><p data-t="trends_sub"></p></div><p class="src-line" data-t="trends_src"></p></div>
+    <div class="sec-head"><div><h2 id="h-trends"><span data-t="trends_title"></span><span class="loc">TRD·T1</span></h2><p data-t="trends_sub"></p></div><p class="src-line" data-t="trends_src"></p></div>
     <div class="legend" id="trendLegend"></div>
     <div class="trends" id="trendGrid"></div>
   </section>
 
   <!-- ============ REAL ASTRONAUT DATA ============ -->
   <section id="science" class="sec" aria-labelledby="h-science">
-    <div class="sec-head"><div><h2 id="h-science" data-t="sci_title"></h2><p data-t="sci_sub"></p></div><p class="src-line" data-t-html="sci_src"></p></div>
+    <div class="sec-head"><div><h2 id="h-science"><span data-t="sci_title"></span><span class="loc">OSD·00</span></h2><p data-t="sci_sub"></p></div><p class="src-line" data-t-html="sci_src"></p></div>
     <div class="science">
       <div class="panel osdr" data-code="OSD·575" data-reveal id="osdrPanel"></div>
       <div class="panel copy" data-code="OSD·569" data-reveal id="osdrCopy"></div>
