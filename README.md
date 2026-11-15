@@ -11,6 +11,10 @@ Team: Erick Flores · Luana Ojopi (Hardware) · Katherine Meneces · Brenda Cali
 - **Sensor firmware in the Wokwi simulator:** https://wokwi.com/projects/480771036190862337
 - **Run it locally:** `cd software && npm start`, then open http://127.0.0.1:5174
 
+| Check-in (day lighting) | Body scan, 3D scanner (pre-sleep lighting) | Earth link on Mars |
+|---|---|---|
+| ![Galley check-in screen in the day theme](docs/img/galley-checkin-day.webp) | ![3D body scanner: chest zone red for a resting heart rate of 46 bpm vs a normal of 62](docs/img/galley-scan-3d-presleep.webp) | ![Mars mode: 44-minute reply time and a queued S-B-A-R report](docs/img/galley-earth-link-mars.webp) |
+
 ---
 
 ## What it does
