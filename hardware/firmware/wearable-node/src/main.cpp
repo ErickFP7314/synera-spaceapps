@@ -95,7 +95,10 @@ void emitSimulated() {
   f.t = millis() / 1000;
   f.hr = random(60, 67);
   f.spo2 = random(97, 100);
-  f.temp = 36.4f + random(0, 4) / 10.0f;
+  // Pulse is simulated (no MAX30102), but if a real skin-temperature sensor is present
+  // we send its reading (e.g., the DS18B20 slider in Wokwi). Otherwise simulate it too.
+  float realTemp = (tempSensor != TEMP_NONE) ? readSkinTempC() : NAN;
+  f.temp = !isnan(realTemp) ? realTemp : 36.4f + random(0, 4) / 10.0f;
   f.q = 1;
   f.simulated = true;
   emit(f);
