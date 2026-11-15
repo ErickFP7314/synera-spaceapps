@@ -5,7 +5,9 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <cmath>
 #include "frame.h"
+#include "temp.h"
 
 using namespace galley;
 static int failures = 0;
@@ -35,6 +37,22 @@ int main() {
   b.add(62); b.add(62); b.add(62); b.add(62); CHECK(b.average() == 62);
   b.reset(); CHECK(b.average() == 0);
 
+  // --- skin temperature (temp.h)
+  CHECK(fabsf(max30205RawToC(0x25, 0x00) - 37.0f) < 1e-4);      // 0x2500 = 37.0 °C
+  CHECK(fabsf(max30205RawToC(0x24, 0x80) - 36.5f) < 1e-4);      // 0x2480 = 36.5 °C
+  CHECK(fabsf(max30205RawToC(0x00, 0x01) - 0.00390625f) < 1e-7);// 1 LSB
+  CHECK(max30205RawToC(0xFF, 0x00) < 0.0f);                     // two's complement negative
+  CHECK(!plausibleSkinTemp(-127.0f));                           // DS18B20 disconnected
+  CHECK(!plausibleSkinTemp(85.0f));                             // DS18B20 power-on value
+  CHECK(!plausibleSkinTemp(NAN));
+  CHECK(plausibleSkinTemp(33.4f) && plausibleSkinTemp(36.6f));
+  TempFilter tf;
+  CHECK(isnan(tf.get()));
+  tf.add(36.0f); CHECK(fabsf(tf.get() - 36.0f) < 1e-4);         // first sample taken as-is
+  tf.add(37.0f); CHECK(fabsf(tf.get() - 36.3f) < 1e-4);         // EMA alpha 0.3
+  tf.add(85.0f); CHECK(fabsf(tf.get() - 36.3f) < 1e-4);         // sentinel ignored
+  tf.add(-127.0f); tf.add(NAN); CHECK(isnan(tf.get()));         // 3 bad in a row -> stop reporting
+
   // --- formatting rules
   char small[8];
   Frame big; big.t = 123456; big.hr = 62; big.q = 1;
@@ -44,6 +62,7 @@ int main() {
   Frame off;     off.t = 13; off.hr = 62; off.spo2 = 97; off.q = 0;                          // finger off: drop hr/spo2
   Frame spo2;    spo2.t = 14; spo2.hr = 71; spo2.spo2 = 97; spo2.q = 1;                      // SpO2 build
   Frame bogus;   bogus.t = 15; bogus.hr = 300; bogus.spo2 = 40; bogus.temp = 80.0f; bogus.q = 1; // out of range: omit
+  Frame skin;    skin.t = 17; skin.hr = 64; skin.temp = max30205RawToC(0x24, 0x9A); skin.q = 1;   // 36.6 °C from MAX30205 raw
   Frame sim;     sim.t = 16; sim.hr = 63; sim.spo2 = 98; sim.temp = 36.5f; sim.q = 1; sim.simulated = true;
 
   char buf[96];
@@ -56,7 +75,10 @@ int main() {
   formatFrame(buf, sizeof(buf), sim);
   CHECK(strstr(buf, "\"src\":\"sim\"") != nullptr);
 
-  print(finger); print(off); print(spo2); print(bogus); print(sim);
+  formatFrame(buf, sizeof(buf), skin);
+  CHECK(strstr(buf, "\"temp\":36.6") != nullptr);
+
+  print(finger); print(off); print(spo2); print(bogus); print(sim); print(skin);
 
   if (failures) { fprintf(stderr, "%d check(s) failed\n", failures); return 1; }
   fprintf(stderr, "all frame.h checks passed\n");

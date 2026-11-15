@@ -48,16 +48,17 @@ def host_frames() -> list:
 class FirmwareHostTest(unittest.TestCase):
     def test_frame_logic_and_contract(self):
         lines = host_frames()
-        self.assertEqual(len(lines), 5)
+        self.assertEqual(len(lines), 6)
         frames = [json.loads(ln) for ln in lines]
         for ln, f in zip(lines, frames):
             self.assertEqual(contract_errors(f), [], ln)
-        finger, off, spo2, bogus, sim = frames
+        finger, off, spo2, bogus, sim, skin = frames
         self.assertEqual((finger["q"], finger["hr"], finger["src"]), (1, 62, "sensor"))
         self.assertTrue(off["q"] == 0 and "hr" not in off and "spo2" not in off)
         self.assertEqual(spo2["spo2"], 97)
         self.assertNotIn("hr", bogus)          # out-of-range values are omitted, never clamped
         self.assertEqual(sim["src"], "sim")
+        self.assertEqual(skin["temp"], 36.6)     # MAX30205 raw 0x249A -> 36.6 °C, 1 decimal
 
     @unittest.skipIf(shutil.which("node") is None, "node not installed")
     def test_software_parser_accepts_firmware_frames(self):
@@ -79,6 +80,7 @@ class FirmwareCompileTest(unittest.TestCase):
         sketch.mkdir()
         shutil.copy(SRC / "main.cpp", sketch / "galley_node.ino")
         shutil.copy(SRC / "frame.h", sketch / "frame.h")
+        shutil.copy(SRC / "temp.h", sketch / "temp.h")
         cmd = [ARDUINO_CLI, "compile", "--fqbn", "esp32:esp32:esp32", str(sketch)]
         if extra_flags:
             cmd += ["--build-property", f"compiler.cpp.extra_flags={extra_flags}"]
@@ -87,9 +89,9 @@ class FirmwareCompileTest(unittest.TestCase):
     def setUp(self):
         cores = subprocess.run([ARDUINO_CLI, "core", "list"], capture_output=True, text=True).stdout
         libs = subprocess.run([ARDUINO_CLI, "lib", "list"], capture_output=True, text=True).stdout
-        if "esp32:esp32" not in cores or "MAX3010x" not in libs:
+        if "esp32:esp32" not in cores or not all(x in libs for x in ("MAX3010x", "OneWire", "DallasTemperature")):
             self.skipTest("needs: arduino-cli core install esp32:esp32 && arduino-cli lib install "
-                          "\"SparkFun MAX3010x Pulse and Proximity Sensor Library\"")
+                          "\"SparkFun MAX3010x Pulse and Proximity Sensor Library\" OneWire DallasTemperature")
 
     def test_compiles_hr_mode(self):
         r = self.compile()
