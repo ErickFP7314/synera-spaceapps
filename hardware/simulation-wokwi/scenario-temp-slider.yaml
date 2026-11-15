@@ -1,0 +1,24 @@
+# Wokwi scenario: moving the DS18B20 slider changes "temp" live; out-of-range readings are omitted.
+# Run: ./build.sh && WOKWI_CLI_TOKEN=... wokwi-cli --scenario scenario-temp-slider.yaml .
+name: Galley skin-temperature slider
+version: 1
+author: Team Synera
+steps:
+  - wait-serial: '"temp":36.5'
+  - set-control:
+      part-id: skin
+      control: temperature
+      value: 38.5
+  - wait-serial: '"temp":38.5'
+  - set-control:
+      part-id: skin
+      control: temperature
+      value: 125
+  # 125 °C is outside the skin range (30-44 °C): after 3 bad samples "temp" disappears from the line
+  # (visible in --serial-log-file). It must never fall back to a fake ~36.5 °C.
+  - delay: 5000ms
+  - set-control:
+      part-id: skin
+      control: temperature
+      value: 37
+  - wait-serial: '"temp":37.0'

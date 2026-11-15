@@ -97,8 +97,10 @@ void emitSimulated() {
   f.spo2 = random(97, 100);
   // Pulse is simulated (no MAX30102), but if a real skin-temperature sensor is present
   // we send its reading (e.g., the DS18B20 slider in Wokwi). Otherwise simulate it too.
-  float realTemp = (tempSensor != TEMP_NONE) ? readSkinTempC() : NAN;
-  f.temp = !isnan(realTemp) ? realTemp : 36.4f + random(0, 4) / 10.0f;
+  // Out-of-range real readings (slider outside 30-44 °C) are omitted, never faked (temp.h).
+  bool hasTemp = (tempSensor != TEMP_NONE);
+  float realTemp = hasTemp ? readSkinTempC() : NAN;
+  f.temp = galley::simFrameTemp(hasTemp, realTemp, 36.4f + random(0, 4) / 10.0f);
   f.q = 1;
   f.simulated = true;
   emit(f);

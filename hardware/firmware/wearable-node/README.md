@@ -34,7 +34,7 @@ Dirección I²C: `0x57`.
 |---|---|---|---|
 | **HR** (por defecto) | `pio run -e esp32dev -t upload` | `hr` (promedio de 4 latidos, detector de SparkFun) | Hay dedo (IR ≥ 50000), un latido en los últimos 3 s y FC entre 25 y 240 |
 | **HR + SpO₂** | `pio run -e esp32dev_spo2 -t upload` | `hr` + `spo2` (algoritmo de Maxim) | Hay dedo y el algoritmo marca FC y SpO₂ como válidas y en rango |
-| **Sin sensor de pulso** | (automático) | Pulso y SpO₂ simulados con `"src":"sim"`. Si hay sensor de temperatura, `temp` es real; si no, también se simula | Siempre; la app debe mostrar que son simulados |
+| **Sin sensor de pulso** | (automático) | Pulso y SpO₂ simulados con `"src":"sim"`. Si hay sensor de temperatura, `temp` es real (y se omite si sale de 30–44 °C, nunca se inventa); si no hay sensor, también se simula | Siempre; la app debe mostrar que son simulados |
 
 Reglas que cumplen los tres modos:
 - **Nunca se inventan ni se recortan valores.** Lo inválido o fuera de rango se omite.

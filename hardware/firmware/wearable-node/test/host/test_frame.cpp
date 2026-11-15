@@ -53,6 +53,15 @@ int main() {
   tf.add(85.0f); CHECK(fabsf(tf.get() - 36.3f) < 1e-4);         // sentinel ignored
   tf.add(-127.0f); tf.add(NAN); CHECK(isnan(tf.get()));         // 3 bad in a row -> stop reporting
 
+  // --- simulated-pulse frames (no MAX30102, e.g. Wokwi): temperature source
+  // A real temp sensor is present -> send its reading, or omit it; NEVER replace it with a fake value.
+  CHECK(fabsf(simFrameTemp(true, 38.5f, 36.5f) - 38.5f) < 1e-4); // DS18B20 slider at 38.5 °C
+  CHECK(isnan(simFrameTemp(true, NAN, 36.5f)));                  // real sensor out of skin range -> omit
+  CHECK(fabsf(simFrameTemp(false, NAN, 36.5f) - 36.5f) < 1e-4);  // no temp sensor at all -> simulated
+  TempFilter hot;                                                // Wokwi slider at 125 °C (bug report)
+  hot.add(125.0f); hot.add(125.0f); hot.add(125.0f);
+  CHECK(isnan(simFrameTemp(true, hot.get(), 36.5f)));
+
   // --- formatting rules
   char small[8];
   Frame big; big.t = 123456; big.hr = 62; big.q = 1;
