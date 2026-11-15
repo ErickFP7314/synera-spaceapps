@@ -1,646 +1,204 @@
 <!doctype html>
-<html lang="es">
+<html lang="en" data-theme="day">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Galley · Crew check-in</title>
-<style>
-:root{
-  --bg:#070d18; --panel:#0e1626; --panel2:#152036; --line:#22324f;
-  --text:#e8eefc; --muted:#8fa2c7; --accent:#22d3ee; --accent-ink:#04202a;
-  --ok:#2ecc71; --warn:#f5b301; --crit:#ff4d4f;
-  --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,Consolas,monospace;
-}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
-button,select,input{font:inherit}
-.hidden{display:none!important}
-.mono{font-family:var(--mono)}
-.small{font-size:12px;color:var(--muted)}
-.wrap{max-width:1240px;margin:0 auto;padding:14px 16px 28px}
-.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.lang button{border:0;border-radius:0;padding:5px 12px;font:700 12px system-ui;cursor:pointer;background:transparent;color:var(--muted)}
-.lang button.on{background:var(--accent);color:var(--accent-ink)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
-.kick{font:600 11px var(--mono);letter-spacing:.08em;color:var(--accent);text-transform:uppercase;display:flex;align-items:center;gap:6px}
-.dotlive{width:6px;height:6px;border-radius:50%;background:var(--ok);display:inline-block}
-button{color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
-button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
-button:disabled{opacity:.45;cursor:not-allowed}
-button:focus-visible,select:focus-visible,input:focus-visible,.crewrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
-label.inline{flex-direction:row;align-items:center;gap:6px}
-select,input[type=text],input[type=number]{color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
-
-/* ===== top bar ===== */
-.topbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;margin-bottom:12px}
-.brand{display:flex;gap:12px;align-items:center;min-width:0}
-.brand .logo{width:40px;height:40px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);flex:none}
-.brand h1{margin:2px 0 0;font-size:17px;letter-spacing:.02em;text-transform:uppercase}
-.brand p{margin:0;font-size:12px;color:var(--muted)}
-.clock{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.clock .t{font:500 12px var(--mono);color:var(--muted);text-align:right}
-.clock .t b{color:var(--text);font-weight:600}
-.badge{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--mono);color:var(--ok);border:1px solid rgba(46,204,113,.45);background:rgba(46,204,113,.08);padding:6px 9px;border-radius:6px;text-transform:uppercase}
-
-/* ===== login ===== */
-.login{display:grid;gap:12px}
-@media(min-width:920px){.login{grid-template-columns:1.25fr 1fr}}
-.panelhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.pill{font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);display:inline-flex;align-items:center;gap:6px}
-.pill.sensing{color:var(--accent);border-color:rgba(34,211,238,.5)}
-.pill.match{color:var(--ok);border-color:rgba(46,204,113,.5)}
-.prompt{text-align:center;font-weight:600;margin:4px 0 10px}
-.viewfinder{position:relative;width:min(100%,420px);aspect-ratio:4/3;margin:0 auto;background:#050a14;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.viewfinder .corner{position:absolute;width:22px;height:22px;border:2px solid var(--accent);z-index:3}
-.viewfinder .c1{top:10px;left:10px;border-right:0;border-bottom:0}.viewfinder .c2{top:10px;right:10px;border-left:0;border-bottom:0}
-.viewfinder .c3{bottom:10px;left:10px;border-right:0;border-top:0}.viewfinder .c4{bottom:10px;right:10px;border-left:0;border-top:0}
-.viewfinder .vx,.viewfinder .hx{position:absolute;background:rgba(143,162,199,.18);z-index:2}
-.viewfinder .vx{left:50%;top:0;bottom:0;width:1px}.viewfinder .hx{top:50%;left:0;right:0;height:1px}
-.viewfinder .sweep{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 12px var(--accent);z-index:3;top:50%;opacity:.0}
-.viewfinder.sensing .sweep{opacity:.9;animation:sweep 2.2s ease-in-out infinite}
-@keyframes sweep{0%{top:12%}50%{top:88%}100%{top:12%}}
-@media(prefers-reduced-motion:reduce){.viewfinder.sensing .sweep{animation:none}}
-.viewfinder .mirror{position:absolute;inset:0;transform:scaleX(-1);display:none;z-index:1}
-.viewfinder.live .mirror{display:block}
-.viewfinder video,.viewfinder canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.viewfinder .idle{position:absolute;inset:0;display:grid;place-items:center;z-index:2}
-.viewfinder.live .idle{display:none}
-.idcard{display:grid;justify-items:center;gap:6px;padding:14px 18px;border:1px solid rgba(143,162,199,.25);border-radius:10px;background:rgba(14,22,38,.7);min-width:62%}
-.idcard .face{width:76px;height:76px;border-radius:12px;border:2px solid var(--ok);background:rgba(46,204,113,.08);display:grid;place-items:center;overflow:hidden}
-.idcard .face img{width:100%;height:100%;object-fit:cover}
-.idcard .who{font-weight:700;font-size:16px}
-.idcard .role{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.idcard .dist{font:600 10px var(--mono);color:var(--ok);letter-spacing:.04em}
-.camfoot{display:flex;justify-content:space-between;width:min(100%,420px);margin:6px auto 0;font:500 10px var(--mono);color:var(--muted)}
-.result{display:flex;align-items:center;gap:10px;width:min(100%,460px);margin:12px auto 0;border:1px solid rgba(46,204,113,.45);background:rgba(46,204,113,.08);border-radius:8px;padding:10px 12px}
-.result .ck{width:28px;height:28px;border-radius:50%;background:var(--ok);display:grid;place-items:center;color:#062413;flex:none}
-.result b{display:block}
-.result .sub{font:500 11px var(--mono);color:var(--muted)}
-.result .camoff{margin-left:auto;color:var(--muted)}
-.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-.status{text-align:center;font-size:13px;color:var(--muted);min-height:1.5em;margin-top:8px}
-.status.warn{color:var(--warn)}
-.privacy{display:flex;gap:12px;align-items:flex-start;margin-top:12px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:10px 12px}
-.privacy .ic{color:var(--accent);flex:none}
-.privacy h4{margin:0 0 2px;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase}
-.privacy p{margin:0;font-size:13px;color:var(--muted)}
-
-.crewlist{display:grid;gap:8px;margin-top:10px}
-.crewrow{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;width:100%;color:var(--text)}
-.crewrow.sel{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
-.crewrow .av{width:40px;height:40px;border-radius:8px;background:#1d2a45;display:grid;place-items:center;font-weight:700;flex:none;overflow:hidden}
-.crewrow.sel .av{background:var(--accent);color:var(--accent-ink)}
-.crewrow .av img{width:100%;height:100%;object-fit:cover}
-.crewrow .meta{min-width:0;flex:1}
-.crewrow .nm{font-weight:700;display:flex;align-items:center;gap:6px}
-.crewrow .rl{font-size:12px;color:var(--muted)}
-.crewrow .ls{font:500 10px var(--mono);color:var(--muted)}
-.crewrow .ls.ok{color:var(--ok)}
-.crewitem{display:flex;gap:6px;align-items:stretch}
-.delbtn{flex:none;width:34px;padding:0;font-size:18px;color:var(--muted)}
-.delbtn:hover{color:var(--crit);border-color:var(--crit)}
-.tag{font:600 10px var(--mono);text-transform:uppercase;padding:3px 7px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
-.tag.match{color:var(--ok);border-color:rgba(46,204,113,.5);background:rgba(46,204,113,.1)}
-.regbtn{width:100%;margin-top:4px;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase}
-.regform{border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:10px;background:var(--panel2)}
-.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:6px 0 10px}
-.sensorpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 10px;margin:6px 0 10px}
-.fb{margin-top:14px}
-.fb .lbl{font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.proceed{width:100%;margin-top:12px;padding:14px;font:700 14px var(--mono);letter-spacing:.06em;text-transform:uppercase}
-
-/* ===== scan view ===== */
-.scan{display:grid;gap:12px}
-@media(min-width:920px){.scan{grid-template-columns:minmax(300px,400px) 1fr}}
-.crewbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.crewbar .av{width:40px;height:40px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--accent);overflow:hidden;flex:none}
-.crewbar .av img{width:100%;height:100%;object-fit:cover}
-.crewbar b{display:block}
-.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-top:12px}
-.sensors{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.sensors span{font:500 11px var(--mono);border:1px solid var(--line);border-radius:6px;padding:3px 7px;color:var(--muted)}
-.card h2{margin:0 0 10px;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.empty{color:var(--muted);font-size:14px}
-.zone{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:var(--panel2);animation:in .35s ease-out}
-.zone.ok{border-left-color:var(--ok)} .zone.warn{border-left-color:var(--warn)} .zone.crit{border-left-color:var(--crit)} .zone.none{border-left-color:var(--line);opacity:.75}
-@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){.zone{animation:none}}
-.zhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
-.zhead h3{margin:0;font-size:15px}
-.chip{display:inline-flex;align-items:center;gap:5px;font:700 11px system-ui;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
-.chip.ok{color:var(--ok);background:rgba(46,204,113,.14)} .chip.warn{color:var(--warn);background:rgba(245,179,1,.14)} .chip.crit{color:var(--crit);background:rgba(255,77,79,.16)}
-.metric{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(90px,.8fr) minmax(120px,1.4fr);gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
-.metric:first-of-type{border-top:0}
-.metric .name{display:flex;align-items:flex-start;gap:6px}
-.metric .dev{display:block;font:500 10px var(--mono);color:var(--muted)}
-.metric .val{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px}
-.metric .val small{font-weight:400;color:var(--muted);font-size:11px;margin-left:2px}
-.metric .usual{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
-.ico{width:14px;height:14px;flex:none;margin-top:2px}
-.rbar{width:100%;height:16px;display:block}
-.advice{font-size:13px;margin:6px 0 2px}
-.src{font-size:11px;color:var(--muted)}
-.src a{color:var(--accent)}
-.summary{border-radius:10px;padding:12px 14px;border:1px solid;margin-top:4px}
-.summary.ok{background:rgba(46,204,113,.10);border-color:var(--ok)}
-.summary.warn{background:rgba(245,179,1,.10);border-color:var(--warn)}
-.summary.crit{background:rgba(255,77,79,.12);border-color:var(--crit)}
-.summary h3{margin:0 0 4px;font-size:16px}
-.note{font-size:11px;color:var(--muted);margin-top:10px}
-</style>
+<title>Galley — the check-up that does itself</title>
+<meta name="description" content="Galley: an on-device daily health check-up for astronauts. Compares each crew member with their own 14-day normal, using real NASA data. Decision support, not a medical device.">
+<meta name="theme-color" content="#e9e7e1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%231b1d1f'/%3E%3Cpath d='M9 16h4l2-5 3 10 2-5h3' fill='none' stroke='%23f7f6f2' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/atkinson-next.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+<script>
+  /* apply the saved or system lighting before first paint */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("galley-theme"); } catch (e) {}
+    if (t !== "day" && t !== "night") t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day";
+    document.documentElement.dataset.theme = t;
+    if (window.IntersectionObserver && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) document.documentElement.classList.add("js-reveal");
+  })();
+</script>
 </head>
 <body>
-<div class="wrap">
+<a class="skip" href="#main" data-t="skip"></a>
 
-  <!-- ============ top bar (shared) ============ -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M3 12h6M15 12h6M12 3v6M12 15v6M5 5l3 3M16 16l3 3"/></svg></div>
-      <div>
-        <div class="kick"><span id="t-login_kicker"></span><span class="dotlive"></span></div>
-        <h1 id="t-login_title"></h1>
-        <p id="t-login_sub"></p>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#checkin"><b>GALLEY</b><span data-t="by_team"></span></a>
+    <nav aria-label="Sections" id="nav">
+      <a href="#checkin" data-t="nav_checkin"></a>
+      <a href="#scan" data-t="nav_scan"></a>
+      <a href="#earth" data-t="nav_earth"></a>
+      <a href="#weather" data-t="nav_weather"></a>
+      <a href="#trends" data-t="nav_trends"></a>
+      <a href="#science" data-t="nav_science"></a>
+    </nav>
+    <div class="bar-tools">
+      <span class="met">MET <b id="met">--:--:--</b></span>
+      <div class="seg" role="group" id="themeSeg" data-t-aria="lighting">
+        <button type="button" data-theme-set="day"><svg data-icon="sun"></svg><span class="lbl-l" data-t="day"></span></button>
+        <button type="button" data-theme-set="night"><svg data-icon="moon"></svg><span class="lbl-l" data-t="presleep"></span></button>
       </div>
-    </div>
-    <div class="clock">
-      <div class="t">MET: <b id="met">--</b><br>UTC: <b id="utc">--</b></div>
-      <span class="badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span id="t-local_badge"></span></span>
-      <div class="lang" role="group" aria-label="Idioma / Language"><button type="button" id="langEs">ES</button><button type="button" id="langEn">EN</button></div>
+      <div class="seg" role="group" aria-label="Language / Idioma">
+        <button type="button" data-lang-set="en" lang="en">EN</button>
+        <button type="button" data-lang-set="es" lang="es">ES</button>
+      </div>
     </div>
   </div>
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+</header>
 
-  <!-- ============ SCREEN 1: biometric login ============ -->
-  <section id="viewLogin" class="login" aria-label="Crew biometric check-in">
-    <div class="card">
-      <div class="panelhead">
-        <div class="kick"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span id="t-optic"></span></div>
-        <span class="pill" id="pill"><span class="dotlive"></span><span id="pillText"></span></span>
+<main id="main">
+  <!-- ============ CHECK-IN ============ -->
+  <section id="checkin" class="sec hero" aria-labelledby="h-checkin">
+    <div class="hero-copy">
+      <h1 id="h-checkin" data-t="hero_title"></h1>
+      <p class="lede" data-t="hero_lede"></p>
+      <ul class="facts">
+        <li><svg data-icon="user"></svg><span data-t-html="fact_normal"></span></li>
+        <li><svg data-icon="data"></svg><span data-t-html="fact_data"></span></li>
+        <li><svg data-icon="orbit"></svg><span data-t-html="fact_env"></span></li>
+      </ul>
+      <div class="hero-cta">
+        <a class="btn" href="#scan" id="demoGo"><svg data-icon="scan"></svg><span data-t="try_demo"></span></a>
       </div>
-      <div class="prompt" id="t-look_prompt"></div>
-      <div class="viewfinder" id="vf">
-        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-        <span class="vx"></span><span class="hx"></span><span class="sweep"></span>
-        <div class="mirror"><video id="camVideo" autoplay muted playsinline></video><canvas id="camOverlay"></canvas></div>
-        <div class="idle">
-          <div class="idcard">
-            <div class="face" id="idFace"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01M9 15c2 1.5 4 1.5 6 0"/></svg></div>
-            <div class="dist" id="idDist"></div>
-            <div class="who" id="idWho">—</div>
-            <div class="role" id="idRole"></div>
+      <p class="disclaimer"><svg data-icon="shield"></svg><span data-t="disclaimer_short"></span></p>
+    </div>
+
+    <div class="panel checkin" data-code="NOD2·D4">
+      <div class="vf" id="vf">
+        <video id="camVideo" playsinline muted></video>
+        <canvas id="camOverlay"></canvas>
+        <div class="idle" id="vfIdle"><div><svg data-icon="camera"></svg><span data-t="cam_idle"></span></div></div>
+        <div class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="pill" id="pill"><i></i><span id="pillText"></span></div>
+        <div class="idcard" id="idcard" hidden><div class="face" id="idFace"></div><div><b id="idWho"></b><small id="idDist"></small></div></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="identify" type="button"><svg data-icon="camera"></svg><span data-t="identify"></span></button>
+        <button class="btn" id="regOpen" type="button"><svg data-icon="plus"></svg><span data-t="reg_new"></span></button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <div class="result" id="result" hidden><svg data-icon="check"></svg><div><b id="resultName"></b> <span data-t="cam_off"></span></div></div>
+
+      <div class="regform" id="regForm" hidden>
+        <div class="fields">
+          <label class="field"><span data-t="reg_name"></span><input type="text" id="regName" maxlength="24" autocomplete="off"></label>
+          <label class="field"><span data-t="reg_role"></span><input type="text" id="regRole" maxlength="40" autocomplete="off"></label>
+          <label class="field"><span data-t="reg_hr"></span><input type="number" id="regHr" value="62" step="1" min="35" max="120" inputmode="numeric"></label>
+          <label class="field"><span data-t="reg_sleep"></span><input type="number" id="regSleep" value="6.6" step="0.1" min="3" max="12" inputmode="decimal"></label>
+          <label class="field"><span data-t="reg_mood"></span><input type="number" id="regMood" value="4" step="1" min="1" max="5" inputmode="numeric"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="regConsent"><span data-t="reg_consent"></span></label>
+        <div class="row"><button class="btn primary" id="regSave" type="button"><span data-t="reg_save"></span></button><button class="btn ghost" id="regCancel" type="button"><span data-t="cancel"></span></button></div>
+        <p class="status" id="regMsg" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="crew">
+        <h3><span id="crewTitle"></span></h3>
+        <div class="crewlist" id="crewList"></div>
+      </div>
+      <button class="btn primary" id="proceed" type="button"><svg data-icon="scan"></svg><span id="proceedText"></span></button>
+      <div class="privacy"><svg data-icon="lock"></svg><p data-t="privacy"></p></div>
+    </div>
+  </section>
+
+  <!-- ============ SCAN ============ -->
+  <section id="scan" class="sec" aria-labelledby="h-scan">
+    <div class="sec-head">
+      <div><h2 id="h-scan" data-t="scan_title"></h2><p data-t="scan_sub"></p></div>
+      <p class="src-line" id="dataSource"></p>
+    </div>
+
+    <div class="panel controls" data-code="LAB1·O2">
+      <div class="crewtag"><span class="av" id="sAv">?</span><div><b id="sName">—</b><small id="sRole"></small></div></div>
+      <label class="ctl"><span data-t="scenario"></span>
+        <select class="input" id="scenario"></select>
+      </label>
+      <div class="ctl"><span id="dayLabel" data-t="day_of"></span>
+        <div class="dayctl"><input type="range" id="day" min="1" max="14" value="13" aria-labelledby="dayLabel"><output id="dayOut" for="day">13/14</output></div>
+      </div>
+      <div class="ctl"><span id="envLabel" data-t="environment"></span>
+        <div class="seg" role="group" id="envSeg" aria-labelledby="envLabel">
+          <button type="button" data-env="ISS">ISS</button><button type="button" data-env="MOON" data-t="moon"></button><button type="button" data-env="MARS" data-t="mars"></button>
+        </div>
+      </div>
+      <div class="ctl"><span data-t="voice"></span>
+        <div class="seg" role="group"><button type="button" id="voiceBtn" aria-pressed="true"><svg data-icon="volume"></svg><span id="voiceText"></span></button></div>
+      </div>
+      <div class="go">
+        <button class="btn" id="serialBtn" type="button"><svg data-icon="usb"></svg><span id="serialText"></span></button>
+        <button class="btn primary" id="start" type="button"><svg data-icon="play"></svg><span id="startText"></span></button>
+      </div>
+      <div class="livestrip" id="live" hidden></div>
+    </div>
+
+    <div class="scan-grid">
+      <div class="panel figure-panel" data-code="BODY·A1">
+        <div class="viewtoggle">
+          <div class="seg" role="group" id="viewSeg" data-t-aria="view">
+            <button type="button" data-view="2d" data-t="view_2d"></button>
+            <button type="button" data-view="3d" data-t="view_3d"></button>
           </div>
         </div>
+        <div id="figure2d"></div>
+        <div id="figure3d" hidden></div>
+        <p class="caption" id="caption" aria-live="polite"><svg data-icon="volume"></svg><span id="captionText"></span></p>
+        <p class="voice-note" id="voiceNote" hidden></p>
       </div>
-      <div class="camfoot"><span>face-api · TinyFaceDetector</span><span id="camSrc">WebGL / CPU</span></div>
-      <div class="result hidden" id="result">
-        <div class="ck"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></div>
-        <div><b id="resultName"></b><span class="sub" id="t-cam_off"></span></div>
-        <svg class="camoff" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l22 22M21 7l-5 4V7a2 2 0 0 0-2-2H8M3 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11"/></svg>
-      </div>
-      <div class="actions"><button class="primary" id="identify" type="button"></button></div>
-      <div class="status" id="status" role="status"></div>
-      <div class="privacy">
-        <svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg>
-        <div><h4 id="t-privacy_title"></h4><p id="t-privacy"></p></div>
-      </div>
+      <div class="readouts" id="readout"></div>
     </div>
+    <div class="next" id="next" hidden></div>
+  </section>
 
-    <div class="card">
-      <div class="kick"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 11a3 3 0 1 0 0-6M22 21c0-3-2-5-5-5.5"/></svg><span id="crewTitle"></span></div>
-      <button type="button" class="regbtn" id="regOpen" style="margin-top:10px"></button>
-      <div class="regform hidden" id="regForm">
-        <div class="fields">
-          <label><span id="t-reg_name"></span><input type="text" id="regName" maxlength="24" autocomplete="off"></label>
-          <label><span id="t-reg_role"></span><input type="text" id="regRole" maxlength="40" autocomplete="off"></label>
-          <label><span id="t-reg_hr"></span><input type="number" id="regHr" value="65" step="1"></label>
-          <label><span id="t-reg_sleep"></span><input type="number" id="regSleep" value="7.5" step="0.1"></label>
-          <label><span id="t-reg_mood"></span><input type="number" id="regMood" value="8" step="1" min="1" max="10"></label>
-        </div>
-        <div class="small" id="t-reg_sensors"></div>
-        <div class="sensorpick" id="sensorPick"></div>
-        <label class="inline"><input type="checkbox" id="regConsent"> <span id="t-reg_consent"></span></label>
-        <div class="actions" style="justify-content:flex-start"><button class="primary" id="regSave" type="button"></button><button id="regCancel" type="button"></button></div>
-        <div class="small" id="regMsg"></div>
-      </div>
-      <div class="crewlist" id="crewList"></div>
-      <div class="fb"><div class="lbl" id="t-fallback"></div><div class="small" id="t-fallback_hint"></div></div>
-      <button type="button" class="primary proceed" id="proceed" disabled></button>
+  <!-- ============ EARTH LINK ============ -->
+  <section id="earth" class="sec" aria-labelledby="h-earth">
+    <div class="sec-head"><div><h2 id="h-earth" data-t="earth_title"></h2><p data-t="earth_sub"></p></div><p class="src-line" data-t="earth_src"></p></div>
+    <div class="earth">
+      <div class="panel delay" data-code="COMM·S1" data-reveal id="delayPanel"></div>
+      <div class="panel sbar" data-code="SBAR·F1" data-reveal id="sbarPanel"></div>
     </div>
   </section>
 
-  <!-- ============ SCREEN 2: body scan ============ -->
-  <section id="viewScan" class="scan hidden" aria-label="Body scan">
-    <div class="card">
-      <div class="crewbar"><div class="av" id="sAv">?</div><div><b id="sName">—</b><span class="small" id="sRole"></span></div></div>
-      <div id="figure"></div>
-      <div class="controls">
-        <button class="primary" id="start" type="button"></button>
-        <button id="changeCrew" type="button"></button>
-        <label><span id="t-scenario"></span>
-          <select id="scenario"><option value="normal" id="o-normal"></option><option value="fatigue" id="o-fatigue" selected></option><option value="fever" id="o-fever"></option></select>
-        </label>
-        <label class="inline"><input type="checkbox" id="voice" checked> <span id="t-voice"></span></label>
-      </div>
-      <div class="controls">
-        <label class="inline"><input type="checkbox" class="layer" value="muscles" checked> <span id="t-muscles"></span></label>
-        <label class="inline"><input type="checkbox" class="layer" value="bones" checked> <span id="t-bones"></span></label>
-        <label class="inline"><input type="checkbox" class="layer" value="organs" checked> <span id="t-organs"></span></label>
-        <label class="inline"><input type="checkbox" class="layer" value="labels" checked> <span id="t-labels"></span></label>
-      </div>
-    </div>
-    <div class="card" aria-live="polite">
-      <h2 id="t-sensors_active"></h2>
-      <div class="sensors" id="sensorChips"></div>
-      <h2 id="t-readout"></h2>
-      <div id="readout"></div>
-      <div class="note" id="t-note"></div>
+  <!-- ============ SPACE WEATHER ============ -->
+  <section id="weather" class="sec" aria-labelledby="h-weather">
+    <div class="sec-head"><div><h2 id="h-weather" data-t="wx_title"></h2><p data-t="wx_sub"></p></div><p class="src-line" data-t-html="wx_src"></p></div>
+    <div class="weather">
+      <div class="panel timeline draw" data-code="RAD·W2" data-reveal id="wxTimeline"></div>
+      <div class="panel wx-side" data-code="RAD·W3" data-reveal id="wxSide"></div>
     </div>
   </section>
-</div>
 
-<script type="module">
-import { createBodyScan, ZONES } from "./body-scan.js";
-import { speak, stopVoice, chime, setVoiceLang, setVoiceEnabled } from "./voice.js";
-import { makeT } from "./i18n.js";
-import { createFaceId } from "./face-id.js";
+  <!-- ============ TRENDS ============ -->
+  <section id="trends" class="sec" aria-labelledby="h-trends">
+    <div class="sec-head"><div><h2 id="h-trends" data-t="trends_title"></h2><p data-t="trends_sub"></p></div><p class="src-line" data-t="trends_src"></p></div>
+    <div class="legend" id="trendLegend"></div>
+    <div class="trends" id="trendGrid"></div>
+  </section>
 
-let LANG = "es";
-try { const s = localStorage.getItem("galley-lang"); if (s === "en" || s === "es") LANG = s; } catch (e) { /* storage blocked */ }
-const t = makeT(() => LANG);
-const $ = (s) => document.querySelector(s);
-const esc = (x) => String(x).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  <!-- ============ REAL ASTRONAUT DATA ============ -->
+  <section id="science" class="sec" aria-labelledby="h-science">
+    <div class="sec-head"><div><h2 id="h-science" data-t="sci_title"></h2><p data-t="sci_sub"></p></div><p class="src-line" data-t-html="sci_src"></p></div>
+    <div class="science">
+      <div class="panel osdr" data-code="OSD·575" data-reveal id="osdrPanel"></div>
+      <div class="panel copy" data-code="OSD·569" data-reveal id="osdrCopy"></div>
+    </div>
+    <div class="panel sources" data-code="REF·00" data-reveal>
+      <h3 data-t="sources_title"></h3>
+      <ul id="sourceList"></ul>
+    </div>
+  </section>
+</main>
 
-/* ===== Ranges. From contracts/medical-ranges-config.json (ISS) unless marked demo.
-   red if v < rMin or v > rMax; amber if outside [gMin, gMax].
-   sleep and mood: config's red_high really means "red at or below", so it is used as rMin. ===== */
-const RANGES = {
-  sleep:    { gMin: 7.0, gMax: 9.5, rMin: 5.5, rMax: 24,  lo: 3,   hi: 11 },
-  mood:     { gMin: 7,   gMax: 10,  rMin: 5,   rMax: 11,  lo: 1,   hi: 10 },
-  temp:     { gMin: 36.1, gMax: 37.3, rMin: 35.0, rMax: 38.5, lo: 34.5, hi: 39.5 },
-  hr:       { gMin: 50,  gMax: 90,  rMin: 40,  rMax: 120, lo: 30,  hi: 140 },
-  bp:       { gMin: 95,  gMax: 130, rMin: 85,  rMax: 160, lo: 70,  hi: 180 },
-  spo2:     { gMin: 95,  gMax: 100, rMin: 90,  rMax: 101, lo: 85,  hi: 100, demo: true },
-  glucose:  { gMin: 70,  gMax: 140, rMin: 50,  rMax: 250, lo: 40,  hi: 260 },
-  meal:     { gMin: 80,  gMax: 100, rMin: 50,  rMax: 101, lo: 0,   hi: 100, demo: true },
-  exercise: { gMin: 45,  gMax: 200, rMin: 15,  rMax: 999, lo: 0,   hi: 120, demo: true }
-};
-const ZONE_METRICS = { head: ["sleep", "mood", "temp"], chest: ["hr", "bp", "spo2"], abdomen: ["glucose", "meal"], legs: ["exercise"] };
-/* hardware per metric, from the team's hardware table */
-const DEVICE = {
-  hr: "MAX30102", spo2: "MAX30102", temp: "MAX30205", bp: "Omron NIBP", glucose: "CGM · FreeStyle Libre",
-  sleep: "BMI270 · actigraphy", mood: "Touch scale 1-10", meal: "Menu log", exercise: "ARED log"
-};
-const ALL_SENSORS = ["hr", "spo2", "temp", "bp", "glucose", "sleep", "mood", "meal", "exercise"];
-const SOURCES = {
-  head: "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/",
-  chest: "https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/",
-  abdomen: "https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/",
-  legs: "https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/"
-};
-const DEFAULT_BASE = { sleep: 7.5, mood: 8, temp: 36.6, hr: 65, bp: 118, bpd: 76, spo2: 98, glucose: 95, meal: 95, exercise: 60 };
-const SCEN = {
-  normal:  { sleep: 7.4, mood: 8, temp: 36.6, hr: 66, bp: 117, bpd: 75, spo2: 98, glucose: 96, meal: 95, exercise: 60 },
-  fatigue: { sleep: 5.6, mood: 5, temp: 36.8, hr: 92, bp: 124, bpd: 80, spo2: 97, glucose: 92, meal: 60, exercise: 20 },
-  fever:   { sleep: 6.4, mood: 6, temp: 38.7, hr: 108, bp: 112, bpd: 72, spo2: 95, glucose: 110, meal: 55, exercise: 0 }
-};
-/* demo crew without face data: selectable by hand (fallback). Each one wears different sensors. */
-const DEMO_CREW = [
-  { id: "DEMO-KM", name: "Katherine M.", roleKey: "role_fe", sensors: ["hr", "spo2", "temp", "sleep", "mood", "meal", "exercise"], base: {} },
-  { id: "DEMO-AV", name: "Alex Vance", roleKey: "role_cmd", sensors: ["hr", "bp", "temp", "sleep", "mood", "exercise"], base: { hr: 60 } },
-  { id: "DEMO-ER", name: "Elena Rostov", roleKey: "role_med", sensors: ["hr", "spo2", "bp", "temp", "glucose", "sleep", "mood", "meal"], base: { hr: 68 } }
-];
-const MISSION_START = Date.parse("2026-11-14T13:00:00Z"); /* demo MET reference */
+<footer>
+  <div class="foot">
+    <p><b>Galley</b> · Team Synera · NASA Space Apps Challenge 2026 · <span data-t="disclaimer_long"></span></p>
+    <p><a href="https://github.com/ErickFP7314/synera-spaceapps" rel="noopener">GitHub</a> · <a href="https://wokwi.com/projects/480771036190862337" rel="noopener" data-t="wokwi_link"></a></p>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-const rank = { ok: 0, warn: 1, crit: 2 };
-function statusOf(k, v) {
-  const r = RANGES[k];
-  if (v < r.rMin || v > r.rMax) return "crit";
-  if (v < r.gMin || v > r.gMax) return "warn";
-  return "ok";
-}
-function evaluate(vals, sensors) {
-  const out = { zones: {}, metrics: {} };
-  for (const z of ZONES) {
-    const keys = ZONE_METRICS[z].filter((k) => sensors.includes(k));
-    if (!keys.length) { out.zones[z] = { st: null, key: null, keys }; continue; }
-    let worst = "ok", worstKey = keys[0];
-    for (const k of keys) {
-      const st = statusOf(k, vals[k]); out.metrics[k] = st;
-      if (rank[st] > rank[worst]) { worst = st; worstKey = k; }
-    }
-    out.zones[z] = { st: worst, key: worstKey, keys };
-  }
-  const sts = Object.values(out.metrics);
-  out.level = sts.includes("crit") ? 3 : sts.filter((s) => s === "warn").length >= 2 ? 2 : 1;
-  return out;
-}
-
-/* ===== formatting ===== */
-let BASE = { ...DEFAULT_BASE };
-function fmt(k, v, vals) {
-  if (k === "bp") return `${Math.round(v)}/${Math.round(vals.bpd)}`;
-  const one = (k === "sleep" || k === "temp") ? v.toFixed(1) : String(Math.round(v));
-  return LANG === "es" ? one.replace(".", ",") : one;
-}
-const ICON = {
-  ok: '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor" opacity=".25"/><path d="M4.5 8.2l2.3 2.3 4.7-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-  warn: '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l7 12.5H1z" fill="currentColor" opacity=".25"/><path d="M8 6v4M8 12v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-  crit: '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="3" fill="currentColor" opacity=".25"/><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
-};
-const COLOR = { ok: "var(--ok)", warn: "var(--warn)", crit: "var(--crit)" };
-function rangeBar(k, v) {
-  const r = RANGES[k], W = 200, H = 16, X = (x) => Math.max(0, Math.min(W, ((x - r.lo) / (r.hi - r.lo)) * W));
-  const seg = (a, b, c) => `<rect x="${X(a)}" y="5" width="${Math.max(0, X(b) - X(a))}" height="6" fill="${c}" opacity=".55"/>`;
-  return `<svg class="rbar" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">` +
-    seg(r.lo, r.rMin, "#ff4d4f") + seg(r.rMin, r.gMin, "#f5b301") + seg(r.gMin, r.gMax, "#2ecc71") +
-    seg(r.gMax, Math.min(r.rMax, r.hi), "#f5b301") + (r.rMax < r.hi ? seg(r.rMax, r.hi, "#ff4d4f") : "") +
-    `<line x1="${X(BASE[k])}" x2="${X(BASE[k])}" y1="2" y2="14" stroke="#9fb0d3" stroke-width="1.5" stroke-dasharray="2 2"/>` +
-    `<circle cx="${X(v)}" cy="8" r="5" fill="#e8eefc" stroke="#070d18" stroke-width="2"/></svg>`;
-}
-function zoneCard(z, R, vals) {
-  const zs = R.zones[z];
-  if (!zs.st) {
-    return `<div class="zone none" data-zone="${z}"><div class="zhead"><h3>${t("zone_" + z)}</h3><span class="small">${t("no_sensor")}</span></div></div>`;
-  }
-  let rows = "";
-  for (const k of zs.keys) {
-    const st = R.metrics[k];
-    rows += `<div class="metric">
-      <div class="name" style="color:${COLOR[st]}">${ICON[st]}<span style="color:var(--text)">${t("m_" + k)}${RANGES[k].demo ? ' <span class="src">(demo)</span>' : ""}<span class="dev">${DEVICE[k]}</span></span></div>
-      <div><span class="val">${fmt(k, vals[k], vals)}<small>${t("u_" + k)}</small></span><div class="usual">${t("usual")}: ${fmt(k, BASE[k], BASE)}</div></div>
-      <div>${rangeBar(k, vals[k])}</div></div>`;
-  }
-  const advice = zs.st === "ok" ? "" : `<p class="advice">${t("adv_" + zs.key)}</p>`;
-  return `<div class="zone ${zs.st}" data-zone="${z}">
-    <div class="zhead"><h3>${t("zone_" + z)}</h3><span class="chip ${zs.st}">${ICON[zs.st]}${t("st_" + zs.st)}</span></div>
-    ${rows}${advice}
-    <div class="src">${t("source")}: <a href="${SOURCES[z]}" target="_blank" rel="noopener">nasa.gov</a></div></div>`;
-}
-
-/* ===== crew model ===== */
-const face = createFaceId({ video: $("#camVideo"), overlay: $("#camOverlay"), box: $("#vf") });
-let selected = null;   /* crew object */
-let selectedBy = null; /* "face" | "manual" */
-let matchDist = null;
-function crewAll() {
-  const reg = face.list().map((p) => ({ id: p.id, name: p.name, role: p.role || "", sensors: p.sensors || ALL_SENSORS, base: p.base || {}, photo: p.photo, lastScan: p.lastScan, face: true }));
-  return reg.concat(DEMO_CREW.map((d) => ({ ...d, face: false })));
-}
-const roleOf = (c) => c.roleKey ? t(c.roleKey) : (c.role || "");
-const initials = (n) => n.split(/\s+/).map((w) => w[0] || "").join("").slice(0, 2).toUpperCase();
-function ago(ts) {
-  if (!ts) return t("never");
-  const m = Math.round((Date.now() - ts) / 60000);
-  return m < 1 ? t("just_now") : m < 60 ? t("ago_m", { n: m }) : t("ago_h", { n: Math.round(m / 60) });
-}
-
-function renderCrew() {
-  const list = crewAll();
-  $("#crewTitle").textContent = t("crew_title", { n: list.length });
-  $("#crewList").innerHTML = list.map((c) => {
-    const isSel = selected && selected.id === c.id;
-    const right = isSel && selectedBy === "face" ? `<span class="tag match">MATCH ›</span>`
-      : isSel ? `<span class="tag match">${esc(t("manual"))}</span>`
-      : !c.face ? `<span class="tag">${t("demo")}</span>` : "";
-    const verified = isSel && selectedBy === "face" ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.6"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>' : "";
-    const last = isSel && selectedBy === "face" ? `<span class="ls ok">● ${t("verified")}</span>` : `<span class="ls">● ${t("last_scan", { t: ago(c.lastScan) })}</span>`;
-    const del = c.face ? `<button type="button" class="delbtn" data-del="${esc(c.id)}" title="${esc(t("del"))}" aria-label="${esc(t("del"))} ${esc(c.name)}">×</button>` : "";
-    return `<div class="crewitem"><button type="button" class="crewrow${isSel ? " sel" : ""}" data-id="${esc(c.id)}">
-      <span class="av">${c.photo ? `<img alt="" src="${c.photo}">` : esc(initials(c.name))}</span>
-      <span class="meta"><span class="nm">${esc(c.name)} ${verified}</span><span class="rl">${esc(roleOf(c))} · ${c.sensors.length} ${LANG === "es" ? "sensores" : "sensors"}</span><br>${last}</span>${right}</button>${del}</div>`;
-  }).join("");
-  $("#crewList").querySelectorAll(".crewrow").forEach((b) => b.addEventListener("click", () => {
-    const c = crewAll().find((x) => x.id === b.dataset.id);
-    if (c) select(c, "manual");
-  }));
-  $("#crewList").querySelectorAll(".delbtn").forEach((b) => b.addEventListener("click", () => {
-    const p = face.get(b.dataset.del);
-    if (!p || !window.confirm(t("del_confirm", { name: p.name }))) return;
-    face.remove(p.id);
-    if (selected && selected.id === p.id) { selected = null; selectedBy = null; }
-    renderCrew();
-  }));
-  const p = $("#proceed");
-  p.disabled = !selected;
-  p.textContent = selected ? t("proceed", { name: selected.name }) + " →" : t("proceed_none");
-}
-
-function select(c, by, dist) {
-  selected = c; selectedBy = by; matchDist = dist ?? null;
-  $("#idWho").textContent = c.name;
-  $("#idRole").textContent = roleOf(c);
-  $("#idFace").innerHTML = c.photo ? `<img alt="" src="${c.photo}">` : `<b style="font-size:24px;color:#2ecc71">${esc(initials(c.name))}</b>`;
-  $("#idDist").textContent = by === "face" && dist != null ? t("match_dist", { d: (LANG === "es" ? dist.toFixed(2).replace(".", ",") : dist.toFixed(2)) }) : (by === "manual" ? t("manual").toUpperCase() : "");
-  $("#result").classList.toggle("hidden", by !== "face");
-  $("#resultName").textContent = t("recog", { name: c.name });
-  setPill(by === "face" ? "match" : "standby");
-  renderCrew();
-}
-
-/* ===== login screen ===== */
-let pillState = "standby";
-function setPill(s) {
-  pillState = s;
-  $("#pill").className = "pill" + (s === "sensing" ? " sensing" : s === "match" ? " match" : "");
-  $("#pillText").textContent = t("pill_" + s);
-  $("#vf").classList.toggle("sensing", s === "sensing");
-}
-let statusKey = "st_ready", statusVars = null, statusCls = "";
-function setStatus(key, vars, cls) { statusKey = key; statusVars = vars || null; statusCls = cls || ""; $("#status").textContent = key ? t(key, vars || undefined) : ""; $("#status").className = "status " + statusCls; }
-let regKey = null, regVars = null;
-function regMsg(key, vars) { regKey = key; regVars = vars || null; $("#regMsg").textContent = key ? t(key, vars) : ""; }
-
-/* load models, then turn the camera on. show(key, isError) reports progress. Returns true when the camera is live. */
-async function bootCamera(show) {
-  try { show("st_loading"); await face.ensure(); }
-  catch (e) { show("models_fail", true); return false; }
-  $("#camSrc").textContent = face.source === "local" ? "models: local" : "models: CDN";
-  try { show("st_camera"); await face.startCam(); }
-  catch (e) { face.stopCam(); show(face.camErrorKey(e), true); return false; }
-  return true;
-}
-
-let idToken = 0;
-async function identify() {
-  const token = ++idToken;
-  $("#identify").disabled = true; $("#result").classList.add("hidden");
-  face.stopPreview(); $("#regForm").classList.add("hidden");
-  if (!face.list().length) { setStatus("st_noprof", null, "warn"); openRegister(); $("#identify").disabled = false; return; }
-  setPill("sensing");
-  const ok = await bootCamera((k, err) => setStatus(k, null, err ? "warn" : ""));
-  if (!ok) { setPill("standby"); $("#identify").disabled = false; return; }
-  const res = await face.identify({ timeoutMs: 12000, onStatus: (s) => setStatus(s === "look" ? "st_look" : "st_match"), isCancelled: () => token !== idToken });
-  face.stopCam();
-  $("#identify").disabled = false;
-  if (res.status !== "ok") { setPill("standby"); if (res.status === "timeout") setStatus("st_timeout", null, "warn"); return; }
-  const c = crewAll().find((x) => x.id === res.id);
-  select(c, "face", res.dist);
-  setStatus("opening", null, "");
-  setTimeout(() => { if (selected && selected.id === c.id && selectedBy === "face") goScan(true); }, 1800);
-}
-
-function buildSensorPick() {
-  $("#sensorPick").innerHTML = ALL_SENSORS.map((k) =>
-    `<label class="inline"><input type="checkbox" class="spk" value="${k}" checked> <span>${t("m_" + k)} · ${DEVICE[k]}</span></label>`).join("");
-}
-async function openRegister() {
-  $("#regForm").classList.remove("hidden"); buildSensorPick();
-  $("#regName").focus();
-  if (!face.isLive()) {
-    const ok = await bootCamera((k) => regMsg(k));
-    if (!ok) return;
-  }
-  setPill("sensing");
-  face.preview((det) => regMsg(det ? "prev_face" : "prev_noface"));
-}
-async function saveRegister() {
-  const name = $("#regName").value.trim();
-  if (!name) return regMsg("reg_need_name");
-  if (face.exists(name)) return regMsg("reg_exists");
-  const hr = parseFloat($("#regHr").value), sleep = parseFloat(String($("#regSleep").value).replace(",", ".")), mood = parseFloat($("#regMood").value);
-  if (!(hr >= 35 && hr <= 120 && sleep >= 3 && sleep <= 12 && mood >= 1 && mood <= 10)) return regMsg("reg_bad");
-  const sensors = [...document.querySelectorAll(".spk:checked")].map((x) => x.value);
-  if (!sensors.length) return regMsg("reg_bad");
-  if (!$("#regConsent").checked) return regMsg("reg_need_consent");
-  $("#regSave").disabled = true;
-  face.stopPreview();
-  try {
-    if (!face.isLive()) { const ok = await bootCamera((k) => regMsg(k)); if (!ok) return; }
-    regMsg("reg_look");
-    const r = await face.register(name, { hr, sleep, mood }, { role: $("#regRole").value.trim(), sensors },
-      (n, total) => regMsg("reg_progress", { n, total }));
-    if (!r.ok) { regMsg("reg_noface"); face.preview((det) => regMsg(det ? "prev_face" : "prev_noface")); return; }
-    face.stopCam(); setPill("standby");
-    /* show the captured photo in the viewfinder card */
-    $("#idFace").innerHTML = `<img alt="" src="${r.profile.photo}">`;
-    $("#idWho").textContent = r.profile.name; $("#idRole").textContent = r.profile.role || ""; $("#idDist").textContent = "";
-    $("#regForm").classList.add("hidden"); $("#regName").value = ""; $("#regConsent").checked = false;
-    setStatus(r.stored ? "reg_ok" : "reg_nostore", { name: r.profile.name }, r.stored ? "" : "warn");
-    regMsg(null);
-    renderCrew();
-  } catch (e) { face.stopCam(); setPill("standby"); regMsg(face.camErrorKey(e)); }
-  finally { $("#regSave").disabled = false; }
-}
-function cancelRegister() { $("#regForm").classList.add("hidden"); regMsg(null); face.stopCam(); setPill("standby"); }
-
-/* ===== scan screen ===== */
-const fig = createBodyScan($("#figure"), { ariaNames: { head: "Head", chest: "Chest", abdomen: "Abdomen", legs: "Legs" } });
-fig.onSelect((z) => { const el = document.querySelector(`.zone[data-zone="${z}"]`); if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
-document.querySelectorAll(".layer").forEach((cb) => cb.addEventListener("change", () => fig.setLayers({ [cb.value]: cb.checked })));
-let last = null, running = false, runToken = 0;
-
-function showView(v) {
-  $("#viewLogin").classList.toggle("hidden", v !== "login");
-  $("#viewScan").classList.toggle("hidden", v !== "scan");
-  window.scrollTo(0, 0);
-}
-function fillCrewBar() {
-  const c = selected;
-  $("#sAv").innerHTML = c.photo ? `<img alt="" src="${c.photo}">` : esc(initials(c.name));
-  $("#sName").textContent = c.name;
-  $("#sRole").textContent = roleOf(c) + (selectedBy === "face" ? " · " + t("verified") : " · " + t("manual"));
-  $("#sensorChips").innerHTML = c.sensors.map((k) => `<span>${t("m_" + k)} · ${DEVICE[k]}</span>`).join("");
-}
-function goScan(autoStart) {
-  if (!selected) return;
-  BASE = { ...DEFAULT_BASE, ...selected.base };
-  fillCrewBar(); showView("scan");
-  last = null; fig.reset(); rerenderReadout();
-  if (autoStart) runCheck();
-}
-function backToLogin() {
-  runToken++; stopVoice(); running = false; $("#start").disabled = false;
-  selected = null; selectedBy = null;
-  $("#result").classList.add("hidden"); $("#idWho").textContent = "—"; $("#idRole").textContent = ""; $("#idDist").textContent = "";
-  $("#idFace").innerHTML = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01M9 15c2 1.5 4 1.5 6 0"/></svg>';
-  setPill("standby"); setStatus("st_ready"); renderCrew(); showView("login");
-}
-
-async function runCheck() {
-  if (running || !selected) return;
-  running = true; const token = ++runToken; $("#start").disabled = true;
-  stopVoice(); setVoiceLang(LANG); setVoiceEnabled($("#voice").checked);
-  const vals = SCEN[$("#scenario").value];
-  const R = evaluate(vals, selected.sensors);
-  last = { vals, R, shown: [] };
-  $("#readout").innerHTML = "";
-  await speak(t("say_sensors", { name: selected.name, n: selected.sensors.length }));
-  if (token !== runToken) return;
-  const statuses = {}; for (const z of ZONES) statuses[z] = R.zones[z].st;
-  await fig.run(statuses, {
-    onZone: async (z, st) => {
-      if (token !== runToken) return;
-      last.shown.push(z);
-      $("#readout").insertAdjacentHTML("beforeend", zoneCard(z, R, vals));
-      const keys = R.zones[z].keys;
-      if (keys.length) fig.setLabel(z, `${t("m_" + keys[0])} ${fmt(keys[0], vals[keys[0]], vals)} ${t("u_" + keys[0])}`);
-      if (z === "chest" && keys.includes("hr")) fig.setHeartRate(vals.hr);
-      if (!st || st === "ok") return; /* calm voice: only zones that need attention */
-      const key = R.zones[z].key, r = RANGES[key];
-      const dir = vals[key] < r.gMin ? t("low") : t("high");
-      await speak(t("say_zone", { zone: t("zone_" + z), metric: t("m_" + key), value: `${fmt(key, vals[key], vals)} ${t("u_" + key)}`, dir, advice: t("adv_" + key) }));
-    }
-  });
-  if (token !== runToken) return;
-  const lvlSt = R.level === 3 ? "crit" : R.level === 2 ? "warn" : "ok";
-  $("#readout").insertAdjacentHTML("beforeend", `<div class="summary ${lvlSt}"><h3>${t("lvl" + R.level)}</h3><div>${t("lvl" + R.level + "_do")}</div></div>`);
-  if (selected.face) face.touch(selected.id);
-  chime(lvlSt);
-  await speak(t("say_end", { level: t("lvl" + R.level), todo: t("lvl" + R.level + "_do") }));
-  running = false; $("#start").disabled = false; $("#start").textContent = t("again");
-}
-function rerenderReadout() {
-  if (!last) { $("#readout").innerHTML = `<p class="empty">${t("waiting")}</p>`; return; }
-  const { vals, R, shown } = last;
-  let html = shown.map((z) => zoneCard(z, R, vals)).join("");
-  if (shown.length === ZONES.length && !running) {
-    const lvlSt = R.level === 3 ? "crit" : R.level === 2 ? "warn" : "ok";
-    html += `<div class="summary ${lvlSt}"><h3>${t("lvl" + R.level)}</h3><div>${t("lvl" + R.level + "_do")}</div></div>`;
-  }
-  $("#readout").innerHTML = html;
-  for (const z of shown) { const k = R.zones[z].keys[0]; if (k) fig.setLabel(z, `${t("m_" + k)} ${fmt(k, vals[k], vals)} ${t("u_" + k)}`); }
-}
-
-/* ===== language + clock ===== */
-function applyLang() {
-  document.documentElement.lang = LANG;
-  const ids = ["login_kicker", "login_title", "login_sub", "local_badge", "optic", "look_prompt", "cam_off", "privacy_title", "privacy",
-    "reg_name", "reg_role", "reg_hr", "reg_sleep", "reg_mood", "reg_sensors", "reg_consent", "fallback", "fallback_hint",
-    "scenario", "voice", "muscles", "bones", "organs", "labels", "sensors_active", "readout", "note"];
-  for (const id of ids) { const el = $("#t-" + id); if (el) el.textContent = t(id); }
-  $("#identify").textContent = t("identify"); $("#regOpen").textContent = "+ " + t("reg_new");
-  $("#regSave").textContent = t("reg_save"); $("#regCancel").textContent = t("cancel");
-  $("#changeCrew").textContent = t("change_crew");
-  $("#start").textContent = last ? t("again") : t("start_scan");
-  $("#o-normal").textContent = t("sc_normal"); $("#o-fatigue").textContent = t("sc_fatigue"); $("#o-fever").textContent = t("sc_fever");
-  $("#langEs").classList.toggle("on", LANG === "es"); $("#langEn").classList.toggle("on", LANG === "en");
-  setPill(pillState); $("#status").textContent = statusKey ? t(statusKey, statusVars || undefined) : "";
-  $("#regMsg").textContent = regKey ? t(regKey, regVars || undefined) : "";
-  if ($("#sensorPick").innerHTML) buildSensorPick();
-  if (selected) { select(selected, selectedBy, matchDist); fillCrewBar(); } else renderCrew();
-  setVoiceLang(LANG);
-  if (!running) rerenderReadout();
-}
-function setLang(l) { LANG = l; try { localStorage.setItem("galley-lang", l); } catch (e) { /* storage blocked */ } stopVoice(); applyLang(); }
-function tick() {
-  const now = new Date(), s = Math.max(0, Math.floor((now - MISSION_START) / 1000));
-  const p = (n) => String(n).padStart(2, "0");
-  $("#met").textContent = `${p(Math.floor(s / 3600))}:${p(Math.floor(s / 60) % 60)}:${p(s % 60)}`;
-  $("#utc").textContent = now.toISOString().slice(0, 19).replace("T", " ");
-}
-
-$("#langEs").addEventListener("click", () => setLang("es"));
-$("#langEn").addEventListener("click", () => setLang("en"));
-$("#identify").addEventListener("click", identify);
-$("#regOpen").addEventListener("click", openRegister);
-$("#regSave").addEventListener("click", saveRegister);
-$("#regCancel").addEventListener("click", cancelRegister);
-$("#proceed").addEventListener("click", () => goScan(true));
-$("#start").addEventListener("click", runCheck);
-$("#changeCrew").addEventListener("click", backToLogin);
-$("#voice").addEventListener("change", (e) => setVoiceEnabled(e.target.checked));
-setPill("standby"); setStatus("st_ready");
-applyLang(); tick(); setInterval(tick, 1000);
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>

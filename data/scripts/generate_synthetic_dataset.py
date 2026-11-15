@@ -31,8 +31,8 @@ CAL = {
     "skin_temp_c":  {"mean": 36.5, "sd": 0.12, "drift_per_day": 0.013, "source": "Stahn et al. 2017, Sci Rep 7:16180 — core temperature +~1 °C over ~2.5 months (0.013 °C/day)"},
     "mood_1_5":     {"values": [3, 4, 4, 4, 5], "source": "Demo profile usual mood 4/5"},
     "pvt_lapses":   {"mean": 2, "sd": 1, "source": "Basner et al. 2011, Acta Astronaut 69:949 — PVT-B lapses (RT > 355 ms) in rested subjects are low"},
-    "intake_pct":   {"mean": 86, "sd": 4, "source": "Smith et al. 2005, J Nutr 135:437 — ISS crews eat below requirement (~80%, VERIFY); NASA HRP nutrition risk"},
-    "exercise":     {"prescribed_min": 90, "mean_pct": 92, "sd_pct": 6, "source": "NASA HRP bone risk; ISS daily exercise ~2 h incl. setup (VERIFY) -> 90 min prescribed in the demo"},
+    "intake_pct":   {"mean": 86, "sd": 4, "source": "Smith et al. 2005, J Nutr 135:437 — ISS crews ate a mean 80% of the recommended energy intake; NASA HRP nutrition risk"},
+    "exercise":     {"prescribed_min": 90, "mean_pct": 92, "sd_pct": 6, "source": "NASA HRP bone risk; ISS crew exercise about 2 h per day incl. set-up (NASA, CSA) -> 90 min prescribed in the demo"},
     "radiation_mgy_day": {"min": 0.16, "max": 0.21, "source": "Di Fino et al. 2023, Life Sci Space Res 39:26 (ASI LIDAL, ISS Columbus): 1.8-2.4 nGy/s"},
 }
 

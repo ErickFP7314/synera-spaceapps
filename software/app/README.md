@@ -1,62 +1,96 @@
 # Galley web app (Software team)
 
-Static web app, no build step and no backend. Everything runs in the browser.
+Static web app with no build step and no backend. Everything runs in the browser.
 
 **Public link (GitHub Pages):** https://erickfp7314.github.io/synera-spaceapps/
 
-## Run it
+## Run it locally
 
-Needs Node.js 18 or newer (the project already uses it for `npm test`). No `npm install` is needed to run the app.
+You need Node.js 18 or newer. You don't need `npm install` to run the app.
 
 ```bash
 cd software
 npm start
 ```
 
-Open http://127.0.0.1:5174 (it redirects to `/software/app/`). The server serves the whole repo because the app reads `data/` and `contracts/`, exactly like GitHub Pages. Use another port with `PORT=5180 npm start` (PowerShell: `$env:PORT=5180; npm start`).
+Then open http://127.0.0.1:5174 (it redirects to `/software/app/`).
 
-The camera only works on `127.0.0.1`, `localhost` or HTTPS (GitHub Pages). Opening `index.html` by double-click (`file://`) does not work, because the page uses ES modules.
+- The server serves the whole repo because the app reads `data/` and `contracts/`, exactly like GitHub Pages.
+- The camera only works on `127.0.0.1`, `localhost` or HTTPS.
+- Without Node, run this from the repo root and open http://127.0.0.1:5174/software/app/:
+  ```bash
+  python -m http.server 5174 --bind 127.0.0.1
+  ```
 
-Alternative without Node, from the repo root: `python -m http.server 5174 --bind 127.0.0.1`, then open http://127.0.0.1:5174/software/app/.
+### Demo deep links (for the video and the judges)
 
-## Flow
+`?scenario=bradycardia&day=13&env=MARS&view=3d&lang=en&theme=night&voice=0&autoscan=1`
 
-1. **Crew biometric check-in.** Register a crew member (name, role, usual values, the sensors that person wears, consent). The camera shows a live preview, takes 5 face samples and turns off. "Identify with camera" recognizes a registered face and opens the scan. Without a camera, pick a crew member from the list.
-2. **Body scan.** A scan line moves from head to feet over the figure. Each zone (head, chest, abdomen, legs) turns green, amber or red, and its readings appear on the right with a range bar (today's value vs. the person's usual value). Only the sensors assigned to that crew member are read. The voice guide (ES/EN) reads only the zones that need attention.
+| Parameter | Values |
+|---|---|
+| `scenario` | `nominal`, `fatigue`, `bradycardia`, `infection`, `solar_storm` |
+| `day` | `1`–`14` |
+| `env` | `ISS`, `MOON`, `MARS` |
+| `view` | `2d`, `3d` |
+| `theme` | `day`, `night` |
+| `voice` | `0` (off) |
+| `autoscan` | `1` (starts the scan on load) |
+
+## Flow (one scrolling page)
+
+1. **Check-in.** Face ID: the camera turns on only while identifying, then off. You can also register a crew member or pick the demo profile (Cmdr. A. Rivera, CREW-A).
+2. **Body scan.**
+   - A scan walks from head to feet, over the anatomical figure or the 3D body scanner.
+   - Each reading appears as a tag: today's value, *your normal*, the z-score, a bullet bar, and "What does this mean?".
+   - It ends with **one next step**, one of 4 levels: self-care, tell the crew, flight surgeon, urgent.
+3. **Earth link.** Shows the delay for the ISS, the Moon or Mars, and the **S-B-A-R** report, sent now or queued with its reply time. The report can be copied or printed.
+4. **Space weather.** Real NASA DONKI solar particle events from the May 2024 storm, today's dose, and rule R6.
+5. **14-day trends.** One chart per indicator, with your personal band. The dots grow with the distance from your normal.
+6. **Real astronaut data.** NASA OSDR Inspiration4 glucose (OSD-575 / OSD-569), each crew member against their own pre-flight mean, with the R+45 caveat.
+
+Data source line:
+- `SIMULATION` = the 14-day dataset.
+- `LIVE SENSOR` = values from the USB sensor.
 
 ## Files
 
 | File | What it does |
 |---|---|
-| `index.html` | The two screens and the demo logic |
-| `body-scan.js` | SVG human figure, 4 clickable zones, scan animation. Presentation only: it receives the status of each zone |
-| `face-id.js` | Local face recognition: camera, registration, matching, storage |
-| `voice.js` | Voice guide (Web Speech API) and alert tones (Web Audio API) |
-| `i18n.js` | All UI and voice texts in Spanish and English |
-| `vendor/face-api/` | `@vladmandic/face-api` 1.7.12 and its 3 models (MIT license), so Face ID works offline |
+| `index.html` | Page structure, and the theme set before first paint |
+| `styles.css` | "Station interior" design: day and pre-sleep (warm, low-blue) themes, panels, inventory tags, scroll reveal |
+| `app.js` | Controller: loads `contracts/` and `data/`, runs the engine, renders every section |
+| `engine/` | **Generated** from `software/src/domain` with `npm run build:engine`. `tests/app-engine.test.ts` fails if it is stale |
+| `body-scan.js` | 2D anatomical SVG figure with the scan line |
+| `body-3d.js` + `body-3d-art.js` | 3D isometric body scanner. The art is **generated** by `node tools/build-body-3d.mjs` with the MIT anatomy kit in `software/tools/anatomy-kit` |
+| `voice.js` | Voice guide (details below) |
+| `voice/` | Recorded voice clips in EN/ES. **Generated** by `node tools/build-voice.mjs` with the open Kokoro-82M model (AI-generated audio, listed in `voice/manifest.json`) |
+| `serial.js` | Web Serial reader for the ESP32 sensor, with frames checked against `contracts/telemetry-payload.schema.json` |
+| `charts.js`, `icons.js` | Dependency-free SVG charts and one drawn icon set |
+| `i18n.js` | All UI and voice texts in English (default) and Spanish |
+| `face-id.js`, `vendor/face-api/` | Local face recognition (`@vladmandic/face-api` 1.7.12, MIT), works offline |
+| `fonts/` | Atkinson Hyperlegible Next + Mono (SIL OFL) |
 
-## Browser APIs used
+### How the voice works
 
-| Feature | API |
-|---|---|
-| Face recognition | `@vladmandic/face-api` (TensorFlow.js, WebGL or CPU): TinyFaceDetector, 68-point landmarks, 128-number face descriptor |
-| Camera | `navigator.mediaDevices.getUserMedia` |
-| Figure and range bars | Inline SVG drawn with JavaScript, `requestAnimationFrame` |
-| Voice | `SpeechSynthesis` (`es-ES`, `en-US`) |
-| Alert tone | Web Audio `OscillatorNode` |
-| Storage | `localStorage` (profiles, face descriptors, language). Nothing is uploaded |
+1. If the browser has a voice for the current language, Galley uses it (Web Speech).
+2. If it has none (Brave, or Chrome on Linux without speech-dispatcher), Galley plays its recorded clips instead.
+3. In every case, the sentence also appears as a caption under the figure.
+
+## Hardware (USB sensor)
+
+1. Press **Connect sensor (USB)** in Chrome or Edge.
+2. The ESP32 sends one JSON line per second, for example `{"t":12,"hr":61,"spo2":98,"temp":36.6,"q":1,"src":"sensor"}`.
+3. Today's pulse, SpO₂ and skin temperature then come from the sensor: the median of the last good frames, where `q=1`.
+4. If the sensor is unplugged, the app goes back to the dataset.
+
+The demo uses the simulator: the Go/No-Go decision was NO-GO because there was no physical board. See `hardware/tools/gonogo.py`.
 
 ## Privacy
 
-The camera is on only while registering or identifying. Photo and face descriptor stay in this browser's `localStorage`. Each registration can be deleted from the crew list.
+- The camera is on only while registering or identifying.
+- Photos and face descriptors stay in this browser's `localStorage`, and each crew member can be deleted from the list.
+- Nothing is uploaded.
 
-## Status against plan v2.1 (to do next)
+## Decision support
 
-This first version still uses its own demo values. It is **not yet aligned** with the frozen contracts:
-
-- Thresholds are hard-coded in `index.html`. They must be read from `contracts/medical-ranges-config.json` (personal baseline, z-score, absolute limits).
-- Mood uses 1–10. The plan says **1–5**.
-- Blood pressure and glucose still change the zone color. The plan says they must **not** raise alerts.
-- The summary shows 3 levels. The plan has **4 action levels**.
-- Scenarios are 3 built-in ones. They must come from `data/synthetic/galley-14day-scenarios.json`.
-- Not connected yet: the TypeScript engine in `software/src/domain/`, the environment selector (ISS / Moon / Mars), the S-B-A-R report, the DONKI radiation card, the Inspiration4 card, "What does this mean?" and Web Serial.
+Galley is decision support, not a medical device. Thresholds and rules come from `contracts/medical-ranges-config.json` and `data/reference/rules.json`, with their sources.

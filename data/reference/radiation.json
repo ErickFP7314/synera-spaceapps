@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "owner": "Biotech team (content) — read-only for Software",
   "description": "Radiation reference values and space-weather alert thresholds used by rule R6.",
-  "career_limit": { "value": 600, "unit": "mSv effective dose", "source": "NASA-STD-3001 Vol. 1 (Rev. B, 2022) / NASA OCHMO — VERIFY exact section number before quoting" },
+  "career_limit": { "value": 600, "unit": "mSv effective dose", "source": "NASA-STD-3001 Vol. 1 Rev. B, section 4.8.2, requirement [V1 4030] 'Career Space Permissible Exposure Limit for Space Flight Radiation' (600 mSv, all ages and sexes; NASA OCHMO radiation technical brief)" },
   "noaa_solar_radiation_storm_scale": {
     "metric": "GOES integral proton flux >= 10 MeV (pfu)",
     "levels": [

@@ -6,6 +6,11 @@ Team: Erick Flores · Luana Ojopi (Hardware) · Katherine Meneces · Brenda Cali
 > On Mars, a doctor's answer can take 44 minutes. Galley lets astronauts check themselves in about 60 seconds. It compares them against **their own normal** and tells them what to do now.
 > Galley is decision support, **not a medical device**: it does not diagnose or prescribe.
 
+**Try it:**
+- **App (no login):** https://erickfp7314.github.io/synera-spaceapps/
+- **Sensor firmware in the Wokwi simulator:** https://wokwi.com/projects/480771036190862337
+- **Run it locally:** `cd software && npm start`, then open http://127.0.0.1:5174
+
 ---
 
 ## What it does
@@ -28,7 +33,7 @@ Team: Erick Flores · Luana Ojopi (Hardware) · Katherine Meneces · Brenda Cali
 | ISS radiation dose (LIDAL) | **ASI** (Di Fino et al., 2023) | Background dose, ISS mode |
 | Radiation monitoring (CANS) | **CSA** (2026) | Radiation zone explanation |
 | Mars and Moon dose | MSL/RAD (Zeitlin 2013; Hassler 2014), Chang'e-4 LND (Zhang 2020) | Background dose, Moon and Mars modes |
-| GOES proton flux | NOAA SWPC | Live S-scale level |
+| Solar radiation storm scale | NOAA SWPC | S-scale thresholds behind rule R6 |
 | 14-day vital-sign series | **Simulated**, calibrated on the publications above | Demo scenarios: nominal, fatigue, bradycardia, infection, solar storm |
 
 Details: [`data/README.md`](data/README.md). Thresholds and sources: [`contracts/medical-ranges-config.json`](contracts/medical-ranges-config.json).
@@ -37,7 +42,7 @@ Details: [`data/README.md`](data/README.md). Thresholds and sources: [`contracts
 ```
 contracts/   frozen interfaces: SerialFrame + DailyRecord, thresholds, S-B-A-R report
 data/        real NASA/NOAA data, curated references, calibrated synthetic dataset, scripts
-software/    domain engine (TypeScript, pure, tested) + web app
+software/    domain engine (TypeScript, pure, tested) + web app (software/app, runs the compiled engine)
 hardware/    ESP32 + MAX30102 firmware (USB serial JSON, 1 Hz), Plan B simulator, Wokwi
 docs/        ADRs, medical resources, scientific evidence (Spanish, team-internal)
 submission/  project page text, video script (English)

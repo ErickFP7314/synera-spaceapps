@@ -57,13 +57,13 @@
   "intake_pct": {
    "mean": 86,
    "sd": 4,
-   "source": "Smith et al. 2005, J Nutr 135:437 — ISS crews eat below requirement (~80%, VERIFY); NASA HRP nutrition risk"
+   "source": "Smith et al. 2005, J Nutr 135:437 — ISS crews ate a mean 80% of the recommended energy intake; NASA HRP nutrition risk"
   },
   "exercise": {
    "prescribed_min": 90,
    "mean_pct": 92,
    "sd_pct": 6,
-   "source": "NASA HRP bone risk; ISS daily exercise ~2 h incl. setup (VERIFY) -> 90 min prescribed in the demo"
+   "source": "NASA HRP bone risk; ISS crew exercise about 2 h per day incl. set-up (NASA, CSA) -> 90 min prescribed in the demo"
   },
   "radiation_mgy_day": {
    "min": 0.16,

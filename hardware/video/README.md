@@ -1,6 +1,6 @@
 # Video demo (≤ 30 s) — edición de Hardware
 
-Borrador renderizado: [`galley-demo-draft.mp4`](galley-demo-draft.mp4). Dura **29,5 s**, en 1920×1080 a 30 fps, con subtítulos en inglés incrustados.
+Video final renderizado: [`galley-demo.mp4`](galley-demo.mp4). Dura **29,5 s**, en 1920×1080 a 30 fps, con subtítulos en inglés incrustados.
 
 Sigue el guion de Bio ([`submission/video-script.md`](../../submission/video-script.md)). Está hecho con [HyperFrames](https://hyperframes.studio): el video es un HTML (`index.html`) que se renderiza a MP4.
 
@@ -8,7 +8,8 @@ Sigue el guion de Bio ([`submission/video-script.md`](../../submission/video-scr
 - ✅ Tarjeta de título, tarjeta de demora a Marte (contador hasta 44 min), HUD de telemetría, subtítulos EN y tarjeta final con fuentes.
 - ✅ Clip del sensor (Wokwi) en miniatura durante los primeros 2 s del escaneo. Se puede quitar con la variable `showSensorPip`.
 - ✅ Chips con datos reales del repo: "46 bpm vs 62" (escenario `bradycardia`, día 13) y "NASA DONKI · 10–11 May 2024".
-- ⏳ **Las 5 tomas de Software son PLACAS PROVISIONALES** (`assets/rec-0N-*.mp4`). Faltan las grabaciones reales.
+- ✅ **Las 5 tomas son grabaciones reales de la app v2** (`assets/rec-0N-*.mp4`), hechas con Chrome automatizado en el tema pre-sueño, a 1920×1080. `rec-01` muestra el ingreso eligiendo al tripulante en la lista. Si alguien mayor de 18, que acepte salir en el video, graba el login con su cara, se reemplaza ese archivo y se renderiza de nuevo.
+- Colores del video: tokens del tema pre-sueño de la app, para que gráficos y grabaciones se vean como un solo producto.
 
 ## Cuando lleguen las grabaciones de Software
 1. Copien cada grabación a `assets/` **con el mismo nombre**:
@@ -37,7 +38,7 @@ Sigue el guion de Bio ([`submission/video-script.md`](../../submission/video-scr
 - [x] Subtítulos en inglés incrustados.
 - [x] Sin logos ni insignias de NASA (solo el nombre en texto). Sin personas en el borrador.
 - [x] Sin imágenes ni video generados con IA: todo se renderiza desde código y datos reales, así que no lleva marca de agua.
-- [ ] Al poner las grabaciones reales: que la persona del login sea mayor de 18 y dé su consentimiento.
+- [x] Sin personas en las tomas actuales (el login usa la lista de tripulantes).
 - [ ] Subirlo a YouTube (no listado) o a un Drive público, probar el enlace en una ventana privada y pegarlo en Trello y en la página del proyecto.
 
 ## Diseño
