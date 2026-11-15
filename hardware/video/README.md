@@ -45,4 +45,4 @@ Sigue el guion de Bio ([`submission/video-script.md`](../../submission/video-scr
 - Concepto: consola de telemetría de salud de la tripulación (HUD con reloj MET, marcas de registro, escala lateral).
 - Colores: los tokens de la app Galley (`software/app/index.html`), para que las grabaciones y los gráficos se vean como un solo producto.
 - Fuentes: Montserrat + JetBrains Mono (vienen incluidas en el renderizador).
-- No tiene audio. Si quieren voz en off, se puede agregar después sin pasar de 30 s.
+- Tiene voz en off en inglés generada con IA (ElevenLabs, voz "Matilda"). En pantalla dice "AI-generated voice · ElevenLabs" durante todo el video, y los subtítulos coinciden palabra por palabra con la voz. Detalles y cómo rehacerla: [`voiceover/`](voiceover/).
