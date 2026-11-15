@@ -16,8 +16,8 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 <style>
   :root {
-    --bg:#070d18; --panel:#0e1626; --line:#22324f; --text:#e8eefc; --muted:#8fa2c7;
-    --accent:#22d3ee; --ok:#2ecc71; --warn:#f5b301; --crit:#ff4d4f;
+    --bg:#15100c; --panel:#1f1813; --line:#3a2f25; --text:#f1e3d0; --muted:#b29d86;
+    --accent:#ecc596; --ok:#8fd1a6; --warn:#f0c46a; --crit:#ff9a8c;
     --sans:"Montserrat", "Arial", sans-serif; --mono:"JetBrains Mono", "Courier New", monospace;
   }
   * { box-sizing: border-box; }
@@ -27,11 +27,11 @@
   /* ---------- background (whole video) ---------- */
   #bg { position: absolute; inset: 0; }
   #bg .grid { position: absolute; inset: -80px; background-image:
-      linear-gradient(rgba(34,50,79,.55) 2px, transparent 2px),
-      linear-gradient(90deg, rgba(34,50,79,.55) 2px, transparent 2px);
+      linear-gradient(rgba(58,47,37,.55) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(58,47,37,.55) 2px, transparent 2px);
     background-size: 80px 80px; }
   #bg .glow { position: absolute; width: 1400px; height: 1400px; left: 260px; top: -260px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(34,211,238,.20) 0%, rgba(34,211,238,0) 62%); }
+    background: radial-gradient(circle, rgba(236,197,150,.20) 0%, rgba(236,197,150,0) 62%); }
 
   /* ---------- recordings: inset "monitor" ---------- */
   .rec { position: absolute; left: 240px; top: 104px; width: 1440px; height: 810px; object-fit: cover; background: var(--panel); }
@@ -69,18 +69,18 @@
 
   /* ---------- subtitles ---------- */
   .sub { position: absolute; left: 0; right: 0; top: 942px; display: flex; justify-content: center; }
-  .sub p { margin: 0; max-width: 1500px; padding: 14px 38px; background: rgba(7,13,24,.88); border: 2px solid var(--line);
+  .sub p { margin: 0; max-width: 1500px; padding: 14px 38px; background: rgba(21,16,12,.88); border: 2px solid var(--line);
            border-radius: 14px; font-weight: 700; font-size: 38px; line-height: 1.25; text-align: center; }
 
   /* ---------- full-frame cards ---------- */
   .card { position: absolute; inset: 0; background: var(--bg); }
   .card .grid { position: absolute; inset: -80px; background-image:
-      linear-gradient(rgba(34,50,79,.55) 2px, transparent 2px), linear-gradient(90deg, rgba(34,50,79,.55) 2px, transparent 2px);
+      linear-gradient(rgba(58,47,37,.55) 2px, transparent 2px), linear-gradient(90deg, rgba(58,47,37,.55) 2px, transparent 2px);
     background-size: 80px 80px; }
   .content { position: absolute; inset: 0; padding: 150px 160px 130px; display: flex; gap: 80px; align-items: center; }
   .kicker { font-family: var(--mono); font-size: 24px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; }
   .ghost { position: absolute; right: -40px; bottom: -70px; font-weight: 900; font-size: 380px; letter-spacing: 10px;
-           color: rgba(34,211,238,.10); white-space: nowrap; }
+           color: rgba(236,197,150,.10); white-space: nowrap; }
 
   /* title */
   #title .left { flex: 1.2; display: flex; flex-direction: column; gap: 22px; }
@@ -128,7 +128,7 @@
   #end .foot { bottom: 120px; }
 
   /* ---------- overlays on recordings ---------- */
-  .chip { position: absolute; background: rgba(7,13,24,.92); border: 3px solid var(--line); border-radius: 16px; padding: 18px 24px; }
+  .chip { position: absolute; background: rgba(21,16,12,.92); border: 3px solid var(--line); border-radius: 16px; padding: 18px 24px; }
   .chip .k { font-family: var(--mono); font-size: 20px; letter-spacing: 2px; color: var(--muted); }
   #hrchip { right: 268px; top: 132px; width: 400px; border-color: var(--crit); }
   #hrchip .v { font-weight: 900; font-size: 84px; color: var(--crit); line-height: 1; margin-top: 6px; }
@@ -138,7 +138,7 @@
   #donkichip .v { font-weight: 700; font-size: 32px; margin-top: 6px; line-height: 1.2; }
   #pip { position: absolute; left: 1212px; top: 642px; width: 448px; height: 252px; object-fit: cover; }
   #piplabel { position: absolute; left: 1212px; top: 600px; width: 448px; font-family: var(--mono); font-size: 19px; color: var(--accent);
-              background: rgba(7,13,24,.92); padding: 8px 12px; border: 2px solid var(--line); border-bottom: 0; }
+              background: rgba(21,16,12,.92); padding: 8px 12px; border: 2px solid var(--line); border-bottom: 0; }
   #pipframe { position: absolute; left: 1209px; top: 639px; width: 454px; height: 258px; border: 3px solid var(--accent); }
 </style>
 </head>
@@ -151,11 +151,11 @@
   </div>
 
   <!-- track 1: Software screen recordings (direct root children; same file names when the real ones arrive) -->
-  <video id="rec1" class="clip rec" src="assets/rec-01-login.mp4"             data-start="7"    data-duration="3"   data-media-start="0" data-track-index="1" muted playsinline></video>
-  <video id="rec2" class="clip rec" src="assets/rec-02-bradycardia-day13.mp4" data-start="10"   data-duration="9"   data-media-start="0" data-track-index="1" muted playsinline></video>
-  <video id="rec3" class="clip rec" src="assets/rec-03-mars-sbar.mp4"         data-start="19"   data-duration="3"   data-media-start="0" data-track-index="1" muted playsinline></video>
-  <video id="rec4" class="clip rec" src="assets/rec-04-solar-storm-donki.mp4" data-start="22"   data-duration="2.5" data-media-start="0" data-track-index="1" muted playsinline></video>
-  <video id="rec5" class="clip rec" src="assets/rec-05-trends-14d.mp4"        data-start="24.5" data-duration="2.5" data-media-start="0" data-track-index="1" muted playsinline></video>
+  <video id="rec1" class="clip rec" src="assets/rec-01-login.mp4"             data-start="7"    data-duration="3"   data-media-start="0.4" data-track-index="1" muted playsinline></video>
+  <video id="rec2" class="clip rec" src="assets/rec-02-bradycardia-day13.mp4" data-start="10"   data-duration="9"   data-media-start="0.3" data-track-index="1" muted playsinline></video>
+  <video id="rec3" class="clip rec" src="assets/rec-03-mars-sbar.mp4"         data-start="19"   data-duration="3"   data-media-start="10" data-track-index="1" muted playsinline></video>
+  <video id="rec4" class="clip rec" src="assets/rec-04-solar-storm-donki.mp4" data-start="22"   data-duration="2.5" data-media-start="2" data-track-index="1" muted playsinline></video>
+  <video id="rec5" class="clip rec" src="assets/rec-05-trends-14d.mp4"        data-start="24.5" data-duration="2.5" data-media-start="2" data-track-index="1" muted playsinline></video>
 
   <!-- track 2: monitor frame around the recordings -->
   <div id="recframe" class="clip" data-start="7" data-duration="20" data-track-index="2"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
@@ -326,7 +326,7 @@
   tl.to(["#pipframe", "#pip", "#piplabel"], { opacity: 0, duration: 0.25 }, 11.75);
   tl.from("#hrchip", { x: 60, opacity: 0, duration: 0.45, ease: "expo.out" }, 12.1);
   tl.from("#hrchip .v", { scale: 1.25, transformOrigin: "0 50%", duration: 0.5, ease: "back.out(2.2)" }, 12.25);
-  tl.fromTo("#hrchip", { borderColor: "#ff4d4f" }, { borderColor: "#22324f", duration: 0.45, ease: "sine.inOut",
+  tl.fromTo("#hrchip", { borderColor: "#ff9a8c" }, { borderColor: "#3a2f25", duration: 0.45, ease: "sine.inOut",
     yoyo: true, repeat: 7 }, 12.9);
   tl.from("#donkichip", { y: 40, opacity: 0, duration: 0.4, ease: "power3.out" }, 22.2);
 
