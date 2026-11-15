@@ -60,3 +60,6 @@ _autosave-*
 !PROYECTO_GALLEY_ES.pdf
 *.zip
 ISS Internal Radiation Monitoring_Excel/
+
+# Resúmenes personales de Hardware (no se suben)
+resumenes-hardware/
