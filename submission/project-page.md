@@ -64,4 +64,4 @@ Galley is an on-device health check-up for astronauts on long missions. The crew
 - **CSA:** Monitoring radiation for astronaut health (2026); Why do we conduct science experiments in space?
 - **NOAA SWPC:** GOES integral proton flux; Space Weather Scales.
 - Scientific references: see plan.md §13 in the repository. Key ones: Stahn 2017, Barger 2014, Basner 2011, Mishra 2020, Smarr 2020, Crucian 2018, Haig 2006.
-- **Code and libraries:** @vladmandic/face-api (license: VERIFY), SparkFun MAX3010x library.
+- **Code and libraries:** @vladmandic/face-api (MIT license, vendored in software/app/vendor/face-api), SparkFun MAX3010x library.

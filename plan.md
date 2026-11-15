@@ -310,7 +310,7 @@ Estructura del monorepo v2.1: `contracts/` (interfaces congeladas) · `data/` (`
 ### 11.4 Declaración de IA (resumen)
 - Google Gemini: lluvia de ideas inicial y un primer esquema. Sus afirmaciones se rechequearon.
 - Claude / Claude Code: búsqueda y revisión de fuentes, apoyo en código y documentación.
-- face-api (@vladmandic/face-api, TensorFlow.js): reconocimiento facial local; no es IA generativa. Licencia: VERIFICAR en `package.json` y el repositorio.
+- face-api (@vladmandic/face-api, TensorFlow.js): reconocimiento facial local; no es IA generativa. Licencia MIT (incluida en `software/app/vendor/face-api/LICENSE`).
 - **La idea de la solución es del equipo.** Ninguna cifra médica se acepta porque "lo dijo una IA": cada una lleva su fuente.
 
 ---
