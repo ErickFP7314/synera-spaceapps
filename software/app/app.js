@@ -54,7 +54,7 @@ const num = (v, d = 1) => {
   return S.lang === "es" ? s.replace(".", ",") : s;
 };
 const fmtVal = (k, v) => (k === "skin_temp_c" || k === "sleep_h" ? num(v, 1) : num(Math.round(v), 0));
-const unitOf = (k) => { const u = D.cfg.indicators[k].unit; return UNIT[u] ?? u; };
+const unitOf = (k) => { const u = D.cfg.indicators[k].unit; const v = UNIT[u] ?? u; return S.lang === "es" && v === "lapses" ? "lapsos" : v; };
 const labelOf = (k) => L(D.cfg.indicators[k].label);
 const spokenLabel = (k) => { const s = labelOf(k).replace(/\s*\(.*?\)\s*/g, " ").trim(); return s.charAt(0).toLowerCase() + s.slice(1); };
 const spokenUnit = (k) => SPOKEN_UNIT[S.lang][unitOf(k)] || unitOf(k);
@@ -351,6 +351,7 @@ async function runScan() {
   $$(".zone").forEach((el) => el.classList.remove("active", "dim"));
   renderNext(R);
   renderEarth(R);
+  $("#next").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
   if (S.crew.face) face.touch(S.crew.id);
   const lv = R.ev.level, info = D.rules.escalation_levels[String(lv)];
   chime(lv >= 3 ? "crit" : lv === 2 ? "warn" : "ok");
@@ -583,6 +584,7 @@ async function boot() {
   face = createFaceId({ video: $("#camVideo"), overlay: $("#camOverlay"), box: $("#vf") });
   fig = createBodyScan($("#figure2d"), { ariaNames: { head: t("zone_head"), chest: t("zone_chest"), abdomen: t("zone_abdomen"), legs: t("zone_legs") } });
   fig.onSelect((z) => { const el = document.querySelector(`.zone[data-zone="${z}"]`); if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
+  fig.setLayers({ labels: false }); /* readings live on the tags beside the figure, not stamped on it */
   onCaption(setCaption);
 
   /* controls */
