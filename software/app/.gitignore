@@ -1,0 +1,2 @@
+# The root .gitignore blocks *.bin (firmware builds). These are the face-api model weights the app needs offline.
+!vendor/face-api/model/*.bin
