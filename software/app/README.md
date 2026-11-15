@@ -4,11 +4,18 @@ Static web app, no build step and no server. Everything runs in the browser (Chr
 
 ## Run it
 
+Needs Node.js 18 or newer (the project already uses it for `npm test`). No `npm install` is needed to run the app.
+
 ```bash
-python -m http.server 5174 --bind 127.0.0.1 --directory software/app
+cd software
+npm start
 ```
 
-Open http://127.0.0.1:5174. The camera only works on `127.0.0.1`, `localhost` or HTTPS (GitHub Pages).
+Open http://127.0.0.1:5174 in Chrome or Edge. Use another port with `PORT=5180 npm start` (PowerShell: `$env:PORT=5180; npm start`).
+
+The camera only works on `127.0.0.1`, `localhost` or HTTPS (GitHub Pages). Opening `index.html` by double-click (`file://`) does not work, because the page uses ES modules.
+
+Alternative without Node: `python -m http.server 5174 --bind 127.0.0.1 --directory software/app`.
 
 ## Flow
 

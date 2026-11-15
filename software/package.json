@@ -6,6 +6,7 @@
   "private": true,
   "main": "src/domain/index.ts",
   "scripts": {
+    "start": "node app/serve.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "build": "tsc"
   },
