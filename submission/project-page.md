@@ -56,6 +56,7 @@ Galley is an on-device health check-up for astronauts on long missions. The crew
 - Claude / Claude Code (Anthropic): source research, code assistance, interface implementation and documentation.
 - face-api: local, non-generative face matching.
 - Kokoro-82M (open text-to-speech model): the recorded voice clips the app plays when a browser has no built-in speech voice. They are AI-generated audio, used only inside the app.
+- ElevenLabs (voice "Matilda", eleven_multilingual_v2): the English voiceover of the demo video. It is AI-generated audio, and the video says so on screen for its whole length ("AI-generated voice · ElevenLabs"). The subtitles match the voice word for word.
 - No AI-generated images or video. If any are added, they carry a visible watermark.
 - The solution idea is the team's. Every medical claim cites a source.
 

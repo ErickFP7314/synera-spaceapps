@@ -1,0 +1,65 @@
+[
+ {
+  "id": "v0",
+  "start": 0.25,
+  "end": 3.2,
+  "text": "Team Synera presents: Galley.",
+  "speed": 1.1
+ },
+ {
+  "id": "v1",
+  "start": 3.3,
+  "end": 7.0,
+  "text": "On Mars, a doctor's answer can take 44 minutes.",
+  "speed": 1.1
+ },
+ {
+  "id": "v2",
+  "start": 7.0,
+  "end": 10.0,
+  "text": "Galley: the check-up that does itself.",
+  "speed": 1.1
+ },
+ {
+  "id": "v3",
+  "start": 10.0,
+  "end": 14.5,
+  "text": "It compares you to your own normal...",
+  "speed": 1.05
+ },
+ {
+  "id": "v4",
+  "start": 14.5,
+  "end": 19.0,
+  "text": "...and tells you what to do.",
+  "speed": 1.05
+ },
+ {
+  "id": "v5",
+  "start": 19.0,
+  "end": 22.0,
+  "text": "Mars mode guides you, and queues a report for Earth.",
+  "speed": 1.1
+ },
+ {
+  "id": "v6",
+  "start": 22.0,
+  "end": 24.5,
+  "text": "Real NASA space-weather data.",
+  "speed": 1.05
+ },
+ {
+  "id": "v7",
+  "start": 24.5,
+  "end": 27.0,
+  "text": "Built on NASA science.",
+  "speed": 1.05
+ },
+ {
+  "id": "v8",
+  "start": 27.0,
+  "end": 29.45,
+  "text": "Ready for Artemis, and for clinics on Earth.",
+  "speed": 1.1
+ }
+]

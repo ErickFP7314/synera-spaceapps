@@ -140,6 +140,7 @@
   #piplabel { position: absolute; left: 1212px; top: 600px; width: 448px; font-family: var(--mono); font-size: 19px; color: var(--accent);
               background: rgba(21,16,12,.92); padding: 8px 12px; border: 2px solid var(--line); border-bottom: 0; }
   #pipframe { position: absolute; left: 1209px; top: 639px; width: 454px; height: 258px; border: 3px solid var(--accent); }
+  #aiwm { position: absolute; right: 92px; bottom: 20px; font-family: var(--mono); font-size: 17px; letter-spacing: .5px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -256,12 +257,13 @@
   </div>
 
   <!-- track 11: subtitles (EN) — the voice line from submission/video-script.md -->
-  <div id="s1" class="clip sub" data-start="3.3"  data-duration="3.7" data-track-index="11"><p>On Mars, a doctor's answer can take 44 minutes. Astronauts must check themselves.</p></div>
-  <div id="s2" class="clip sub" data-start="7"    data-duration="3"   data-track-index="11"><p>Galley: the check-up that does itself. Private, on-device.</p></div>
-  <div id="s3" class="clip sub" data-start="10"   data-duration="4.5" data-track-index="11"><p>It compares you to your own normal…</p></div>
-  <div id="s4" class="clip sub" data-start="14.5" data-duration="4.5" data-track-index="11"><p>…and tells you what to do.</p></div>
-  <div id="s5" class="clip sub" data-start="19"   data-duration="3"   data-track-index="11"><p>Mars mode guides you on board and queues a report for Earth.</p></div>
+  <div id="s1" class="clip sub" data-start="3.3" data-duration="3.75" data-track-index="11"><p>On Mars, a doctor's answer can take 44 minutes.</p></div>
+  <div id="s2" class="clip sub" data-start="7.1" data-duration="2.9" data-track-index="11"><p>Galley: the check-up that does itself.</p></div>
+  <div id="s3" class="clip sub" data-start="10.4" data-duration="4.1" data-track-index="11"><p>It compares you to your own normal…</p></div>
+  <div id="s4" class="clip sub" data-start="16.6" data-duration="2.4" data-track-index="11"><p>…and tells you what to do.</p></div>
+  <div id="s5" class="clip sub" data-start="19" data-duration="3" data-track-index="11"><p>Mars mode guides you, and queues a report for Earth.</p></div>
   <div id="s6" class="clip sub" data-start="22"   data-duration="2.5" data-track-index="11"><p>Real NASA space-weather data.</p></div>
+  <div id="aiwm" class="clip" data-start="0" data-duration="29.5" data-track-index="13">AI-generated voice · ElevenLabs</div>
   <div id="s7" class="clip sub" data-start="24.5" data-duration="2.5" data-track-index="11"><p>Built on NASA science.</p></div>
 </div>
 
@@ -332,7 +334,7 @@
 
   // ---- subtitles: each line rises in
   ["#s1", "#s2", "#s3", "#s4", "#s5", "#s6", "#s7"].forEach((id, i) => {
-    const t0 = [3.3, 7, 10, 14.5, 19, 22, 24.5][i];
+    const t0 = [3.3, 7.1, 10.4, 16.6, 19, 22, 24.5][i];
     tl.from(`${id} p`, { y: 16, opacity: 0, duration: 0.25, ease: "power2.out" }, t0);
   });
 
