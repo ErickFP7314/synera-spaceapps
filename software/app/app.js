@@ -440,18 +440,33 @@ function renderWeather() {
 
 /* ================= TRENDS ================= */
 function renderTrends() {
-  const evals = [];
   const n = D.ds.scenarios[S.scenario].days.length;
+  const evals = [];
   for (let d = 1; d <= n; d++) evals.push(evaluate(d).ev);
   const R = evaluate();
-  $("#trendLegend").innerHTML = `<span><i style="background:var(--ok-bg)"></i>${esc(t("lg_normal"))}</span><span><i style="background:var(--warn-bg)"></i>${esc(t("lg_watch"))}</span><span><i style="border-top:2px dashed var(--accent);height:0"></i>${esc(t("lg_today"))}</span>`;
-  $("#trendGrid").innerHTML = INDICATORS.map((k) => {
-    const series = evals.map((ev, i) => { const ind = ev.indicators.find((x) => x.key === k); return { day: i + 1, value: ind?.value, color: ind?.color || "NONE", z: ind?.z }; });
-    const ind = R.ev.indicators.find((x) => x.key === k);
-    return `<div class="panel trend draw" data-reveal><h3>${esc(labelOf(k))}<small>${fmtVal(k, ind?.value)} ${esc(unitOf(k))}</small></h3>
-      ${C.trend({ series, base: R.baselines[k], zY: D.cfg.baseline.z_yellow, zR: D.cfg.baseline.z_red, selectedDay: S.day, label: labelOf(k) })}</div>`;
-  }).join("");
-  observeReveal($("#trendGrid"));
+  const seriesOf = (k) => evals.map((ev, i) => { const ind = ev.indicators.find((x) => x.key === k); return { day: i + 1, value: ind?.value, color: ind?.color || "NONE", z: ind?.z }; });
+  const chart = (k) => {
+    const ind = R.ev.indicators.find((x) => x.key === k), base = R.baselines[k];
+    return `<div class="tchart draw"><div class="tchart-h"><div><b>${esc(labelOf(k))}</b><small>${esc(t("tr_usual"))} ${base ? fmtVal(k, base.center) : "—"} · <span class="tw-${ind?.color || "NONE"}">${esc(t("tr_" + (ind?.color || "NONE")))}</span></small></div>
+      <span class="tval">${fmtVal(k, ind?.value)}<small>${esc(unitOf(k))}</small></span></div>
+      ${C.trend({ series: seriesOf(k), base, zY: D.cfg.baseline.z_yellow, zR: D.cfg.baseline.z_red, selectedDay: S.day, label: labelOf(k), dayWord: t("tr_day") })}</div>`;
+  };
+  const zoneCard = (z) => {
+    const keys = INDICATORS.filter((k) => D.cfg.indicators[k].zone === z);
+    return `<section class="panel tzone" data-reveal aria-label="${esc(t("zone_" + z))}"><div class="tzone-h"><h3>${esc(t("zone_" + z))}</h3><span class="loc">${ZONE_CODE[z]}</span>${stateMark(R.ev.zones[z])}</div>${keys.map(chart).join("")}</section>`;
+  };
+  $("#trendGrid").innerHTML = `<div class="tcol">${zoneCard("head")}</div><div class="tcol">${zoneCard("chest")}${zoneCard("abdomen")}${zoneCard("legs")}</div>`;
+
+  /* day × indicator matrix */
+  const rows = INDICATORS.map((k) => ({ label: labelOf(k).replace(/\s*\(.*?\)\s*/g, " ").trim(), cells: seriesOf(k).map((p) => ({ color: p.color, text: t("tr_" + p.color) })) }));
+  const today = R.ev.indicators.filter((i) => INDICATORS.includes(i.key) && i.color !== "NONE");
+  const out = today.filter((i) => i.color !== "GREEN").length, far = today.filter((i) => i.color === "RED").length;
+  const title = out ? t("hm_title", { d: S.day, out, n: today.length, far }) : t("hm_title_ok", { d: S.day, n: today.length });
+  $("#trendMatrix").innerHTML = `<div class="matrix-h">${C.miniBody(R.ev.zones, title)}<div><h3>${esc(title)}</h3><p>${esc(t("hm_note"))}</p></div></div>
+    <div class="hm-scroll">${C.heatmap({ rows, days: n, selectedDay: S.day, words: { title, day: t("tr_day") } })}</div>
+    <div class="legend"><span><i class="c-GREEN"></i>${esc(t("hm_legend_in"))}</span><span><i class="c-YELLOW"></i>${esc(t("hm_legend_near"))}</span><span><i class="c-RED"></i>${esc(t("hm_legend_far"))}</span></div>`;
+  $$("#trendMatrix .hm-day").forEach((b) => b.addEventListener("click", () => { S.day = Number(b.dataset.day); $("#day").value = S.day; stopRun(); refreshAll(); }));
+  observeReveal($("#trends"));
 }
 
 /* ================= REAL ASTRONAUT DATA ================= */

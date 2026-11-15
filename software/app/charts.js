@@ -46,38 +46,68 @@ export function bullet({ value, base, abs, zY = 2, zR = 3, color = "NONE", label
 }
 
 /**
- * 14-day trend with the personal band and dots sized on a fixed |z| ramp.
+ * 14-day trend: personal band with its centre line, a coloured data line, dots in the engine's state
+ * colour (sized on a fixed |z| ramp) and a ringed marker on the selected day.
  * series: [{ day, value, color, z }]
  */
-export function trend({ series, base, zY = 2, zR = 3, selectedDay, label = "" }) {
-  const W = 300, H = 120, L = 30, R = 8, T = 10, B = 20;
+export function trend({ series, base, zY = 2, zR = 3, selectedDay, label = "", dayWord = "Day" }) {
+  const W = 520, H = 170, L = 44, R = 12, T = 14, B = 26;
   const vals = series.map((p) => p.value).filter(Number.isFinite);
   if (!vals.length) return "";
   let lo = Math.min(...vals), hi = Math.max(...vals);
-  if (base) { lo = Math.min(lo, base.center - zR * base.scale); hi = Math.max(hi, base.center + zR * base.scale); }
-  const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
+  if (base) { lo = Math.min(lo, base.center - zY * base.scale); hi = Math.max(hi, base.center + zY * base.scale); }
+  const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
   const n = series.length;
   const X = (d) => L + ((d - 1) / Math.max(1, n - 1)) * (W - L - R);
   const Y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
   const fmt = (v) => (Math.abs(hi - lo) < 10 ? v.toFixed(1) : Math.round(v));
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">`;
   if (base) {
-    s += `<rect class="band2" x="${L}" y="${Y(base.center + zR * base.scale)}" width="${W - L - R}" height="${Y(base.center - zR * base.scale) - Y(base.center + zR * base.scale)}"/>`;
-    s += `<rect class="band" x="${L}" y="${Y(base.center + zY * base.scale)}" width="${W - L - R}" height="${Y(base.center - zY * base.scale) - Y(base.center + zY * base.scale)}"/>`;
+    s += `<rect class="band" x="${L}" y="${Y(base.center + zY * base.scale)}" width="${W - L - R}" height="${Y(base.center - zY * base.scale) - Y(base.center + zY * base.scale)}" rx="2"/>`;
+    s += `<line class="centre" x1="${L}" x2="${W - R}" y1="${Y(base.center)}" y2="${Y(base.center)}"/>`;
   }
-  s += `<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
-  s += `<text x="${L - 4}" y="${Y(hi - pad) + 3}" text-anchor="end">${fmt(hi - pad)}</text><text x="${L - 4}" y="${Y(lo + pad) + 3}" text-anchor="end">${fmt(lo + pad)}</text>`;
-  for (const d of [1, 7, n]) s += `<text x="${X(d)}" y="${H - 5}" text-anchor="middle">D${d}</text>`;
-  if (selectedDay) s += `<line class="today" x1="${X(selectedDay)}" x2="${X(selectedDay)}" y1="${T - 4}" y2="${H - B}"/>`;
+  s += `<text x="${L - 6}" y="${Y(hi - pad) + 4}" text-anchor="end">${fmt(hi - pad)}</text><text x="${L - 6}" y="${Y(lo + pad) + 4}" text-anchor="end">${fmt(lo + pad)}</text>`;
+  s += `<text x="${X(1)}" y="${H - 5}" text-anchor="start">${esc(dayWord)} 1</text><text x="${X(n)}" y="${H - 5}" text-anchor="end">${esc(dayWord)} ${n}</text>`;
+  if (selectedDay) s += `<line class="today" x1="${X(selectedDay)}" x2="${X(selectedDay)}" y1="${T - 6}" y2="${H - B + 2}"/>`;
   const pts = series.filter((p) => Number.isFinite(p.value));
-  const d = pts.map((p, i) => `${i ? "L" : "M"}${X(p.day).toFixed(1)},${Y(p.value).toFixed(1)}`).join("");
-  s += `<path class="line" d="${d}"/>`;
+  s += `<path class="line" d="${pts.map((p, i) => `${i ? "L" : "M"}${X(p.day).toFixed(1)},${Y(p.value).toFixed(1)}`).join("")}"/>`;
   for (const p of pts) {
-    const r = 2.6 + Math.min(Math.abs(p.z || 0), 5) * 1.1;
-    const sel = p.day === selectedDay;
-    s += `<circle cx="${X(p.day)}" cy="${Y(p.value)}" r="${r.toFixed(1)}" fill="${COLOR_VAR[p.color] || COLOR_VAR.NONE}" stroke="${sel ? "var(--ink)" : "var(--panel)"}" stroke-width="${sel ? 2 : 1.2}"><title>D${p.day}: ${esc(p.value)}</title></circle>`;
+    const r = 2.8 + Math.min(Math.abs(p.z || 0), 5) * 0.7;
+    if (p.day === selectedDay) {
+      s += `<circle class="sel-ring" cx="${X(p.day)}" cy="${Y(p.value)}" r="${(r + 4).toFixed(1)}"/>`;
+    }
+    s += `<circle cx="${X(p.day)}" cy="${Y(p.value)}" r="${r.toFixed(1)}" fill="${COLOR_VAR[p.color] || COLOR_VAR.NONE}" class="dot"><title>${esc(dayWord)} ${p.day}: ${esc(p.value)}</title></circle>`;
   }
   return s + "</svg>";
+}
+
+/** day × indicator matrix in the engine's colours; each column header selects that day */
+export function heatmap({ rows, days, selectedDay, words }) {
+  let h = `<div class="hm" role="table" aria-label="${esc(words.title)}"><div class="hm-row hm-head" role="row"><span class="hm-lbl" role="columnheader"></span>`;
+  for (let d = 1; d <= days; d++) h += `<button type="button" class="hm-day${d === selectedDay ? " on" : ""}" data-day="${d}" role="columnheader" aria-label="${esc(words.day)} ${d}">${d}</button>`;
+  h += `</div>`;
+  for (const r of rows) {
+    h += `<div class="hm-row" role="row"><span class="hm-lbl" role="rowheader">${esc(r.label)}</span>`;
+    r.cells.forEach((c, i) => {
+      h += `<span role="cell" class="hm-cell c-${c.color}${i + 1 === selectedDay ? " on" : ""}" data-day="${i + 1}" title="${esc(r.label)} · ${esc(words.day)} ${i + 1}: ${esc(c.text)}"><span class="sr-only">${esc(c.text)}</span></span>`;
+    });
+    h += `</div>`;
+  }
+  return h + `</div>`;
+}
+
+/** small body silhouette with one colour per zone */
+export function miniBody(zones, label = "") {
+  const f = (z) => ({ GREEN: "var(--ok-fill)", YELLOW: "var(--warn-fill)", RED: "var(--crit-fill)" }[zones[z]] || "var(--none)");
+  return `<svg class="mini-body" viewBox="0 0 60 120" role="img" aria-label="${esc(label)}">
+    <circle cx="30" cy="13" r="10" fill="${f("head")}"/>
+    <rect x="17" y="26" width="26" height="28" rx="6" fill="${f("chest")}"/>
+    <rect x="5" y="28" width="9" height="34" rx="4.5" fill="${f("chest")}"/>
+    <rect x="46" y="28" width="9" height="34" rx="4.5" fill="${f("chest")}"/>
+    <rect x="18" y="56" width="24" height="18" rx="5" fill="${f("abdomen")}"/>
+    <rect x="18" y="76" width="10.5" height="40" rx="5" fill="${f("legs")}"/>
+    <rect x="31.5" y="76" width="10.5" height="40" rx="5" fill="${f("legs")}"/>
+  </svg>`;
 }
 
 /** Inspiration4 glucose: one row per crew member, lab range band + personal pre-flight mean */

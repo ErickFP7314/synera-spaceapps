@@ -59,7 +59,10 @@ There is no internet on Mars and the station link drops, so nothing in the app n
    - It ends with **one next step**, one of 4 levels: self-care, tell the crew, flight surgeon, urgent.
 3. **Earth link.** Shows the delay for the ISS, the Moon or Mars, and the **S-B-A-R** report, sent now or queued with its reply time. The report can be copied or printed.
 4. **Space weather.** Real NASA DONKI solar particle events from the May 2024 storm, today's dose, and rule R6.
-5. **14-day trends.** One chart per indicator, with your personal band. The dots grow with the distance from your normal.
+5. **14-day trends.**
+   - Charts grouped by zone (head, chest, abdomen, legs), each with the zone's status.
+   - Every chart has a coloured data line, your personal band with its centre line, and dots in the engine's colour that grow with the distance from your normal. The selected day is ringed.
+   - A day × indicator map (8 × 14) shows the engine's verdict for every day; tap a day to jump to it.
 6. **Real astronaut data.** NASA OSDR Inspiration4 glucose (OSD-575 / OSD-569), each crew member against their own pre-flight mean, with the R+45 caveat.
 
 Data source line:
