@@ -53,4 +53,15 @@ struct TempFilter {
   float get() const { return value; }
 };
 
+/**
+ * Temperature for a simulated-pulse frame (no MAX30102, e.g. the Wokwi demo).
+ * If a real skin-temperature sensor is present, its filtered reading is used as-is:
+ * NAN (out of skin range, unplugged) means "omit temp" — it is NEVER replaced by a fake value,
+ * otherwise a real 125 °C reading would silently show up as a normal 36.5 °C.
+ * Only when there is no temperature sensor at all is the simulated value used.
+ */
+inline float simFrameTemp(bool tempSensorPresent, float realC, float simulatedC) {
+  return tempSensorPresent ? realC : simulatedC;
+}
+
 }  // namespace galley

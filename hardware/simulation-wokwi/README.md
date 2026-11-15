@@ -16,7 +16,11 @@ En el monitor serie aparece, una vez por segundo:
 ```json
 {"t":3,"hr":63,"spo2":98,"temp":36.5,"q":1,"src":"sim"}
 ```
-Al mover el deslizador del DS18B20, `temp` cambia (suavizado, en unos segundos).
+Al mover el deslizador del DS18B20, `temp` cambia (suavizado: tarda unos 10 s en llegar al valor nuevo).
+
+> **Rango del deslizador:** usa valores de **30 a 44 °C** (piel). Para la demo de fiebre, pon **38,5 °C**.
+> Fuera de ese rango (por ejemplo 125 °C, el máximo del deslizador) la lectura no es de piel:
+> tras 3 lecturas malas `temp` **desaparece de la línea** (sensor despegado o roto). Nunca se reemplaza por un valor inventado.
 
 ## Opción A — proyecto público en wokwi.com (para el enlace de la entrega)
 1. Entra a https://wokwi.com con tu cuenta y crea **New project → ESP32**.
@@ -28,10 +32,20 @@ Al mover el deslizador del DS18B20, `temp` cambia (suavizado, en unos segundos).
 7. **Save** → **Share** → copia el enlace y ábrelo en una **ventana privada** para confirmar que es público.
 8. Pega el enlace aquí abajo y en la tarjeta de Trello.
 
-Enlace público del proyecto: `<pegar aquí>`
+Enlace público del proyecto: **https://wokwi.com/projects/480771036190862337**
 
 ## Opción B — VS Code con la extensión Wokwi (local)
 ```bash
 ./hardware/simulation-wokwi/build.sh     # compila el firmware real con arduino-cli -> build/
 ```
 Luego abre `hardware/simulation-wokwi/diagram.json` en VS Code y pulsa **Wokwi: Start Simulator**. La extensión usa `wokwi.toml` y pide una licencia gratuita de Wokwi la primera vez.
+
+## Prueba automática (wokwi-cli)
+[`scenario-temp-slider.yaml`](scenario-temp-slider.yaml) mueve el deslizador 36,5 → 38,5 → 125 → 37 °C y comprueba que `temp` lo sigue.
+Necesita un token de https://wokwi.com/dashboard/ci (no lo subas al repo):
+```bash
+./hardware/simulation-wokwi/build.sh
+cd hardware/simulation-wokwi
+WOKWI_CLI_TOKEN=<tu token> wokwi-cli --scenario scenario-temp-slider.yaml --timeout 40000 --serial-log-file /tmp/galley-serial.log .
+```
+Debe terminar con `Scenario completed successfully`. En el log se ve que con 125 °C las líneas salen **sin** `temp`.
