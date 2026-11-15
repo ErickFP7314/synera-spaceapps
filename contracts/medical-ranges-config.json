@@ -216,12 +216,12 @@
       "direction": "low",
       "sigma_floor": 8,
       "absolute": {
-        "yellow_low": 80
+        "yellow_low": 75
       },
       "consecutive_rule": {
         "red_if_below": 70,
         "days": 3,
-        "rule_R3_if_below": 80,
+        "rule_R3_if_below": 75,
         "rule_R3_days": 2
       },
       "hrp_risk": {
