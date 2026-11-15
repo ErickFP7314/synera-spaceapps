@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Galley sensor node — Wokwi simulation (B-roll renderer)</title>
+<!--
+  Renders stills and video frames of the Galley sensor node running in the Wokwi simulator.
+  The serial lines are REAL firmware output captured with wokwi-cli (src/*.log); nothing is invented.
+  The ESP32 drawing is the official Wokwi element (@wokwi/elements, MIT). Wokwi has no DS18B20
+  element in that package, so the TO-92 sensor and the resistor are drawn here.
+  Driven by render_media.py through the URL hash: #view=scene&log=slider&n=3&f=0.5&slider=38.5
+-->
+<script src="__ELEMENTS_SRC__"></script>
+<style>
+  :root { --bg:#0b1020; --panel:#111a2e; --line:#23304d; --text:#e2e8f0; --muted:#94a3b8;
+          --accent:#38bdf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--text);
+               font-family: "DejaVu Sans", Arial, sans-serif; }
+  .title { position: absolute; left: 110px; top: 52px; font-size: 40px; font-weight: bold; }
+  .subtitle { position: absolute; left: 110px; top: 108px; font-size: 24px; color: var(--muted); }
+  .badge { position: absolute; right: 60px; top: 58px; font-size: 22px; padding: 10px 18px; border-radius: 999px;
+           border: 2px solid var(--accent); color: var(--accent); }
+  #esp { position: absolute; left: 110px; top: 200px; transform: scale(3.4); transform-origin: 0 0; }
+  svg.wires { position: absolute; left: 0; top: 0; }
+  .monitor { position: absolute; left: 960px; top: 180px; width: 900px; height: 520px; background: #050914;
+             border: 2px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .monitor .bar { height: 54px; background: var(--panel); border-bottom: 2px solid var(--line); display: flex;
+                  align-items: center; padding: 0 22px; font-size: 22px; color: var(--muted); gap: 14px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--green); }
+  .lines { padding: 18px 22px; font-family: "DejaVu Sans Mono", monospace; font-size: 22.5px; line-height: 44px;
+           white-space: pre; }
+  .lines .old { color: #64748b; }
+  .lines .new { color: var(--text); background: rgba(56,189,248,.12); border-radius: 6px; }
+  .k { color: var(--accent); } .v { color: #fde68a; } .s { color: #86efac; }
+  .cursor { display: inline-block; width: 13px; height: 26px; background: var(--accent); vertical-align: -4px; }
+  .cards { position: absolute; left: 960px; top: 730px; width: 900px; display: flex; gap: 24px; }
+  .card { flex: 1; background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 20px 24px; }
+  .card .lbl { font-size: 20px; color: var(--muted); }
+  .card .val { font-size: 64px; font-weight: bold; margin-top: 6px; }
+  .card .val small { font-size: 30px; color: var(--muted); font-weight: normal; }
+  .card .note { font-size: 18px; color: var(--muted); margin-top: 6px; }
+  .omitted { color: var(--amber) !important; font-size: 40px !important; }
+  .footer { position: absolute; left: 110px; right: 60px; bottom: 34px; font-size: 20px; color: var(--muted);
+            border-top: 2px solid var(--line); padding-top: 16px; }
+  /* close-up view */
+  .closeup { position: absolute; inset: 0; display: none; }
+  .closeup .frame { position: absolute; left: 110px; top: 420px; font-family: "DejaVu Sans Mono", monospace;
+                    font-size: 46px; background: #050914; border: 2px solid var(--line); border-radius: 16px;
+                    padding: 34px 40px; white-space: pre; }
+  .closeup .ann { position: absolute; font-size: 25px; color: var(--text); text-align: center; width: 360px; white-space: nowrap; }
+  .closeup .ann b { display: block; color: var(--accent); font-size: 28px; margin-bottom: 4px; }
+  body.view-closeup .scene { display: none; }
+  body.view-closeup .closeup { display: block; }
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="title">Galley sensor node — Wokwi simulation</div>
+  <div class="subtitle">Real Galley firmware on an ESP32 · 1 JSON line per second over USB (SerialFrame contract)</div>
+  <div class="badge">SIMULATION</div>
+  <wokwi-esp32-devkit-v1 id="esp"></wokwi-esp32-devkit-v1>
+  <svg class="wires" width="1920" height="1080" viewBox="0 0 1920 1080" id="wires"></svg>
+  <div class="monitor">
+    <div class="bar"><span class="dot"></span>Serial monitor · 115200 baud</div>
+    <div class="lines" id="lines"></div>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Skin temperature (DS18B20)</div><div class="val" id="temp">—</div>
+      <div class="note" id="tempnote">real reading from the simulated sensor</div></div>
+    <div class="card"><div class="lbl">Pulse · SpO₂</div><div class="val" id="hr">—</div>
+      <div class="note">simulated · Wokwi has no MAX30102</div></div>
+  </div>
+  <div class="footer">Team Synera · NASA Space Apps 2026 · Out-of-range readings are omitted, never invented · Decision support, not a medical device</div>
+</div>
+
+<div class="closeup">
+  <div class="title">One SerialFrame per second</div>
+  <div class="subtitle">What the ESP32 sends to the Galley app (contracts/telemetry-payload.schema.json)</div>
+  <div class="frame" id="cframe"></div>
+  <svg class="wires" width="1920" height="1080" viewBox="0 0 1920 1080" id="cwires"></svg>
+  <div id="anns"></div>
+  <div class="footer">Missing values are omitted (finger off → no hr/spo2 · sensor off the skin → no temp) · Team Synera · NASA Space Apps 2026</div>
+</div>
+
+<script>
+const DATA = __DATA__;   // { nominal: [lines], slider: [lines] } — real wokwi-cli captures
+const P = Object.fromEntries(location.hash.slice(1).split('&').filter(Boolean).map(kv => kv.split('=')));
+const view = P.view || 'scene', log = DATA[P.log || 'nominal'];
+const n = Math.max(0, Math.min(log.length, parseInt(P.n ?? '3', 10)));
+const f = Math.max(0, Math.min(1, parseFloat(P.f ?? '0')));
+const slider = P.slider || '36.5';
+document.body.classList.add('view-' + view);
+
+function colorize(s) {
+  return s.replace(/"(\w+)":("?[^,"}]+"?)/g, (m, k, v) =>
+    `<span class="k">"${k}"</span>:<span class="${v.startsWith('"') ? 's' : 'v'}">${v}</span>`);
+}
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+// ---------------- serial monitor: last 9 complete lines + the one being typed
+function renderLines() {
+  const shown = log.slice(Math.max(0, n - 8), n);
+  let html = shown.map((l, i) => `<div class="${i === shown.length - 1 && f === 0 ? 'new' : 'old'}">${colorize(esc(l))}</div>`).join('');
+  if (f > 0 && n < log.length) {
+    const next = log[n], cut = Math.round(next.length * Math.min(1, f / 0.35));
+    html += `<div class="new">${colorize(esc(next.slice(0, cut)))}<span class="cursor"></span></div>`;
+  }
+  document.getElementById('lines').innerHTML = html;
+  const typed = f >= 0.35 && n < log.length;          // the incoming line is fully printed
+  const last = typed ? JSON.parse(log[n]) : (n > 0 ? JSON.parse(log[n - 1]) : null);
+  const t = document.getElementById('temp');
+  if (last && last.temp !== undefined) { t.innerHTML = `${last.temp.toFixed(1)} <small>°C</small>`; }
+  else if (last) { t.textContent = 'omitted'; t.classList.add('omitted');
+    document.getElementById('tempnote').textContent = 'reading outside 30–44 °C → not sent'; }
+  if (last && last.hr) document.getElementById('hr').innerHTML = `${last.hr} <small>bpm · ${last.spo2}%</small>`;
+}
+
+// ---------------- wiring (pin coordinates from the official element: pinInfo, scale 3.4)
+const S = 3.4, EX = 110, EY = 200;
+function pin(name) { const p = document.getElementById('esp').pinInfo.find(q => q.name === name); return [EX + p.x * S, EY + p.y * S]; }
+function path(pts, color, w = 7) { return `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`; }
+function renderWires() {
+  const [x0, yD4] = pin('D4'), [, yG] = pin('GND.1'), [, y33] = pin('3V3');
+  const legY = 530, gx = 680, dx = 700, vx = 720;           // TO-92 legs: GND, DQ, VDD (flat face to viewer)
+  let s = '';
+  // TO-92 body + legs
+  s += `<path d="M640 400 h120 v70 a60 22 0 0 1 -120 0 z" fill="#1f2937" stroke="#475569" stroke-width="3"/>`;
+  s += `<text x="700" y="446" fill="#cbd5e1" font-size="22" text-anchor="middle" font-family="DejaVu Sans Mono">DS18B20</text>`;
+  [gx, dx, vx].forEach(x => s += `<line x1="${x}" y1="490" x2="${x}" y2="${legY}" stroke="#cbd5e1" stroke-width="5"/>`);
+  s += `<text x="700" y="382" fill="#94a3b8" font-size="20" text-anchor="middle">GND · DQ · VDD</text>`;
+  // slider readout (the Wokwi part has a temperature slider)
+  s += `<rect x="560" y="270" width="290" height="70" rx="12" fill="#111a2e" stroke="#23304d" stroke-width="2"/>`;
+  s += `<text x="580" y="300" fill="#94a3b8" font-size="18">Wokwi slider</text>`;
+  s += `<text x="580" y="328" fill="#fde68a" font-size="24" font-weight="bold">${slider} °C</text>`;
+  const pct = Math.max(0, Math.min(1, (parseFloat(slider) + 55) / 180));
+  s += `<line x1="720" y1="315" x2="830" y2="315" stroke="#334155" stroke-width="6" stroke-linecap="round"/>`;
+  s += `<circle cx="${720 + 110 * pct}" cy="315" r="10" fill="#38bdf8"/>`;
+  // DQ (green): leg -> down -> left to D4
+  s += path([[dx, legY], [dx, yD4], [x0, yD4]], '#22c55e');
+  // VDD (red): leg -> right -> down -> left to 3V3
+  s += path([[vx, legY], [vx, 545], [860, 545], [860, y33], [x0, y33]], '#ef4444');
+  // GND (black/grey): leg -> left -> down (hop over DQ) -> left to GND.1
+  const hx = 620;
+  s += path([[gx, legY], [gx, 556], [hx, 556], [hx, yD4 - 14]], '#64748b');
+  s += `<path d="M${hx} ${yD4 - 14} a14 14 0 0 1 0 28" fill="none" stroke="#64748b" stroke-width="7"/>`;
+  s += path([[hx, yD4 + 14], [hx, yG], [x0, yG]], '#64748b');
+  // 4.7 kΩ pull-up between DQ and VDD (horizontal, between the DQ wire at x=700 and the VDD wire at x=860)
+  const ry = 578;
+  s += path([[dx, ry], [740, ry]], '#22c55e', 5) + path([[820, ry], [860, ry]], '#ef4444', 5);
+  s += `<rect x="740" y="${ry - 13}" width="80" height="26" rx="8" fill="#d6b98c" stroke="#8b6f47" stroke-width="2"/>`;
+  [756, 770, 784, 804].forEach((x, i) => s += `<rect x="${x}" y="${ry - 13}" width="6" height="26" fill="${['#facc15', '#7c3aed', '#dc2626', '#c9a227'][i]}"/>`);
+  s += `<text x="780" y="${ry + 44}" fill="#cbd5e1" font-size="20" text-anchor="middle">4.7 kΩ</text>`;
+  [[dx, ry], [860, ry]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="8" fill="#e2e8f0"/>`);
+  // pin labels next to the board edge
+  [['D4 (1-Wire)', yD4], ['GND', yG], ['3V3', y33]].forEach(([t, y]) => s += `<text x="${x0 + 14}" y="${y - 12}" fill="#e2e8f0" font-size="19">${t}</text>`);
+  // USB cable to the station screen
+  s += path([[EX + 53 * S, EY + 205 * S - 6], [EX + 53 * S, 902], [930, 902], [930, 445], [960, 445]], '#475569', 9);
+  s += `<text x="560" y="890" fill="#94a3b8" font-size="19">USB → station screen (Web Serial)</text>`;
+  document.getElementById('wires').innerHTML = s;
+}
+
+// ---------------- close-up: one frame with field annotations
+function renderCloseup() {
+  const line = log[Math.max(0, n - 1)];
+  document.getElementById('cframe').innerHTML = colorize(esc(line));
+  const fields = [
+    ['t', 'seconds since boot'], ['hr', 'pulse (bpm)'], ['spo2', 'oxygen saturation %'],
+    ['temp', 'skin temp °C (1 decimal)'], ['q', 'signal quality (1 = OK)'], ['src', 'sensor or sim'],
+  ];
+  const box = document.getElementById('cframe').getBoundingClientRect();
+  const spans = [...document.querySelectorAll('#cframe .k')];
+  let svg = '', anns = '';
+  spans.forEach((sp, i) => {
+    const key = sp.textContent.replace(/"/g, ''), info = fields.find(x => x[0] === key);
+    if (!info) return;
+    const r = sp.getBoundingClientRect(), cx = r.left + r.width / 2, up = i % 2 === 0;
+    const ty = up ? box.top - 125 : box.bottom + 52;
+    svg += `<line x1="${cx}" y1="${up ? box.top : box.bottom}" x2="${cx}" y2="${up ? box.top - 44 : box.bottom + 44}" stroke="#38bdf8" stroke-width="3"/>`;
+    anns += `<div class="ann" style="left:${cx - 180}px;top:${ty}px"><b>${key}</b>${info[1]}</div>`;
+  });
+  document.getElementById('cwires').innerHTML = svg;
+  document.getElementById('anns').innerHTML = anns;
+}
+
+customElements.whenDefined('wokwi-esp32-devkit-v1').then(() => requestAnimationFrame(() => {
+  if (view === 'closeup') renderCloseup(); else { renderLines(); renderWires(); }
+  document.title = 'READY';
+}));
+</script>
+</body>
+</html>
