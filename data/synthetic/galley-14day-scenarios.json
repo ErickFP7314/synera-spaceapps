@@ -894,7 +894,7 @@
    ]
   },
   "solar_storm": {
-   "description": "Nominal vitals; real NASA DONKI solar energetic particle event replayed on days 12-13.",
+   "description": "Nominal vitals; real NASA DONKI solar energetic particle events of the May 2024 solar storm replayed on days 12-13.",
    "expected": "R6 radiation storm (level 2; level 4 if GOES >= 1000 pfu).",
    "days": [
     {
@@ -1064,7 +1064,7 @@
      "exercise_min": 84,
      "radiation_mgy_day": 0.206,
      "sep_active": true,
-     "sep_ref": "data/nasa/donki/donki-sep-demo-2025-11.json"
+     "sep_ref": "data/nasa/donki/donki-sep-demo.json"
     },
     {
      "day": 13,
@@ -1079,7 +1079,7 @@
      "exercise_min": 88,
      "radiation_mgy_day": 0.162,
      "sep_active": true,
-     "sep_ref": "data/nasa/donki/donki-sep-demo-2025-11.json"
+     "sep_ref": "data/nasa/donki/donki-sep-demo.json"
     },
     {
      "day": 14,

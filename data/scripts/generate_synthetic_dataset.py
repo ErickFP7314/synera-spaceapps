@@ -123,9 +123,9 @@ def build():
     for d in days:
         if d["day"] in (12, 13):
             d["sep_active"] = True
-            d["sep_ref"] = "data/nasa/donki/donki-sep-demo-2025-11.json"
+            d["sep_ref"] = "data/nasa/donki/donki-sep-demo.json"
     scenarios["solar_storm"] = {
-        "description": "Nominal vitals; real NASA DONKI solar energetic particle event replayed on days 12-13.",
+        "description": "Nominal vitals; real NASA DONKI solar energetic particle events of the May 2024 solar storm replayed on days 12-13.",
         "expected": "R6 radiation storm (level 2; level 4 if GOES >= 1000 pfu).",
         "days": days,
     }

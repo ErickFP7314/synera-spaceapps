@@ -25,7 +25,8 @@ Individual astronaut vital signs are not public. NASA LSAH and LSDA give access 
 ## Real data highlights
 - **Personal baseline on real astronauts.** Take `osdr/inspiration4-crew-labs.json`. Compare each crew member's pre-flight mean (L-92, L-44, L-3) with the population lab range. Population ranges hide individual change.
   - **Caveat:** the R+45 glucose values (36–44 mg/dL in every crew member) are likely a sample-handling artifact. Never present them as clinical findings.
-- **Solar storm replay.** `nasa/donki/donki-sep-demo-2025-11.json` holds the SEP events linked to the 10-Nov-2025 X-class flare. It drives rule R6 offline.
+- **Solar storm replay.** `nasa/donki/donki-sep-demo.json` holds the SEP events of the May 2024 solar storm (X-class flares on 8–13 May; GOES >10 MeV SEP on 10 May, >100 MeV on 11 May). It drives rule R6 offline.
+  - The 10-Nov-2025 event can be added with `fetch_nasa_data.py` once the `DEMO_KEY` limit resets (or with a free personal key from api.nasa.gov).
 
 ## Refresh
 ```bash

@@ -51,11 +51,12 @@ def now_iso() -> str:
 
 # ---------------------------------------------------------------- DONKI SEP
 DONKI_FILE = DATA / "nasa" / "donki" / "donki-sep-events.json"
-DEMO_FILE = DATA / "nasa" / "donki" / "donki-sep-demo-2025-11.json"
-DEMO_WINDOW = ("2025-11-10", "2025-11-15")  # SEP linked to the 2025-11-10 X-class flare
+DEMO_FILE = DATA / "nasa" / "donki" / "donki-sep-demo.json"
+# May 2024 "Gannon" storm: X-class flares 8-13 May, GOES >10 MeV SEP on 10 May, >100 MeV on 11 May.
+DEMO_WINDOW = ("2024-05-09", "2024-05-13")
 
 
-def fetch_donki_sep(start: date, end: date) -> None:
+def fetch_donki_sep(start: date, end: date, network: bool = True) -> None:
     """Incremental: merges into DONKI_FILE, skips 60-day chunks already covered,
     stops at the first HTTP 429 (rate limit) so it can simply be re-run later."""
     db = {"events": [], "covered_ranges": []}
@@ -70,7 +71,7 @@ def fetch_donki_sep(start: date, end: date) -> None:
     cur = start
     while cur <= end:
         chunk_end = min(cur + timedelta(days=59), end)
-        if not is_covered(cur, chunk_end):
+        if network and not is_covered(cur, chunk_end):
             url = (f"https://api.nasa.gov/DONKI/SEP?startDate={cur.isoformat()}"
                    f"&endDate={chunk_end.isoformat()}&api_key={API_KEY}")
             try:
@@ -98,7 +99,7 @@ def fetch_donki_sep(start: date, end: date) -> None:
     demo = [e for e in ordered if DEMO_WINDOW[0] <= e["eventTime"][:10] <= DEMO_WINDOW[1]]
     if demo:
         DEMO_FILE.write_text(json.dumps({
-            "source": "NASA CCMC DONKI — SEP events, demo window " + " to ".join(DEMO_WINDOW),
+            "source": "NASA CCMC DONKI — SEP events, demo window " + " to ".join(DEMO_WINDOW) + " (May 2024 solar storm)",
             "use": "Offline snapshot for the Galley 'solar storm' demo scenario (rule R6).",
             "retrieved_at": now_iso(),
             "events": demo,
@@ -204,7 +205,7 @@ def main() -> None:
     ap.add_argument("--only", choices=["donki", "goes", "osdr"], default=None)
     ap.add_argument("--start", default="2024-05-01", help="DONKI start date (YYYY-MM-DD)")
     ap.add_argument("--end", default=date.today().isoformat(), help="DONKI end date")
-    ap.add_argument("--no-download", action="store_true", help="OSDR: only re-tidy local CSVs")
+    ap.add_argument("--no-download", action="store_true", help="OSDR: only re-tidy local CSVs; DONKI: only rebuild the demo snapshot")
     a = ap.parse_args()
     for sub in ("nasa/donki", "nasa/osdr", "noaa"):
         (DATA / sub).mkdir(parents=True, exist_ok=True)
@@ -213,7 +214,7 @@ def main() -> None:
     if a.only in (None, "goes"):
         print("[NOAA] GOES protons"); fetch_goes_protons()
     if a.only in (None, "donki"):
-        print("[NASA] DONKI SEP"); fetch_donki_sep(date.fromisoformat(a.start), date.fromisoformat(a.end))
+        print("[NASA] DONKI SEP"); fetch_donki_sep(date.fromisoformat(a.start), date.fromisoformat(a.end), network=not a.no_download)
 
 
 if __name__ == "__main__":

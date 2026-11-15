@@ -30,7 +30,7 @@
   },
   "data_files": {
     "donki_events": "data/nasa/donki/donki-sep-events.json",
-    "donki_demo_snapshot": "data/nasa/donki/donki-sep-demo-2025-11.json",
+    "donki_demo_snapshot": "data/nasa/donki/donki-sep-demo.json",
     "goes_snapshot": "data/noaa/goes-integral-protons-7day-20261115.json",
     "live_endpoints": {
       "donki": "https://api.nasa.gov/DONKI/SEP?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&api_key=DEMO_KEY",

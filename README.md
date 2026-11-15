@@ -22,7 +22,7 @@ Team: Erick Flores · Luana Ojopi (Hardware) · Katherine Meneces · Brenda Cali
 ## Data used
 | Data | Source | How Galley uses it |
 |---|---|---|
-| Solar energetic particle events | **NASA DONKI** (api.nasa.gov) | Radiation storm alert (R6), with an offline replay of the 10-Nov-2025 event |
+| Solar energetic particle events | **NASA DONKI** (api.nasa.gov) | Radiation storm alert (R6), with an offline replay of the real May-2024 solar storm |
 | Inspiration4 crew labs (glucose, WBC) | **NASA OSDR** OSD-575 / OSD-569 | Real astronaut data that shows personal baseline vs. lab range |
 | Human spaceflight hazards and risks | **NASA HRP** | RIDGE tags and the explanation texts |
 | ISS radiation dose (LIDAL) | **ASI** (Di Fino et al., 2023) | Background dose, ISS mode |

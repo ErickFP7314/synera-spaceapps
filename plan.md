@@ -132,7 +132,7 @@ El mismo modelo (local-first, línea base personal, reporte S-B-A-R en cola, con
 | **P0** | Página del proyecto en inglés (`submission/project-page.md`): summary, descripción, NASA data, referencias, uso de IA | Bio | 3 h |
 | **P0** | Repo público único + app desplegada en GitHub Pages, probada en ventana privada | Software | 1 h |
 | **P0** | Coherencia: ánimo 1–5, 4 niveles, sin BP/glucosa en alertas, README sincronizado (§2.3) | Software + Docs | 1,5 h |
-| **P1** (sube el puntaje) | Tarjeta de **clima espacial / radiación** con snapshot real de DONKI (evento SEP del 10-nov-2025) y fetch en vivo opcional | Software | 2 h |
+| **P1** (sube el puntaje) | Tarjeta de **clima espacial / radiación** con snapshot real de DONKI (tormenta solar de mayo 2024) y fetch en vivo opcional | Software | 2 h |
 | **P1** | Tarjeta **"Real astronaut data"**: laboratorio real de Inspiration4 (OSDR) con línea base personal vs rango poblacional | Software (UI) + Bio (texto) | 1 h |
 | **P1** | **σ mínima + reglas por desviación personal** (§6); etiqueta "Fuente:" en cada indicador | Software + Bio | 2 h |
 | **P1** | **Datos sintéticos calibrados** con estudios de vuelo y 3 escenarios + 1 de infección (§7.2) | Bio | 2 h |
@@ -212,7 +212,7 @@ Se mantiene: es el porcentaje de indicadores dentro de su rango habitual, con am
 | # | Dato / recurso | Agencia | Uso en Galley | Estado |
 |---|---|---|---|---|
 | 0 | **OSDR – SpaceX Inspiration4**: OSD-575 (glucosa, panel metabólico) y OSD-569 (leucocitos, hemograma); CSV crudos + `data/nasa/osdr/inspiration4-crew-labs.json` | NASA | Datos **reales** de astronautas: línea base personal preflight (L-92/L-44/L-3) vs rango de laboratorio | ✅ En el repo. Ojo: la glucosa R+45 (36–44 mg/dL en toda la tripulación) es probable artefacto de muestra; no interpretar |
-| 1 | **DONKI SEP API** (`https://api.nasa.gov/DONKI/SEP?startDate=…&endDate=…&api_key=…`) | NASA | Dispara R6. Snapshot real del **evento SEP del 10-nov-2025** (asociado a la fulguración `2025-11-10T08:55:00-FLR-001`) para el demo sin internet | ✅ `data/nasa/donki/donki-sep-events.json` (may-2024 → feb-2025 descargado). El snapshot del demo, `donki-sep-demo-2025-11.json`, se descarga con `fetch_nasa_data.py` cuando se libera el límite de `DEMO_KEY` |
+| 1 | **DONKI SEP API** (`https://api.nasa.gov/DONKI/SEP?startDate=…&endDate=…&api_key=…`) | NASA | Dispara R6. Snapshot real de la **tormenta solar de mayo 2024** (SEP ≥ 10 MeV el 10-may y ≥ 100 MeV el 11-may) para el demo sin internet | ✅ `data/nasa/donki/donki-sep-events.json` (may-2024 → feb-2025 descargado) + snapshot del demo `donki-sep-demo.json`. El evento del 10-nov-2025 se puede agregar con `fetch_nasa_data.py` cuando se libere el límite de `DEMO_KEY` |
 | 2 | **GOES integral protons** (`https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json`) | NOAA (se declara en "otras referencias") | Flujo ≥ 10 MeV en vivo → escala S | ✅ Snapshot de 7 días en `data/noaa/` |
 | 3 | **LIDAL en Columbus/ISS** (Di Fino et al., 2023): 1,8–2,4 nGy/s | **ASI (socia 2026)** | Línea base de dosis en modo ISS | ✅ Artículo en mano (citar el DOI; no subir el PDF) |
 | 4 | **MSL/RAD** (Zeitlin 2013; Hassler 2014) | NASA | Línea base de dosis en modo Marte | Cifras publicadas |
@@ -321,7 +321,7 @@ Estructura del monorepo v2.1: `contracts/` (interfaces congeladas) · `data/` (`
 | Video > 30 s o > 7 diapositivas | **Crítica** (queda fuera del global) | Cronometrar; cortar sin piedad |
 | No enviar a tiempo / zona horaria equivocada | **Crítica** | Enviar a las 20:00; confirmar la zona del Team Owner |
 | Enlace privado o roto | Alta | Probar en ventana privada y desde otro dispositivo |
-| DONKI caído en el demo | Media | Snapshot local (`donki-sep-2025-11-10.json`) |
+| DONKI caído en el demo | Media | Snapshot local (`data/nasa/donki/donki-sep-demo.json`) |
 | Sensor no funciona | Media | Simulador y declararlo |
 | Reconocimiento facial falla con la luz | Media | Botón visible "Select crew member" |
 | Juez: "¿dónde está la IA?" | Media | "IA local solo para identidad; las decisiones de salud son reglas deterministas y citadas: es auditable a propósito." |
