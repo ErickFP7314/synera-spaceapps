@@ -230,7 +230,7 @@
       },
       "sources": [
         "NASA HRP nutrition risk",
-        "Smith et al. 2005, J Nutr 135:437 (ISS crews eat below requirement; ~80% — VERIFY exact figure)",
+        "Smith et al. 2005, J Nutr 135:437 (11 ISS crew members, 128-195 d: mean energy intake 80% of the recommended intake)",
         "ESA 2017 EveryWear diet tracker; NASA ISS FIT app",
         "Cut-offs: operational"
       ],
@@ -261,7 +261,7 @@
       },
       "sources": [
         "NASA HRP bone risk (1-1.5% bone density loss per month without countermeasures)",
-        "ISS daily exercise prescription ~2 h incl. setup — VERIFY",
+        "ISS crew exercise about 2 h per day including set-up (NASA; CSA 'Physical activity in space', asc-csa.gc.ca)",
         "Cut-offs: operational"
       ],
       "note": "GREEN >= 75 · YELLOW < 75 · RED < 50 for 3 consecutive days"

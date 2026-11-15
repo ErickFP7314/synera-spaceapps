@@ -6,7 +6,7 @@
  },
  "timepoints": "L-x = days before launch, R+x = days after return",
  "crew_ids": "C001-C004 are OSDR's anonymized subject IDs",
- "caveat": "Civilian 3-day mission, n=4. Several R+45 glucose values (36-44 mg/dL) are far below the lab range in all crew at the same visit; treat as a likely pre-analytical/sample handling effect (VERIFY in OSDR metadata / Jones et al. 2024) and never as a diagnosis.",
+ "caveat": "Civilian 3-day mission, n=4. Several R+45 glucose values (36-44 mg/dL) are far below the lab range in all crew at the same visit; treat as a likely pre-analytical/sample handling effect (all four crew at the same visit; not confirmed in the OSDR metadata) and never as a diagnosis.",
  "how_galley_uses_it": "Demonstrates the personal-baseline idea on REAL spaceflight data: each crew member's pre-flight mean (L-92, L-44, L-3) vs. the lab population range.",
  "retrieved_at": "2026-11-15T13:23:10+00:00",
  "glucose_mg_dl": {
