@@ -7,6 +7,8 @@
  * Pure frame logic lives in frame.h (tested on the laptop: test/test_firmware_host.py).
  *
  * Wiring (ESP32 DevKit v1): MAX30102 VIN->3V3, GND->GND, SDA->GPIO21, SCL->GPIO22 (I2C 0x57)
+ * Skin temperature (optional, auto-detected): MAX30205 on the same I2C bus (0x48-0x4F)
+ *   or DS18B20 data->GPIO4 with 4.7 kOhm pull-up to 3V3. Logic in temp.h.
  *
  * Two modes (choose at build time):
  *   default            HR via SparkFun beat detector (checkForBeat), 4-beat average. No SpO2.
@@ -20,8 +22,11 @@
  */
 #include <Arduino.h>
 #include <Wire.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include "MAX30105.h"  // SparkFun MAX3010x library (works with MAX30102)
 #include "frame.h"
+#include "temp.h"
 
 #ifndef GALLEY_SPO2
 #define GALLEY_SPO2 0
@@ -38,9 +43,48 @@ bool sensorOk = false;
 unsigned long lastEmit = 0;
 char line[96];
 
-// TODO(hardware): read MAX30205 / DS18B20 here. Return NAN until the part is wired:
-// the MAX30102 die temperature is NOT body temperature, so we never send it as "temp".
-float readSkinTempC() { return NAN; }
+// ------------------------------------------------- skin temperature (temp.h)
+// Auto-detect at boot: MAX30205 on I2C (0x48-0x4F) first, then DS18B20 on GPIO4.
+// The MAX30102 die temperature is NOT body temperature, so it is never sent as "temp".
+const uint8_t DS18B20_PIN = 4;
+OneWire oneWire(DS18B20_PIN);
+DallasTemperature ds18b20(&oneWire);
+enum TempSensor { TEMP_NONE, TEMP_MAX30205, TEMP_DS18B20 };
+TempSensor tempSensor = TEMP_NONE;
+uint8_t max30205Addr = 0;
+galley::TempFilter tempFilter;
+
+void setupTemp() {
+  for (uint8_t a = galley::MAX30205_ADDR_FIRST; a <= galley::MAX30205_ADDR_LAST; a++) {
+    Wire.beginTransmission(a);
+    if (Wire.endTransmission() == 0) { max30205Addr = a; tempSensor = TEMP_MAX30205; return; }
+  }
+  ds18b20.begin();
+  if (ds18b20.getDeviceCount() > 0) {
+    ds18b20.setResolution(12);
+    ds18b20.setWaitForConversion(false);  // non-blocking: request now, read next second
+    ds18b20.requestTemperatures();
+    tempSensor = TEMP_DS18B20;
+  }
+}
+
+/** Call once per second. Returns the filtered skin temperature, or NAN (= omit). */
+float readSkinTempC() {
+  if (tempSensor == TEMP_MAX30205) {
+    Wire.beginTransmission(max30205Addr);
+    Wire.write(galley::MAX30205_REG_TEMP);
+    if (Wire.endTransmission(false) == 0 && Wire.requestFrom((int)max30205Addr, 2) == 2) {
+      uint8_t msb = Wire.read(), lsb = Wire.read();
+      tempFilter.add(galley::max30205RawToC(msb, lsb));
+    } else {
+      tempFilter.add(NAN);
+    }
+  } else if (tempSensor == TEMP_DS18B20) {
+    tempFilter.add(ds18b20.getTempCByIndex(0));  // result of last second's request
+    ds18b20.requestTemperatures();               // start the next conversion (750 ms @12 bit)
+  }
+  return tempFilter.get();
+}
 
 void emit(const galley::Frame &f) {
   if (galley::formatFrame(line, sizeof(line), f) > 0) Serial.println(line);
@@ -132,6 +176,7 @@ void setup() {
   delay(300);
   sensorOk = sensor.begin(Wire, I2C_SPEED_FAST);
   if (sensorOk) setupSensor();
+  setupTemp();  // after Wire is up (MAX30205 shares the I2C bus)
   randomSeed(esp_random());
   // No boot banner on purpose: every line we print must be valid JSON for the web app.
 }
