@@ -21,38 +21,38 @@ const ZONE_Y = { head: 100, chest: 232, abdomen: 320, legs: 560 };
 const H = 560;
 
 const CSS = `
-.gbs{position:relative;width:100%;max-width:360px;margin:0 auto}
-.gbs svg{width:100%;height:auto;display:block;border-radius:12px;overflow:hidden}
+.gbs{position:relative;width:100%;max-width:340px;margin:0 auto}
+.gbs svg{width:100%;height:auto;display:block;border-radius:4px;overflow:hidden}
 .gbs .region{cursor:pointer;outline:none}
-.gbs .region *{fill:var(--rc,rgba(214,178,132,.30));stroke:#3b2a1d;stroke-width:1.3;stroke-linejoin:round;transition:fill .5s,stroke .3s}
-.gbs .region:hover *,.gbs .region:focus-visible *{stroke:#1d6fb8}
-.gbs .region.ok{--rc:rgba(46,160,90,.30)}
-.gbs .region.warn{--rc:rgba(245,179,1,.38)}
-.gbs .region.crit{--rc:rgba(214,40,40,.36)}
-.gbs .region.ok *{stroke:#2e8b57;stroke-width:2.2}
-.gbs .region.warn *{stroke:#d99a00;stroke-width:2.6}
-.gbs .region.crit *{stroke:#d62828;stroke-width:3.4}
-.gbs .region.sel *{stroke:#1d6fb8;stroke-width:3.2}
-.gbs .region.crit > *{filter:drop-shadow(0 0 7px #ff4d4f)}
-.gbs .region.warn > *{filter:drop-shadow(0 0 5px #f5b301)}
-.gbs .limb *{fill:rgba(214,178,132,.30);stroke:#3b2a1d;stroke-width:1.3}
+.gbs .region *{fill:var(--rc,var(--fig-skin));stroke:var(--fig-line);stroke-width:1.3;stroke-linejoin:round;transition:fill .5s,stroke .3s,stroke-width .3s}
+.gbs .region:hover *,.gbs .region:focus-visible *{stroke:var(--sel);stroke-width:2.6}
+.gbs .region.ok{--rc:color-mix(in srgb,var(--ok-fill) 34%,transparent)}
+.gbs .region.warn{--rc:color-mix(in srgb,var(--warn-fill) 42%,transparent)}
+.gbs .region.crit{--rc:color-mix(in srgb,var(--crit-fill) 44%,transparent)}
+.gbs .region.ok *{stroke:var(--ok-fill);stroke-width:2.2}
+.gbs .region.warn *{stroke:var(--warn-fill);stroke-width:2.8}
+.gbs .region.crit *{stroke:var(--crit-fill);stroke-width:3.4}
+.gbs .region.sel *{stroke:var(--sel);stroke-width:3.2}
+.gbs .limb *{fill:var(--fig-skin);stroke:var(--fig-line);stroke-width:1.3}
 .gbs .muscles,.gbs .bones,.gbs .organs,.gbs .labels{pointer-events:none}
-.gbs .muscles *{fill:#b04a3c;fill-opacity:.88;stroke:#3b2a1d;stroke-width:1.1;stroke-linejoin:round}
-.gbs .bones *{fill:#f4ecd8;stroke:#3b2a1d;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.gbs .muscles *{fill:var(--fig-muscle);fill-opacity:.85;stroke:var(--fig-line);stroke-width:1.1;stroke-linejoin:round}
+.gbs .bones *{fill:var(--fig-bone);stroke:var(--fig-line);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
 .gbs .bones .ln{fill:none}
-.gbs .bones .ln.o{stroke:#3b2a1d}
-.gbs .bones .ln.i{stroke:#f4ecd8}
-.gbs .bones .sk{fill:#3b2a1d;stroke:none}
+.gbs .bones .ln.o{stroke:var(--fig-line)}
+.gbs .bones .ln.i{stroke:var(--fig-bone)}
+.gbs .bones .sk{fill:var(--fig-line);stroke:none}
 .gbs .bones .dash{fill:none;stroke-dasharray:4 6}
-.gbs .organs *{fill:rgba(240,150,170,.55);stroke:#3b2a1d;stroke-width:1}
-.gbs .organs .lung{fill:rgba(120,170,220,.5)}
-.gbs .organs .stomach{fill:rgba(230,160,90,.6)}
-.gbs .organs .heart{fill:#e0334a;transform-box:fill-box;transform-origin:center}
+.gbs .organs *{fill:rgba(232,140,160,.55);stroke:var(--fig-line);stroke-width:1}
+.gbs .organs .lung{fill:rgba(120,165,210,.5)}
+.gbs .organs .stomach{fill:rgba(225,160,90,.6)}
+.gbs .organs .heart{fill:#d8344a;transform-box:fill-box;transform-origin:center}
 .gbs svg.live .heart{animation:gbs-beat var(--beat,1s) infinite}
-.gbs .labels text{font-size:11px;font-weight:600;text-anchor:middle;fill:#2a1a10;paint-order:stroke;stroke:#f3e8cf;stroke-width:3px}
+.gbs .labels text{font:700 11px var(--sans,system-ui);text-anchor:middle;fill:var(--fig-label);paint-order:stroke;stroke:var(--fig-label-halo);stroke-width:3.5px}
 .gbs.no-muscles .muscles,.gbs.no-bones .bones,.gbs.no-organs .organs,.gbs.no-labels .labels{display:none}
-.gbs .gbs-bar{height:6px;margin-top:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
-.gbs .gbs-bar i{display:block;height:100%;width:0;background:#4fd1ff}
+.gbs .gbs-bar{height:4px;margin-top:10px;border-radius:2px;background:var(--panel-2);overflow:hidden}
+.gbs .gbs-bar i{display:block;height:100%;width:0;background:var(--scanline)}
+.gbs .bg{fill:var(--fig-ground)}
+.gbs .floor{fill:var(--fig-line);opacity:.18}
 @keyframes gbs-beat{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.gbs svg.live .heart{animation:none}}
 `;
@@ -122,13 +122,12 @@ function figureMarkup(ariaNames) {
 <svg viewBox="0 -10 240 570" role="img" aria-label="Human figure with four zones">
   <defs>
     <linearGradient id="gbsScanGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1d6fb8" stop-opacity="0"/>
-      <stop offset="1" stop-color="#1d6fb8" stop-opacity=".5"/>
+      <stop offset="0" style="stop-color:var(--scanline)" stop-opacity="0"/>
+      <stop offset="1" style="stop-color:var(--scanline)" stop-opacity=".45"/>
     </linearGradient>
-    <radialGradient id="gbsParch" cx="50%" cy="42%" r="78%"><stop offset="0" stop-color="#f3e8cf"/><stop offset="1" stop-color="#d6c196"/></radialGradient>
   </defs>
-  <rect x="0" y="-10" width="240" height="570" fill="url(#gbsParch)"/>
-  <ellipse cx="120" cy="552" rx="74" ry="6" fill="rgba(60,40,20,.22)"/>
+  <rect class="bg" x="0" y="-10" width="240" height="570"/>
+  <ellipse class="floor" cx="120" cy="552" rx="74" ry="6"/>
   <g class="limb">${pair(armBase)}</g>
   <g class="regions">${regions}</g>
   <g class="muscles">${m}</g>
@@ -136,7 +135,7 @@ function figureMarkup(ariaNames) {
   <g class="organs">${o}</g>
   <g class="labels">${labels}</g>
   <rect class="scan" x="0" y="-40" width="240" height="40" fill="url(#gbsScanGrad)" opacity="0"/>
-  <line class="scanline" x1="0" x2="240" y1="0" y2="0" stroke="#1d6fb8" stroke-width="2" opacity="0"/>
+  <line class="scanline" x1="0" x2="240" y1="0" y2="0" style="stroke:var(--scanline)" stroke-width="2" opacity="0"/>
 </svg>
 <div class="gbs-bar" aria-hidden="true"><i></i></div>`;
 }

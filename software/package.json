@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node app/serve.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "build:engine": "tsc -p tsconfig.app.json"
   },
   "keywords": [
     "nasa",
