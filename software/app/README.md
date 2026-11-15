@@ -36,6 +36,20 @@ Then open http://127.0.0.1:5174 (it redirects to `/software/app/`).
 | `voice` | `0` (off) |
 | `autoscan` | `1` (starts the scan on load) |
 
+## Works without internet
+
+There is no internet on Mars and the station link drops, so nothing in the app needs the network. The engine, the data snapshots (NASA DONKI, OSDR), the face models, the fonts and the voice clips are all inside the repo.
+
+- **Locally** (`npm start`), it runs fully offline. A test that blocked every non-local request made zero outside calls.
+- **From the public link**, the service worker (`sw.js`) saves the whole app on the first visit: 68 files, about 9 MB. After that it opens and scans with no connection at all.
+  - The chip in the top bar says **Works offline** when everything is saved.
+  - It says **Offline · running from this device** when there is no network.
+- Without internet, voice uses only the device's own voices or the recorded clips. Chrome's "Google …" voices need the network.
+- After changing any app or data file, regenerate the cache list:
+  ```bash
+  node tools/build-sw.mjs
+  ```
+
 ## Flow (one scrolling page)
 
 1. **Check-in.** Face ID: the camera turns on only while identifying, then off. You can also register a crew member or pick the demo profile (Cmdr. A. Rivera, CREW-A).

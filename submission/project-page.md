@@ -42,6 +42,7 @@ Galley is an on-device health check-up for astronauts on long missions. The crew
 - Astronauts get autonomy when Earth is far away.
 - Recommendations are explainable and auditable, with no black-box AI.
 - Privacy by design: everything runs and stays on the device.
+- Works with no internet: the engine, NASA data snapshots, face models and voice are local, and after the first visit the web app is cached on the station screen, so it keeps working when the link to Earth drops.
 
 **On Earth,** the same local-first, baseline-driven model fits remote clinics with intermittent connectivity, high-altitude communities (where the "normal" SpO₂ is lower) and polar stations.
 

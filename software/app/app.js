@@ -568,6 +568,28 @@ async function setView(v) {
   if (S.scanned && lastR) for (const z of ZONES) { const st = zoneStatus(lastR.ev.zones[z]); fig.setZone(z, st); fig3d && fig3d.setZone(z, st); labelZone(z, lastR); }
 }
 
+/* ================= offline (service worker) ================= */
+let netState = null;
+function netUpdate() {
+  const chip = $("#netchip");
+  const show = (txt, cls) => { chip.hidden = false; chip.textContent = txt; chip.className = "netchip " + cls; };
+  if (!navigator.onLine) return show(t("off_now"), "off");
+  if (netState && netState.cached >= netState.total) return show(t("off_ready"), "ok");
+  if (netState) return show(t("off_saving", { n: netState.cached, t: netState.total }), "busy");
+}
+function setupOffline() {
+  addEventListener("offline", netUpdate);
+  addEventListener("online", () => { netUpdate(); ask(); });
+  const okHost = location.protocol === "https:" || ["127.0.0.1", "localhost"].includes(location.hostname);
+  const ask = () => navigator.serviceWorker && navigator.serviceWorker.ready.then((r) => r.active && r.active.postMessage("galley-status"));
+  if (!("serviceWorker" in navigator) || !okHost) { netUpdate(); return; }
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "galley-status") { netState = e.data; netUpdate(); if (e.data.cached < e.data.total) setTimeout(ask, 1500); }
+  });
+  navigator.serviceWorker.register("sw.js").then(ask).catch(() => {});
+  netUpdate();
+}
+
 /* ================= boot ================= */
 async function boot() {
   hydrateIcons();
@@ -592,7 +614,7 @@ async function boot() {
   $$("[data-lang-set]").forEach((b) => b.addEventListener("click", () => {
     S.lang = b.dataset.langSet; try { localStorage.setItem("galley-lang", S.lang); } catch (e) {}
     stopRun(); applyTexts(); renderCrew(); select(S.crew, S.by, S.dist); setPill(pillState); setStatus(statusKey, statusVars, statusWarn); if (regKey) regMsg(regKey, regVars);
-    refreshAll(); renderScience(); setCaption("", "speech");
+    refreshAll(); renderScience(); setCaption("", "speech"); netUpdate();
   }));
   $("#identify").addEventListener("click", identify);
   $("#regOpen").addEventListener("click", openRegister);
@@ -628,6 +650,7 @@ async function boot() {
   refreshAll(); renderScience();
   if (q.get("view") === "3d") await setView("3d");
   setupScroll(); tick(); setInterval(tick, 1000);
+  setupOffline();
   voiceMode().then((m) => { if (m === "clips") setCaption("", "clips"); });
   if (q.get("autoscan") === "1") setTimeout(runScan, 500);
 }
