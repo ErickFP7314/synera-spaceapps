@@ -5,7 +5,7 @@
 
 export interface EarthReportPayload {
   reportId: string;
-  astronautId: string;
+  crewId: string;
   missionDay: number;
   payloadJson: string;
   priority: 'ROUTINE' | 'ELEVATED' | 'CRITICAL';

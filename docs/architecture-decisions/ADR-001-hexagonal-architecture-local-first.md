@@ -14,12 +14,12 @@ El proyecto **Synera ("Copiloto de salud para astronautas")** aborda los desafí
    - El núcleo del dominio médico no depende de frameworks, bases de datos ni protocolos de transporte.
    - Interfaces unificadas (`SensorInputPort`, `EarthSyncPort`) permiten desacoplar el hardware físico de simuladores de prueba y de formularios de entrada manual.
 2. **Patrón Local-First y Cola Asíncrona (Store-and-Forward):**
-   - Todos los datos se almacenan localmente en una base de datos embebida ligera (SQLite con WAL).
+   - Todos los datos se almacenan localmente en el navegador (`localStorage`; IndexedDB queda como trabajo futuro). No hay servidor.
    - El "Parte para Tierra" se genera como un paquete autosuficiente y se encola para su despacho automático durante las ventanas de enlace satelital.
 3. **Motor Determinista vs. Inteligencia Artificial Caja Negra:**
    - Se prioriza un motor de reglas explícito, inferencia multivariable y modelado estadístico individualizado (Z-Score sobre línea base móvil personal) sobre modelos de Deep Learning opacos.
 4. **Directorio Compartido de Contratos (`/contracts`):**
-   - El monorepo establece esquemas JSON estrictos y perfiles BLE GATT como la única fuente de verdad compartida entre hardware y software.
+   - El monorepo establece esquemas JSON estrictos (`telemetry-payload`, `earth-report`, `medical-ranges-config`) como la única fuente de verdad compartida. El perfil BLE GATT es trabajo futuro: el MVP usa USB serial (Web Serial API).
 
 ## Matriz de Consecuencias y Trade-offs
 | Atributo Priorizado | Atributo Sacrificado | Justificación |

@@ -1,13 +1,13 @@
 {
   "name": "@synera/health-copilot",
   "version": "0.1.0",
-  "description": "Copiloto de salud para astronautas en misiones espaciales (NASA Space Apps)",
+  "description": "Galley v2 domain engine (personal baseline, rules R1-R7, escalation, S-B-A-R) - NASA Space Apps 2026",
   "type": "module",
   "private": true,
-  "main": "src/index.ts",
+  "main": "src/domain/index.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "node --experimental-strip-types --test tests/rules.test.ts"
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "build": "tsc"
   },
   "keywords": [
     "nasa",
@@ -19,6 +19,6 @@
   "author": "Synera Team",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.4.0"
+    "typescript": "^5.8.0"
   }
 }

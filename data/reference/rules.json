@@ -1,0 +1,192 @@
+{
+  "version": "2.0.0",
+  "owner": "Biotech team (texts and sources) — Software implements the conditions exactly as written",
+  "principle": "Deterministic, explainable rules. Galley suggests and guides; it never blocks tasks or prescribes drugs. Medication: 'follow the on-board medical checklist / ask the flight surgeon'.",
+  "escalation_levels": {
+    "1": {
+      "name": {
+        "en": "Self-care",
+        "es": "Autocuidado"
+      },
+      "color": "GREEN",
+      "trigger": "All green or a single isolated yellow",
+      "action": {
+        "en": "Follow the tip. Next check-up in 24 h.",
+        "es": "Sigue el consejo. Próximo chequeo en 24 h."
+      }
+    },
+    "2": {
+      "name": {
+        "en": "Tell the crew",
+        "es": "Avisar a la tripulación"
+      },
+      "color": "YELLOW",
+      "trigger": ">= 2 yellows, one combination rule, or a CUSUM trend",
+      "action": {
+        "en": "Tell a crewmate (buddy check) and repeat the check in 4-12 h.",
+        "es": "Avisa a un compañero (supervisión cruzada) y repite el chequeo en 4-12 h."
+      }
+    },
+    "3": {
+      "name": {
+        "en": "Flight surgeon",
+        "es": "Cirujano de vuelo"
+      },
+      "color": "RED",
+      "trigger": "Any RED indicator, rule R7, or a level-2 rule persisting 48 h",
+      "action": {
+        "en": "Send the S-B-A-R report to the flight surgeon. Postpone spacewalks (recommendation).",
+        "es": "Envía el reporte S-B-A-R al cirujano de vuelo. Pospón caminatas espaciales (recomendación)."
+      }
+    },
+    "4": {
+      "name": {
+        "en": "Urgent",
+        "es": "Urgente"
+      },
+      "color": "RED",
+      "trigger": ">= 3 RED indicators, a RED that does not improve at the re-check after the recommended action, or radiation storm >= S3",
+      "action": {
+        "en": "Tell the commander now. Priority link to Earth. Open the emergency medical checklist.",
+        "es": "Avisa ya al comandante. Enlace prioritario con la Tierra. Abre la lista médica de emergencia."
+      }
+    }
+  },
+  "rules": [
+    {
+      "id": "R1",
+      "name": {
+        "en": "Short sleep",
+        "es": "Sueño corto"
+      },
+      "when": "sleep_h < 7.0 OR sleep_h < baseline.sleep_h - 1.0",
+      "level": 1,
+      "advice": {
+        "en": "Go to bed earlier and keep a regular schedule; dim screens and lights before sleep.",
+        "es": "Acuéstate más temprano y mantén un horario regular; baja pantallas y luces antes de dormir."
+      },
+      "sources": [
+        "Watson et al. 2015",
+        "NASA HRP sleep risk"
+      ]
+    },
+    {
+      "id": "R2",
+      "name": {
+        "en": "Acute fatigue",
+        "es": "Fatiga aguda"
+      },
+      "when": "(sleep_h < 6.0 OR 2 nights sleep_h < baseline - 1.5) AND (pvt_lapses >= baseline + 3 OR mood_1_5 <= 2) AND hr_rest_bpm >= baseline + 2*sigma",
+      "level": 2,
+      "escalate_to": 3,
+      "escalate_if": "persists 48 h",
+      "advice": {
+        "en": "Signs of fatigue. Tell the commander, avoid critical tasks until you have slept, and re-check after sleep.",
+        "es": "Señales de fatiga. Avisa al comandante, evita tareas críticas hasta dormir y repite el chequeo después de descansar."
+      },
+      "sources": [
+        "Van Dongen et al. 2003",
+        "Basner et al. 2011",
+        "Barger et al. 2014"
+      ]
+    },
+    {
+      "id": "R3",
+      "name": {
+        "en": "Under-eating",
+        "es": "Ingesta insuficiente"
+      },
+      "when": "intake_pct < 80 for >= 2 consecutive days (raise one level if R2 active)",
+      "level": 2,
+      "advice": {
+        "en": "Add one extra portion from the available menu and drink water; your flight surgeon will be informed.",
+        "es": "Agrega una porción extra del menú disponible y bebe agua; se informará a tu cirujano de vuelo."
+      },
+      "sources": [
+        "NASA HRP nutrition risk",
+        "Smith et al. 2005"
+      ]
+    },
+    {
+      "id": "R4",
+      "name": {
+        "en": "Early infection warning",
+        "es": "Aviso temprano de infección"
+      },
+      "when": "hr_rest_bpm >= baseline + 2*sigma for 2 days AND skin_temp_c >= baseline + 0.5 (sleep <= baseline - 1 h is reported as supporting evidence only)",
+      "level": 2,
+      "escalate_to": 3,
+      "escalate_if": "skin_temp_c >= baseline + 1.0",
+      "advice": {
+        "en": "Possible infection or inflammation. Check symptoms, measure every 4 h, and follow the on-board medical checklist (e.g., mask, hydration).",
+        "es": "Posible infección o inflamación. Revisa síntomas, mide cada 4 h y sigue la lista médica de a bordo (p. ej., mascarilla, hidratación)."
+      },
+      "sources": [
+        "Mishra et al. 2020",
+        "Smarr et al. 2020",
+        "Quer et al. 2021",
+        "Crucian et al. 2018",
+        "Mehta et al. 2017"
+      ]
+    },
+    {
+      "id": "R5",
+      "name": {
+        "en": "Deconditioning",
+        "es": "Desacondicionamiento"
+      },
+      "when": "exercise_pct < 50 for >= 3 consecutive days",
+      "level": 2,
+      "advice": {
+        "en": "Make up your resistive exercise session — it is the #1 countermeasure for bone and muscle.",
+        "es": "Recupera tu sesión de ejercicio resistivo: es la contramedida #1 para hueso y músculo."
+      },
+      "sources": [
+        "NASA HRP bone risk"
+      ]
+    },
+    {
+      "id": "R6",
+      "name": {
+        "en": "Solar radiation storm",
+        "es": "Tormenta de radiación solar"
+      },
+      "when": "DONKI SEP event active OR GOES >=10 MeV flux >= 10 pfu (S1). >= 1000 pfu (S3) -> level 4",
+      "level": 2,
+      "escalate_to": 4,
+      "escalate_if": "GOES >= 1000 pfu",
+      "advice": {
+        "en": "Solar particle event. Follow the shelter procedure if instructed, postpone spacewalks and log your dosimeter.",
+        "es": "Evento de partículas solares. Sigue el procedimiento de refugio si se indica, pospón caminatas espaciales y registra tu dosímetro."
+      },
+      "sources": [
+        "NOAA SWPC S-scale",
+        "NASA DONKI",
+        "CSA 2026 radiation resource",
+        "NASA-STD-3001 Vol. 1"
+      ]
+    },
+    {
+      "id": "R7",
+      "name": {
+        "en": "S-B-A-R escalation",
+        "es": "Escalamiento S-B-A-R"
+      },
+      "when": "any RED indicator OR >= 2 active rules",
+      "level": 3,
+      "advice": {
+        "en": "Galley prepared an S-B-A-R report. ISS/Moon: sent now. Mars: queued, reply in ~44 min — follow the guided steps meanwhile.",
+        "es": "Galley preparó un reporte S-B-A-R. ISS/Luna: se envía ahora. Marte: en cola, respuesta en ~44 min; mientras, sigue los pasos guiados."
+      },
+      "sources": [
+        "Haig, Sutton & Whittington 2006 (SBAR)"
+      ]
+    }
+  ],
+  "sbar_template": {
+    "situation": "{crew_id} — {indicator_label}: {value} {unit}, {direction} usual ({baseline}). Level {level}.",
+    "background": "Personal 14-day baseline attached. Environment: {environment}. Active rules: {rules}.",
+    "assessment": "Traffic lights: {zones}. Deterministic rule(s) {rules}; not a diagnosis.",
+    "recommendation": "Crew actions taken: {actions}. Request: flight surgeon review within {reply_window}."
+  }
+}

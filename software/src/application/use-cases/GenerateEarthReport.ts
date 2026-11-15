@@ -1,39 +1,41 @@
-import type { EscalationStatus, DailyHealthRecord } from '../../domain/models/types.ts';
+import type { DayEvaluation, EnvironmentId } from '../../domain/models/types.ts';
 import type { EarthSyncPort } from '../ports/EarthSyncPort.ts';
 
+/** Builds the contracts/earth-report.schema.json payload and queues it (store-and-forward). */
 export class GenerateEarthReport {
-  constructor(private earthSyncPort: EarthSyncPort) {}
+  earthSyncPort: EarthSyncPort;
 
-  public async execute(
-    astronautId: string,
-    missionDay: number,
-    latestRecord: DailyHealthRecord,
-    status: EscalationStatus
-  ): Promise<string> {
-    const reportId = `REP-${astronautId}-MD${missionDay}-${Date.now()}`;
-    const priority = status.level >= 4 ? 'CRITICAL' : status.level === 3 ? 'ELEVATED' : 'ROUTINE';
+  constructor(earthSyncPort: EarthSyncPort) {
+    this.earthSyncPort = earthSyncPort;
+  }
 
-    const reportContent = {
+  async execute(crewId: string, missionDay: number, environment: EnvironmentId, ev: DayEvaluation): Promise<string | null> {
+    if (!ev.sbar) return null;
+    const reportId = `REP-${crewId}-MD${missionDay}-${Date.now()}`;
+    const report = {
       report_id: reportId,
-      astronaut_id: astronautId,
+      crew_id: crewId,
       mission_day: missionDay,
       generated_at: new Date().toISOString(),
-      escalation_level: status.level,
-      status_title: status.title,
-      explanation_statement: status.explanation,
-      active_alerts: status.activeAlerts,
-      actionable_recommendations: status.recommendations,
-      vitals_snapshot: latestRecord.vitals
+      environment,
+      escalation_level: ev.level,
+      active_rules: ev.rules.map(r => r.id),
+      zones: ev.zones,
+      sbar: {
+        situation: ev.sbar.situation,
+        background: ev.sbar.background,
+        assessment: ev.sbar.assessment,
+        recommendation: ev.sbar.recommendation,
+      },
+      transmission: ev.sbar.transmission,
     };
-
     await this.earthSyncPort.enqueueReport({
       reportId,
-      astronautId,
+      crewId,
       missionDay,
-      payloadJson: JSON.stringify(reportContent, null, 2),
-      priority
+      payloadJson: JSON.stringify(report),
+      priority: ev.level >= 4 ? 'CRITICAL' : ev.level === 3 ? 'ELEVATED' : 'ROUTINE',
     });
-
     return reportId;
   }
 }

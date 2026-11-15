@@ -1,59 +1,43 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "EarthReportSBARSchema",
-  "description": "Reporte clínico aeroespacial en formato estándar S-B-A-R (Situation, Background, Assessment, Recommendation) para el Cirujano de Vuelo y Control de Misión",
+  "title": "Galley S-B-A-R report for Earth v2",
+  "description": "Clinical report in S-B-A-R format (Situation, Background, Assessment, Recommendation; Haig et al. 2006) for the flight surgeon. Generated at escalation level >= 3. ISS/MOON: sent now. MARS: queued (store-and-forward).",
   "type": "object",
   "properties": {
     "report_id": { "type": "string" },
-    "astronaut_id": { "type": "string" },
+    "crew_id": { "type": "string" },
     "mission_day": { "type": "integer", "minimum": 1 },
     "generated_at": { "type": "string", "format": "date-time" },
-    "environment": { "type": "string", "enum": ["ISS", "DeepSpaceTransit", "LunarBase", "MarsMission"] },
+    "environment": { "type": "string", "enum": ["ISS", "MOON", "MARS"] },
     "escalation_level": { "type": "integer", "enum": [1, 2, 3, 4] },
+    "active_rules": { "type": "array", "items": { "type": "string", "enum": ["R1", "R2", "R3", "R4", "R5", "R6", "R7"] } },
+    "zones": {
+      "type": "object",
+      "properties": {
+        "head":    { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
+        "chest":   { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
+        "abdomen": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] },
+        "legs":    { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] }
+      }
+    },
     "sbar": {
       "type": "object",
       "properties": {
-        "situation": {
-          "type": "string",
-          "description": "S: Qué está ocurriendo en este momento con el astronauta y motivo del reporte"
-        },
-        "background": {
-          "type": "string",
-          "description": "B: Contexto clínico, línea base personal individual y tendencias de los últimos días"
-        },
-        "assessment": {
-          "type": "object",
-          "properties": {
-            "traffic_light_summary": {
-              "type": "object",
-              "additionalProperties": { "type": "string", "enum": ["GREEN", "YELLOW", "RED"] }
-            },
-            "active_alerts": {
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            "clinical_inference": {
-              "type": "string",
-              "description": "Inferencia determinista de causa fisiológica (fatiga, infección, desacondicionamiento)"
-            }
-          },
-          "required": ["traffic_light_summary", "clinical_inference"]
-        },
-        "recommendation": {
-          "type": "object",
-          "properties": {
-            "immediate_crew_actions": {
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            "flight_surgeon_consult_request": { "type": "string" },
-            "contingency_protocol": { "type": "string" }
-          },
-          "required": ["immediate_crew_actions"]
-        }
+        "situation":      { "type": "string", "description": "What is happening now and why the report was generated" },
+        "background":     { "type": "string", "description": "Personal 14-day baseline, trend and environment" },
+        "assessment":     { "type": "string", "description": "Zone colors and deterministic rules that fired (not a diagnosis)" },
+        "recommendation": { "type": "string", "description": "Crew actions already taken and the specific request to the flight surgeon" }
       },
       "required": ["situation", "background", "assessment", "recommendation"]
+    },
+    "transmission": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["SENT_NOW", "QUEUED"] },
+        "eta_minutes": { "type": "number", "minimum": 0, "description": "Expected reply time (MARS ~44 min round trip)" }
+      },
+      "required": ["mode", "eta_minutes"]
     }
   },
-  "required": ["report_id", "astronaut_id", "mission_day", "generated_at", "environment", "escalation_level", "sbar"]
+  "required": ["report_id", "crew_id", "mission_day", "generated_at", "environment", "escalation_level", "sbar", "transmission"]
 }

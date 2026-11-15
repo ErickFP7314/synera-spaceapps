@@ -1,33 +1,24 @@
-import type { EnvironmentType } from '../models/types.ts';
+import type { EnvironmentId, EscalationLevel } from '../models/types.ts';
 
-export interface EnvironmentConfig {
-  id: EnvironmentType;
-  displayName: string;
-  gravityG: number;
-  nominalRadiationUSvDay: number;
-  missionRiskNotes: string;
+/**
+ * Behavior per environment. Full content (labels, radiation, sources) lives in
+ * data/reference/environments.json — this module only holds the decision logic.
+ */
+export interface EnvironmentBehavior {
+  id: EnvironmentId;
+  earthReplyMinutes: number;
+  autonomous: boolean;
 }
 
-export const ENVIRONMENT_PROFILES: Record<EnvironmentType, EnvironmentConfig> = {
-  ISS: {
-    id: 'ISS',
-    displayName: 'Estación Espacial Internacional (LEO)',
-    gravityG: 0.0,
-    nominalRadiationUSvDay: 300,
-    missionRiskNotes: 'Microgravedad continua, desplazamiento de fluidos cefálicos, atenuación magnética terrestre parcial.'
-  },
-  DeepSpaceTransit: {
-    id: 'DeepSpaceTransit',
-    displayName: 'Nave de Tránsito Lunar/Marciano (Artemis / Orión)',
-    gravityG: 0.0,
-    nominalRadiationUSvDay: 1300,
-    missionRiskNotes: 'Exposición plena a rayos cósmicos galácticos (GCR) y tormentas solares (SPE), alta latencia de comunicación con Tierra.'
-  },
-  LunarBase: {
-    id: 'LunarBase',
-    displayName: 'Campamento Base Lunar (Superficie 1/6 g)',
-    gravityG: 0.166,
-    nominalRadiationUSvDay: 700,
-    missionRiskNotes: 'Gravedad fraccionaria, polvo regolito abrasivo, ciclos térmicos extremos de 14 días terrestres de luz/oscuridad.'
-  }
+export const ENVIRONMENTS: Record<EnvironmentId, EnvironmentBehavior> = {
+  ISS: { id: 'ISS', earthReplyMinutes: 5, autonomous: false },
+  MOON: { id: 'MOON', earthReplyMinutes: 5, autonomous: false },
+  MARS: { id: 'MARS', earthReplyMinutes: 44, autonomous: true },
 };
+
+/** Level >= 3: ISS/Moon send the S-B-A-R now; Mars queues it and guides the crew on board. */
+export function transmissionFor(env: EnvironmentId, level: EscalationLevel): { mode: 'SENT_NOW' | 'QUEUED'; eta_minutes: number } {
+  const e = ENVIRONMENTS[env];
+  if (level < 3) return { mode: 'QUEUED', eta_minutes: e.earthReplyMinutes };
+  return e.autonomous ? { mode: 'QUEUED', eta_minutes: e.earthReplyMinutes } : { mode: 'SENT_NOW', eta_minutes: e.earthReplyMinutes };
+}

@@ -1,18 +1,18 @@
-# Evidencia Científica y Respuestas del Botón Explicativo "¿Qué significa esto?"
+# Evidencia científica — botón "What does this mean?" / "¿Qué significa esto?"
 
-Documentación elaborada por la célula de **Biotecnología y Ciencia (Johan & Fidel)** para validar las 4 preguntas que exige el reto:
+Dueño: Biotecnología (Ana y Fidel).
 
-1. **¿Qué mide y por qué se mide en el espacio?**
-   - *Frecuencia Cardíaca y SpO2:* La ausencia de gravedad elimina el gradiente hidrostático terrestre, redistribuyendo ~2 litros de fluidos hacia la cabeza. El miocardio reduce su masa y contractilidad (desacondicionamiento cardiovascular).
-   - *Temperatura:* El flujo de convección natural es nulo en microgravedad; la disipación térmica del cuerpo depende exclusivamente de evaporación y ventilación forzada en cabina.
-   - *Sueño y Estado de Ánimo:* Los astronautas experimentan 16 amaneceres/atardeceres cada 24 horas en la ISS, provocando disrupción circadiana crónica (NASA HRP Sleep Loss Risk).
-   - *Nutrición:* La fatiga de menú y alteraciones de sabor provocan pérdida de peso y balance nitrogenado negativo (ESA 2017).
+- **Textos que muestra la app (EN/ES):** [`data/reference/indicator-explanations.json`](../../data/reference/indicator-explanations.json). Cubre 10 indicadores × 4 preguntas, con un enlace oficial de NASA HRP por indicador.
+- **Reglas y consejos:** [`data/reference/rules.json`](../../data/reference/rules.json).
+- **Umbrales y fuentes:** [`contracts/medical-ranges-config.json`](../../contracts/medical-ranges-config.json) (resumen en [`../medical-resources/nasa-clinical-thresholds.md`](../medical-resources/nasa-clinical-thresholds.md)).
 
-2. **¿Qué riesgo del vuelo espacial (RIDGE) lo afecta?**
-   - Mapeo directo a Radiación (R), Aislamiento (I), Distancia (D), Gravedad (G) y Entorno Hostil (E).
+## Las 4 preguntas (exigidas por el reto)
+1. ¿Qué mide y por qué se mide en el espacio?
+2. ¿Qué peligro del vuelo espacial (RIDGE) lo afecta? → enlace a https://www.nasa.gov/hrp/hazards/ y a la página del riesgo HRP correspondiente.
+3. ¿Qué es normal para mí y por qué cambió de color? → plantilla con la línea base personal (`q3_template`).
+4. ¿Qué hago ahora y cuándo escalo? → consejo + nivel de acción (1–4).
 
-3. **¿Qué es normal para mí y qué cambió de color?**
-   - Se compara con la línea base individual ($Z\text{-Score} = (x - \mu)/\sigma$). Si $|Z| \ge 2.5$ o el parámetro cruza los umbrales de seguridad de NASA-STD-3001, pasa a Amarillo o Rojo.
-
-4. **¿Qué hago ahora y cuándo escalo?**
-   - Matriz de escalamiento 1 a 4 con formato **S-B-A-R** para el Cirujano de Vuelo.
+## Cómo editar sin romper la app
+- Cambiar **solo los textos** dentro de `"en"` y `"es"`. **No renombrar claves**: `hr_rest_bpm`, `q1`…`q4`, `link`.
+- Toda afirmación nueva lleva su fuente en `plan.md` §13, o queda marcada como VERIFICAR y no se muestra.
+- Después de editar, correr `cd software && npm test` para confirmar que el JSON sigue siendo válido.

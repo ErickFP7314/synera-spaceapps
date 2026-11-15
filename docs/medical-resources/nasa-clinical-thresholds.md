@@ -1,35 +1,32 @@
-# Fuentes Oficiales de la NASA y Umbrales Fisiológicos
+# Umbrales clínicos v2 y sus fuentes (resumen legible)
 
-## 1. Contexto Clínico y Lecciones de Misiones Reales
-- **Evacuación Médica ISS Crew-11 (Enero 2026):**
-  - Primera evacuación médica anticipada de la tripulación en 25 años continuos de presencia humana en la Estación Espacial Internacional. La decisión de retornar prematuramente a los cuatro astronautas debido al deterioro médico de un solo tripulante evidenció que determinar el momento exacto de gravedad clínica es un evento de altísimo impacto operativo y financiero.
-- **Misión Artemis II (Abril 2026):**
-  - Generación de los primeros conjuntos de datos fisiológicos continuos más allá de la órbita baja terrestre (LEO) en más de 50 años. El despliegue de sensores vestibles (wearables) midió sueño, estrés, función neurocognitiva y dinámica de equipo bajo radiación del espacio profundo.
+> **Fuente única de la verdad:** [`contracts/medical-ranges-config.json`](../../contracts/medical-ranges-config.json). Si este resumen y el JSON difieren, manda el JSON.
+> Dueño: Biotecnología (Ana y Fidel). Galley es apoyo a la decisión, **no** un dispositivo médico.
 
-## 2. Los 5 Riesgos del Vuelo Espacial de la NASA (RIDGE) y su Mapeo
-1. **R (Space Radiation - Radiación Espacial):**
-   - *Impacto fisiológico:* Daño al ADN, aumento de riesgo oncogénico, síndrome agudo por radiación.
-   - *Mapeo en Synera:* Monitor de dosimetría acumulada (mSv) y tasa de dosis en tiempo real (µSv/h) mediante fotodiodo PIN.
-2. **I (Isolation and Confinement - Aislamiento y Confinamiento):**
-   - *Impacto fisiológico:* Alteración circadiana, depresión reactiva, fatiga mental, pérdida de cohesión grupal.
-   - *Mapeo en Synera:* Registro subjetivo de estado de ánimo (1-10), actigrafía de fases de sueño y test PVT (Psychomotor Vigilance Task).
-3. **D (Distance from Earth - Distancia de la Tierra):**
-   - *Impacto operativo:* Retraso en comunicaciones (hasta 20-22 minutos en Marte), imposibilidad de evacuación inmediata.
-   - *Mapeo en Synera:* Paradigma Local-First, motor de decisión autónomo y generación de "Parte para Tierra" asíncrono.
-4. **G (Gravity Fields - Campos Gravitatorios y Microgravedad):**
-   - *Impacto fisiológico:* Desplazamiento cefálico de fluidos (síndrome SANS), desacondicionamiento cardiovascular, arritmias.
-   - *Mapeo en Synera:* Frecuencia cardíaca, variabilidad del pulso (VFC/HRV) y presión arterial continua/estimada.
-5. **E (Hostile / Closed Environments - Entornos Cerrados y Hostiles):**
-   - *Impacto fisiológico:* Disregulación térmica en trajes espaciales, hipercapnia por acumulación de CO2, metabolismo glucídico alterado.
-   - *Mapeo en Synera:* Monitoreo de temperatura corporal cutánea (±0.1 °C) y glucosa intersticial continua (CGM).
+## Lógica de color
+1. **Desviación de la línea base personal.** Se usa un z robusto (mediana y MAD de los últimos 14 días, **sin los 3 más recientes**). Al empezar se usa el valor habitual del registro más una σ mínima.
+2. **Límites absolutos de seguridad.** Siempre ganan.
+3. **Reglas combinadas (R1–R7) y tendencias.** Pueden subir el nivel. Ver [`data/reference/rules.json`](../../data/reference/rules.json).
 
-## 3. Umbrales Clínicos de Referencia (Base)
-| Indicador | Rango Verde (Nominal) | Rango Amarillo (Atención) | Rango Rojo (Crítico) |
-|---|---|---|---|
-| **Frecuencia Cardíaca** | 50 - 90 bpm | 45-50 / 90-105 bpm | < 40 o > 120 bpm |
-| **Presión Arterial (Sistólica)** | 95 - 130 mmHg | 90-95 / 130-140 mmHg | < 85 o > 160 mmHg |
-| **Presión Arterial (Diastólica)** | 60 - 85 mmHg | 55-60 / 85-90 mmHg | < 50 o > 100 mmHg |
-| **Temperatura Cutánea/Núcleo** | 36.1 - 37.3 °C | 35.8-36.1 / 37.3-37.8 °C | < 35.0 o > 38.5 °C |
-| **Glucosa** | 70 - 140 mg/dL | 60-70 / 140-180 mg/dL | < 50 o > 250 mg/dL |
-| **Horas de Sueño (24h)** | 7.0 - 9.5 h | 5.5 - 7.0 h | < 5.5 h |
-| **Estado de Ánimo** | 7 - 10 / 10 | 5 - 6 / 10 | 1 - 4 / 10 |
+## Tabla
+| Indicador (zona) | Verde | Amarillo | Rojo | Riesgo HRP / RIDGE | Fuentes |
+|---|---|---|---|---|---|
+| FC en reposo (pecho) | \|z\| < 2 y 50–100 lpm | \|z\| ≥ 2 **o** < 50 / > 100 | \|z\| ≥ 3 **o** < 40 / ≥ 120 | Cardiovascular · G | Kusumoto 2019; taquicardia > 100; 40/120 operativo |
+| SpO₂ (pecho) | ≥ 94 % | 90–93 % | < 90 % | Hypoxia · E | O'Driscoll 2017 (BTS 94–98 %) |
+| Temp. cutánea (cabeza) | < base + 0,5 °C | ≥ base + 0,5 °C | ≥ base + 1,0 °C **o** ≥ 38,5 °C | Immune · E | Stahn 2017; Smarr 2020 |
+| Sueño (cabeza) | ≥ 6 h y ≥ base − 1 h (consejo R1 si < 7 h) | < 6 h **o** < base − 1 h | < 5 h **o** 3 noches < 6 h | Sleep · I/E | Watson 2015; Barger 2014; Van Dongen 2003 |
+| Ánimo 1–5 (cabeza) | ≥ 3 | ≤ 2 **o** caída ≥ 2 vs base | 1 durante 2 días | Behavioral · I | HRP; Basner 2013 |
+| PVT-B lapsos (cabeza, opcional) | < base + 3 | ≥ base + 3 | ≥ base + 6 | Sleep · I | Basner 2011 (lapso > 355 ms); Basner 2015 |
+| Ingesta % plan (abdomen) | ≥ 80 % | < 80 % | < 70 % durante 3 días | Nutrition · E | HRP; Smith 2005 (VERIFICAR ~80 %) |
+| Ejercicio % prescripción (piernas) | ≥ 75 % | < 75 % | < 50 % durante 3 días | Bone · G | HRP (1–1,5 %/mes) |
+| Glucosa (abdomen, manual) | — | — | — (sin alertas) | Nutrition · E | Rango de laboratorio 65–99 mg/dL (NASA OSDR OSD-575) |
+| Radiación (cuerpo) | fondo del entorno | SEP (DONKI) o ≥ S1 (≥ 10 pfu) | ≥ S3 (≥ 1000 pfu) | Radiation · R | NOAA S-scale; DONKI; Di Fino 2023; NASA-STD-3001 |
+| Presión arterial | — | — | — | Cardiovascular · G | **Trabajo futuro** (no se mide en el MVP) |
+
+## Escala de acción (4 niveles)
+1. **Autocuidado:** todo verde o un amarillo aislado.
+2. **Avisar a la tripulación:** ≥ 2 amarillos, una regla de nivel 2 o una tendencia.
+3. **Cirujano de vuelo:** un rojo, R7, o una regla de nivel 2 que persiste 48 h. Se genera el S-B-A-R.
+4. **Urgente:** ≥ 3 rojos, un rojo que no mejora en la re-medición, o radiación ≥ S3.
+
+Referencias completas: `plan.md` §13.

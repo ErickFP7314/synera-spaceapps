@@ -1,0 +1,86 @@
+{
+  "version": "2.0.0",
+  "owner": "Biotech team (Ana & Fidel) — DRAFT v2, review wording and sources; keep keys and structure unchanged so Software does not break",
+  "button": { "en": "What does this mean?", "es": "¿Qué significa esto?" },
+  "questions": {
+    "q1": { "en": "What does it measure and why in space?", "es": "¿Qué mide y por qué se mide en el espacio?" },
+    "q2": { "en": "Which spaceflight hazard affects it?", "es": "¿Qué peligro del vuelo espacial lo afecta?" },
+    "q3": { "en": "What is normal for me and why did the color change?", "es": "¿Qué es normal para mí y por qué cambió de color?" },
+    "q4": { "en": "What should I do now and when do I escalate?", "es": "¿Qué hago ahora y cuándo escalo?" }
+  },
+  "q3_template": {
+    "en": "Your usual value is {baseline} {unit} (last 14 days). Today: {value} {unit}. The color changes when you move more than {z} typical deviations from YOUR normal, or cross a safety limit.",
+    "es": "Tu valor habitual es {baseline} {unit} (últimos 14 días). Hoy: {value} {unit}. El color cambia cuando te alejas más de {z} desviaciones típicas de TU normal, o cruzas un límite de seguridad."
+  },
+  "hazards": {
+    "R": { "en": "Space radiation", "es": "Radiación espacial" },
+    "I": { "en": "Isolation & confinement", "es": "Aislamiento y confinamiento" },
+    "D": { "en": "Distance from Earth", "es": "Distancia de la Tierra" },
+    "G": { "en": "Gravity fields", "es": "Campos de gravedad" },
+    "E": { "en": "Hostile / closed environment", "es": "Ambiente hostil y cerrado" },
+    "source": "https://www.nasa.gov/hrp/hazards/"
+  },
+  "indicators": {
+    "hr_rest_bpm": {
+      "q1": { "en": "Your resting pulse. Without gravity, about 2 liters of fluid shift toward the head and the heart works differently, so pulse changes are an early sign of deconditioning, fatigue or illness.", "es": "Tu pulso en reposo. Sin gravedad, unos 2 litros de líquido se desplazan hacia la cabeza y el corazón trabaja distinto; un cambio de pulso es una señal temprana de desacondicionamiento, fatiga o enfermedad." },
+      "q2": { "en": "Gravity fields (G) — NASA HRP Risk of Cardiovascular Adaptations.", "es": "Campos de gravedad (G) — Riesgo HRP de adaptaciones cardiovasculares." },
+      "q4": { "en": "Sit and rest 10 minutes, then measure again. If you feel dizzy, faint or chest pain, call a crewmate now and open the on-board medical checklist.", "es": "Siéntate y descansa 10 minutos, luego vuelve a medir. Si sientes mareo, desmayo o dolor en el pecho, llama ya a un compañero y abre la lista médica de a bordo." },
+      "link": "https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/"
+    },
+    "spo2_pct": {
+      "q1": { "en": "How much oxygen your blood carries. Cabin atmosphere, suits and spacewalk preparation can lower it.", "es": "Cuánto oxígeno lleva tu sangre. La atmósfera de cabina, los trajes y la preparación de caminatas espaciales pueden bajarlo." },
+      "q2": { "en": "Hostile/closed environment (E) — NASA HRP Risk of Hypoxia.", "es": "Ambiente hostil y cerrado (E) — Riesgo HRP de hipoxia." },
+      "q4": { "en": "Keep the finger still and warm and repeat. Below 94%: rest and re-check. Below 90% or short of breath: tell the crew and follow the medical checklist.", "es": "Mantén el dedo quieto y tibio y repite. Bajo 94 %: descansa y vuelve a medir. Bajo 90 % o falta de aire: avisa a la tripulación y sigue la lista médica." },
+      "link": "https://www.nasa.gov/reference/risk-of-hypoxia/"
+    },
+    "skin_temp_c": {
+      "q1": { "en": "Skin temperature, an early sign of fever or heat stress. In long missions core temperature rises about 1 °C, so Galley compares you with YOUR normal, not with Earth values.", "es": "Temperatura de la piel, señal temprana de fiebre o estrés térmico. En misiones largas la temperatura central sube ~1 °C; por eso Galley te compara con TU normal y no con valores de la Tierra." },
+      "q2": { "en": "Hostile/closed environment (E) — NASA HRP Risk of Altered Immune System Responses (dormant viruses can reactivate in flight).", "es": "Ambiente hostil y cerrado (E) — Riesgo HRP de respuesta inmune alterada (virus latentes pueden reactivarse en vuelo)." },
+      "q4": { "en": "Drink water and re-check in 4 h. +1 °C above your normal, or with symptoms: report to the flight surgeon.", "es": "Bebe agua y vuelve a medir en 4 h. Con +1 °C sobre tu normal, o con síntomas: informa al cirujano de vuelo." },
+      "link": "https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/"
+    },
+    "sleep_h": {
+      "q1": { "en": "Hours slept. On the ISS the Sun rises 16 times a day; astronauts average about 6 hours although 8.5 are scheduled. Sleep debt slows reactions and decisions.", "es": "Horas dormidas. En la ISS el Sol sale 16 veces al día; los astronautas duermen ~6 h aunque se programan 8,5. La deuda de sueño vuelve lentas las reacciones y decisiones." },
+      "q2": { "en": "Isolation (I) and hostile environment (E) — NASA HRP Risk from Inadequate Sleep and Irregular Schedules.", "es": "Aislamiento (I) y ambiente hostil (E) — Riesgo HRP por sueño inadecuado y horarios irregulares." },
+      "q4": { "en": "Plan an earlier bedtime and keep a regular schedule. Two nights under 6 h, or sleepy at work: tell the commander and avoid critical tasks.", "es": "Planea dormir antes y mantén un horario regular. Dos noches bajo 6 h, o sueño en el trabajo: avisa al comandante y evita tareas críticas." },
+      "link": "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/"
+    },
+    "mood_1_5": {
+      "q1": { "en": "How you feel today (1 = very bad, 5 = very good). Months of confinement affect mood, sleep and teamwork.", "es": "Cómo te sientes hoy (1 = muy mal, 5 = muy bien). Meses de encierro afectan el ánimo, el sueño y el trabajo en equipo." },
+      "q2": { "en": "Isolation & confinement (I) — NASA HRP Risk of Behavioral Conditions and Psychiatric Disorders.", "es": "Aislamiento y confinamiento (I) — Riesgo HRP de condiciones conductuales y trastornos psiquiátricos." },
+      "q4": { "en": "Take a break, talk with a crewmate or schedule a private family call. Two days at 1: ask for a private conference with the behavioral health team.", "es": "Toma un descanso, habla con un compañero o agenda una llamada privada con tu familia. Dos días en 1: pide una conferencia privada con el equipo de salud conductual." },
+      "link": "https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/"
+    },
+    "pvt_lapses": {
+      "q1": { "en": "A 3-minute reaction test (PVT-B). Slow responses (> 355 ms) are 'lapses' — an objective sign of fatigue that does not depend on how you feel.", "es": "Un test de reacción de 3 minutos (PVT-B). Las respuestas lentas (> 355 ms) son 'fallos': una señal objetiva de fatiga que no depende de cómo te sientes." },
+      "q2": { "en": "Isolation (I) — same family of tests as NASA's Cognition battery used by astronauts.", "es": "Aislamiento (I) — misma familia de pruebas que la batería Cognition de NASA usada por astronautas." },
+      "q4": { "en": "More lapses than usual: rest before any critical task and repeat the test after sleeping.", "es": "Más fallos de lo habitual: descansa antes de cualquier tarea crítica y repite el test después de dormir." },
+      "link": "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/"
+    },
+    "intake_pct": {
+      "q1": { "en": "How much of your planned food you ate. In orbit people tend to eat less (menu fatigue, taste changes), which leads to weight and muscle loss.", "es": "Cuánto comiste de tu plan de comida. En órbita se tiende a comer menos (fatiga de menú, cambios de sabor), lo que lleva a perder peso y músculo." },
+      "q2": { "en": "Hostile/closed environment (E) — NASA HRP Risk of Inadequate Food and Nutrition.", "es": "Ambiente hostil y cerrado (E) — Riesgo HRP de alimentación y nutrición inadecuadas." },
+      "q4": { "en": "Add one extra portion from the available menu and drink water. Under 70% for 3 days: report to the flight surgeon.", "es": "Agrega una porción extra del menú disponible y bebe agua. Bajo 70 % durante 3 días: informa al cirujano de vuelo." },
+      "link": "https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/"
+    },
+    "exercise_pct": {
+      "q1": { "en": "How much of your prescribed exercise you completed. Without gravity, bones can lose 1-1.5% density per month; exercise is the main countermeasure.", "es": "Cuánto de tu ejercicio prescrito completaste. Sin gravedad, los huesos pueden perder 1-1,5 % de densidad por mes; el ejercicio es la contramedida principal." },
+      "q2": { "en": "Gravity fields (G) — NASA HRP Risk of Spaceflight-Induced Bone Changes.", "es": "Campos de gravedad (G) — Riesgo HRP de cambios óseos inducidos por el vuelo." },
+      "q4": { "en": "Make up the missed resistive session today. Under 50% for 3 days: tell the crew medical officer.", "es": "Recupera hoy la sesión resistiva perdida. Bajo 50 % durante 3 días: avisa al oficial médico de la tripulación." },
+      "link": "https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/"
+    },
+    "radiation": {
+      "q1": { "en": "Space radiation exposure. Galley watches real NASA DONKI solar particle events and NOAA GOES proton flux and compares with the normal dose of your environment.", "es": "Exposición a radiación espacial. Galley vigila eventos solares reales de NASA DONKI y el flujo de protones GOES de NOAA, y los compara con la dosis normal de tu entorno." },
+      "q2": { "en": "Space radiation (R) — NASA HRP hazards; CSA monitors neutrons (~30% of ISS radiation).", "es": "Radiación espacial (R) — peligros HRP de NASA; la CSA monitorea neutrones (~30 % de la radiación en la ISS)." },
+      "q4": { "en": "During a solar storm follow the shelter procedure if instructed and postpone spacewalks. Strong storm (S3+): go to the shielded area and tell the commander.", "es": "Durante una tormenta solar sigue el procedimiento de refugio si se indica y pospón caminatas espaciales. Tormenta fuerte (S3+): ve al área blindada y avisa al comandante." },
+      "link": "https://www.nasa.gov/hrp/hazards/"
+    },
+    "glucose_mg_dl": {
+      "q1": { "en": "Blood sugar from a lab test or glucometer (manual entry). Diet changes and stress in flight can shift it. Example data: real Inspiration4 crew labs from NASA OSDR.", "es": "Azúcar en sangre de un análisis o glucómetro (entrada manual). Cambios de dieta y estrés en vuelo pueden alterarla. Datos de ejemplo: análisis reales de la tripulación Inspiration4 (NASA OSDR)." },
+      "q2": { "en": "Hostile/closed environment (E) — NASA HRP Risk of Inadequate Food and Nutrition.", "es": "Ambiente hostil y cerrado (E) — Riesgo HRP de alimentación y nutrición inadecuadas." },
+      "q4": { "en": "Informational only in this prototype. If you feel shaky, sweaty or confused, eat fast sugar and follow the medical checklist.", "es": "Solo informativo en este prototipo. Si sientes temblor, sudor o confusión, come azúcar rápida y sigue la lista médica." },
+      "link": "https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/"
+    }
+  },
+  "disclaimer": { "en": "Galley is decision support, not a medical device. It does not diagnose or prescribe.", "es": "Galley es apoyo a la decisión, no un dispositivo médico. No diagnostica ni receta." }
+}

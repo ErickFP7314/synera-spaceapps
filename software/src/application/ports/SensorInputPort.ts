@@ -1,6 +1,7 @@
-import type { DailyHealthRecord } from '../../domain/models/types.ts';
+import type { DailyRecord } from '../../domain/models/types.ts';
 
+/** Input port: Web Serial adapter, simulator, dataset loader or manual entry all implement it. */
 export interface SensorInputPort {
-  ingest(record: DailyHealthRecord): Promise<void>;
-  getHistory(astronautId: string, limit?: number): Promise<DailyHealthRecord[]>;
+  ingest(crewId: string, record: DailyRecord): Promise<void>;
+  getHistory(crewId: string, limit?: number): Promise<DailyRecord[]>;
 }

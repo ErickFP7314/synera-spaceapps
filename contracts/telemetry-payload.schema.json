@@ -1,95 +1,41 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AstronautTelemetryPayload",
-  "description": "Contrato de telemetría biomédica, nutricional y ambiental para el proyecto Synera - Galley (Web Serial, BLE o Simulador)",
-  "type": "object",
-  "properties": {
-    "astronaut_id": {
-      "type": "string",
-      "description": "Identificador único del astronauta (ej. ASTRO-001)"
-    },
-    "timestamp": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Marca de tiempo ISO 8601 (UTC)"
-    },
-    "capture_source": {
-      "type": "string",
-      "enum": ["web_serial_usb", "wearable_ble", "manual_entry", "simulator"],
-      "description": "Origen de los datos capturados"
-    },
-    "environment": {
-      "type": "string",
-      "enum": ["ISS", "DeepSpaceTransit", "LunarBase", "MarsMission"],
-      "default": "ISS",
-      "description": "Entorno operacional actual (ISS vs. Marte)"
-    },
-    "metrics": {
+  "title": "Galley telemetry contracts v2",
+  "description": "FROZEN interface between teams. Hardware emits SerialFrame (1 line of JSON per second, USB serial 115200 baud). Software consumes SerialFrame and DailyRecord. Biotech produces DailyRecord datasets. Any change needs agreement of the teams that use it.",
+  "definitions": {
+    "SerialFrame": {
+      "description": "Hardware -> Software, 1 Hz, newline-terminated JSON. Example: {\"t\":1731600000,\"hr\":62,\"spo2\":97,\"temp\":36.6,\"q\":1,\"src\":\"sensor\"}",
       "type": "object",
       "properties": {
-        "heart_rate": {
-          "type": "object",
-          "properties": {
-            "bpm": { "type": "number", "minimum": 25, "maximum": 240, "description": "Frecuencia cardíaca en lpm" },
-            "spo2": { "type": "number", "minimum": 60, "maximum": 100, "description": "Saturación de oxígeno %" },
-            "hrv_rmssd": { "type": "number", "minimum": 0, "maximum": 300, "description": "Variabilidad de la frecuencia cardíaca en ms" }
-          },
-          "required": ["bpm"]
-        },
-        "blood_pressure": {
-          "type": "object",
-          "properties": {
-            "systolic": { "type": "number", "minimum": 50, "maximum": 260 },
-            "diastolic": { "type": "number", "minimum": 30, "maximum": 160 }
-          }
-        },
-        "body_temperature": {
-          "type": "object",
-          "properties": {
-            "celsius": { "type": "number", "minimum": 30.0, "maximum": 44.0, "description": "Temperatura corporal cutánea/núcleo en °C" }
-          },
-          "required": ["celsius"]
-        },
-        "sleep": {
-          "type": "object",
-          "properties": {
-            "duration_hours": { "type": "number", "minimum": 0, "maximum": 24, "description": "Horas de sueño acumuladas" },
-            "quality_score": { "type": "integer", "minimum": 1, "maximum": 10 }
-          },
-          "required": ["duration_hours"]
-        },
-        "mood": {
-          "type": "object",
-          "properties": {
-            "score": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Puntaje de ánimo y alerta subjetiva (1 a 10)" },
-            "pvt_reaction_time_ms": { "type": "number" }
-          },
-          "required": ["score"]
-        },
-        "nutrition": {
-          "type": "object",
-          "properties": {
-            "meal_intake_percentage": { "type": "number", "minimum": 0, "maximum": 100, "description": "Porcentaje de porciones de menú consumidas según plan calórico" },
-            "hydration_liters": { "type": "number", "minimum": 0, "maximum": 10 }
-          }
-        },
-        "exercise": {
-          "type": "object",
-          "properties": {
-            "duration_minutes": { "type": "number", "minimum": 0, "maximum": 360, "description": "Minutos de contramedida física en ARED/Cicloergómetro" },
-            "intensity": { "type": "string", "enum": ["REST", "LIGHT", "MODERATE", "VIGOROUS"] }
-          }
-        },
-        "radiation": {
-          "type": "object",
-          "properties": {
-            "dose_rate_uSv_h": { "type": "number", "minimum": 0 },
-            "cumulative_dose_mSv": { "type": "number", "minimum": 0 }
-          }
-        }
+        "t":    { "type": "integer", "description": "Unix time (s) or millis() since boot if no clock" },
+        "hr":   { "type": "number", "minimum": 25, "maximum": 240, "description": "Heart rate, bpm (MAX30102)" },
+        "spo2": { "type": "number", "minimum": 60, "maximum": 100, "description": "SpO2 %, only meaningful when q = 1" },
+        "temp": { "type": "number", "minimum": 30, "maximum": 44, "description": "Skin temperature °C (MAX30205 / DS18B20)" },
+        "q":    { "type": "integer", "enum": [0, 1], "description": "Signal quality: 1 valid (finger detected, stable), 0 invalid" },
+        "src":  { "type": "string", "enum": ["sensor", "sim"], "description": "sensor = real reading, sim = firmware/simulator fallback" }
       },
-      "required": ["heart_rate", "body_temperature", "sleep", "mood"]
+      "required": ["t", "q"],
+      "additionalProperties": false
+    },
+    "DailyRecord": {
+      "description": "One day per crew member (dataset row, manual entry, or daily summary of SerialFrames). Keys match contracts/medical-ranges-config.json.",
+      "type": "object",
+      "properties": {
+        "day":               { "type": "integer", "minimum": 1 },
+        "hr_rest_bpm":       { "type": "number", "minimum": 25, "maximum": 240 },
+        "spo2_pct":          { "type": "number", "minimum": 60, "maximum": 100 },
+        "skin_temp_c":       { "type": "number", "minimum": 30, "maximum": 44 },
+        "sleep_h":           { "type": "number", "minimum": 0, "maximum": 24 },
+        "mood_1_5":          { "type": "integer", "minimum": 1, "maximum": 5 },
+        "pvt_lapses":        { "type": "integer", "minimum": 0, "description": "PVT-B 3 min, lapses = RT > 355 ms (optional)" },
+        "intake_pct":        { "type": "number", "minimum": 0, "maximum": 200, "description": "% of planned kcal eaten" },
+        "exercise_pct":      { "type": "number", "minimum": 0, "maximum": 300, "description": "% of prescribed exercise minutes" },
+        "exercise_min":      { "type": "number", "minimum": 0 },
+        "glucose_mg_dl":     { "type": "number", "minimum": 20, "maximum": 600, "description": "Manual entry, informational only (no alerts)" },
+        "radiation_mgy_day": { "type": "number", "minimum": 0 },
+        "sep_active":        { "type": "boolean", "description": "Solar energetic particle event active (NASA DONKI)" }
+      },
+      "required": ["day"]
     }
-  },
-  "required": ["astronaut_id", "timestamp", "capture_source", "metrics"]
+  }
 }

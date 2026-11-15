@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "owner": "Biotech team (content) — read-only for Software",
+  "description": "Mission environments for Galley. Drives who is notified and how the app behaves for escalation level >= 3.",
+  "environments": {
+    "ISS": {
+      "label": { "en": "Space Station (LEO)", "es": "Estación espacial (LEO)" },
+      "one_way_delay_s": { "min": 0.5, "max": 1, "note": "Near real time; loss-of-signal gaps occur" },
+      "earth_reply_minutes_estimate": 5,
+      "evacuation": { "en": "Possible in days (Crew-11 precedent: decision 8-Jan-2026, splashdown 15-Jan-2026)", "es": "Posible en días (precedente Crew-11: decisión 8-ene-2026, amerizaje 15-ene-2026)" },
+      "behavior_level3": { "en": "Notify the flight surgeon now (private medical conference).", "es": "Avisar ahora al cirujano de vuelo (conferencia médica privada)." },
+      "radiation_background": { "value": 0.18, "range": [0.16, 0.21], "unit": "mGy/day (absorbed, Si)", "source": "Di Fino et al. 2023, Life Sci Space Res 39:26-42 (ASI, LIDAL detector, Columbus 2020-2022): 1.8-2.4 nGy/s" },
+      "gravity_g": 0
+    },
+    "MOON": {
+      "label": { "en": "Moon (Artemis)", "es": "Luna (Artemis)" },
+      "one_way_delay_s": { "min": 1.25, "max": 1.4, "note": "Light time Earth-Moon" },
+      "earth_reply_minutes_estimate": 5,
+      "evacuation": { "en": "Return to Earth takes several days", "es": "El regreso a la Tierra toma varios días" },
+      "behavior_level3": { "en": "Notify flight surgeon (near real time) and start on-board protocol.", "es": "Avisar al cirujano de vuelo (casi en tiempo real) e iniciar el protocolo de a bordo." },
+      "radiation_background": { "value": 1.37, "unit": "mSv/day (dose equivalent, lunar surface)", "source": "Zhang et al. 2020, Sci Adv 6:eaaz1334 (Chang'e-4 LND, 1369 uSv/day)" },
+      "gravity_g": 0.166
+    },
+    "MARS": {
+      "label": { "en": "Mars mission", "es": "Misión a Marte" },
+      "one_way_delay_s": { "min": 180, "max": 1320, "note": "3-22 min one way; up to ~44 min round trip; ~2-week blackout at solar conjunction every ~26 months" },
+      "earth_reply_minutes_estimate": 44,
+      "evacuation": { "en": "Not possible — crew must act autonomously", "es": "No es posible — la tripulación actúa de forma autónoma" },
+      "behavior_level3": { "en": "Follow the guided on-board protocol now. S-B-A-R report queued for Earth; reply expected in ~{minutes} min.", "es": "Sigue ahora el protocolo guiado de a bordo. Reporte S-B-A-R en cola para la Tierra; respuesta estimada en ~{minutes} min." },
+      "radiation_background": {
+        "cruise": { "value": 1.84, "unit": "mSv/day", "source": "Zeitlin et al. 2013, Science 340:1080-1084 (MSL RAD in transit)" },
+        "surface": { "value": 0.64, "unit": "mSv/day", "source": "Hassler et al. 2014, Science 343:1244797 (MSL RAD, Gale crater)" }
+      },
+      "gravity_g": 0.38
+    }
+  },
+  "references": {
+    "delays": "NASA NTRS — Communication Delays, Disruptions, and Blackouts for Crewed Mars Missions (ASCEND)",
+    "crew11": "NPR, 15-Jan-2026 — Crew-11 returns a month early after first ISS medical evacuation"
+  }
+}

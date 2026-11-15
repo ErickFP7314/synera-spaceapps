@@ -1,3 +1,4 @@
+# STATUS: FUTURE WORK — NOT USED IN THE HACKATHON MVP. The MVP link is USB serial (Web Serial API), see contracts/telemetry-payload.schema.json#/definitions/SerialFrame.
 # Perfil GATT Bluetooth Low Energy (BLE) para Nodo Wearable - Synera Health Copilot
 profile_name: "SyneraAstronautHealthGATT"
 version: "1.0.0"

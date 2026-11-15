@@ -1,2 +1,3 @@
-# Requirements for hardware-simulator
-# Standard library json, time, random, argparse are used by default.
+# Galley hardware simulator — standard library only.
+# Optional, only for --port (write frames to a real serial port):
+# pyserial>=3.5

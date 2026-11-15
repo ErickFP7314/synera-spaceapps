@@ -1,48 +1,310 @@
 {
-  "version": "1.0.0",
-  "description": "Rangos de referencia fisiológicos y umbrales por entorno espacial (NASA Clinical Practice Guidelines & Artemis Medical Standards)",
-  "environments": {
-    "ISS": {
-      "name": "Estación Espacial Internacional (LEO)",
-      "gravity_g": 0.0,
-      "radiation_nominal_uSv_day": 300,
-      "metrics": {
-        "heart_rate_bpm": { "green_min": 50, "green_max": 90, "yellow_low": 45, "yellow_high": 105, "red_low": 40, "red_high": 120 },
-        "blood_pressure_systolic": { "green_min": 95, "green_max": 130, "yellow_low": 90, "yellow_high": 140, "red_low": 85, "red_high": 160 },
-        "blood_pressure_diastolic": { "green_min": 60, "green_max": 85, "yellow_low": 55, "yellow_high": 90, "red_low": 50, "red_high": 100 },
-        "body_temperature_celsius": { "green_min": 36.1, "green_max": 37.3, "yellow_low": 35.8, "yellow_high": 37.8, "red_low": 35.0, "red_high": 38.5 },
-        "glucose_mg_dl": { "green_min": 70, "green_max": 140, "yellow_low": 60, "yellow_high": 180, "red_low": 50, "red_high": 250 },
-        "sleep_hours": { "green_min": 7.0, "green_max": 9.5, "yellow_low": 5.5, "yellow_high": 7.0, "red_low": 0.0, "red_high": 5.5 },
-        "mood_score": { "green_min": 7, "green_max": 10, "yellow_low": 5, "yellow_high": 6, "red_low": 1, "red_high": 4 }
-      }
+  "version": "2.0.0",
+  "owner": "Biotech team (Ana & Fidel). Software reads this file; it never hard-codes thresholds.",
+  "status": "Prototype operating thresholds. Each cut-off cites its source; cut-offs marked 'operational' are design decisions of the prototype based on those sources. Galley is decision support, NOT a medical device.",
+  "color_logic": [
+    "1. Personal baseline deviation (robust z-score) decides GREEN / YELLOW / RED.",
+    "2. Absolute safety limits always win (RED/YELLOW regardless of baseline).",
+    "3. Combination rules and CUSUM trends (data/reference/rules.json) can raise the escalation level."
+  ],
+  "baseline": {
+    "method": "Start: registered 'usual' value as center + sigma_floor as scale. With >= 5 eligible days: median and MAD of the last 14 days, EXCLUDING the 3 most recent days (so an evolving problem does not contaminate its own baseline). scale = max(1.4826 * MAD, sigma_floor); robust_z = (x - median) / scale.",
+    "min_days_for_robust": 5,
+    "window_days": 14,
+    "z_yellow": 2,
+    "z_red": 3,
+    "trend": {
+      "method": "One-sided CUSUM on z (Page 1954)",
+      "k": 0.5,
+      "h": 4
     },
-    "DeepSpaceTransit": {
-      "name": "Nave en Tránsito a la Luna o Marte",
-      "gravity_g": 0.0,
-      "radiation_nominal_uSv_day": 1300,
-      "metrics": {
-        "heart_rate_bpm": { "green_min": 50, "green_max": 90, "yellow_low": 45, "yellow_high": 105, "red_low": 40, "red_high": 120 },
-        "blood_pressure_systolic": { "green_min": 95, "green_max": 130, "yellow_low": 90, "yellow_high": 140, "red_low": 85, "red_high": 160 },
-        "blood_pressure_diastolic": { "green_min": 60, "green_max": 85, "yellow_low": 55, "yellow_high": 90, "red_low": 50, "red_high": 100 },
-        "body_temperature_celsius": { "green_min": 36.1, "green_max": 37.3, "yellow_low": 35.8, "yellow_high": 37.8, "red_low": 35.0, "red_high": 38.5 },
-        "glucose_mg_dl": { "green_min": 70, "green_max": 140, "yellow_low": 60, "yellow_high": 180, "red_low": 50, "red_high": 250 },
-        "sleep_hours": { "green_min": 7.0, "green_max": 9.5, "yellow_low": 5.5, "yellow_high": 7.0, "red_low": 0.0, "red_high": 5.5 },
-        "mood_score": { "green_min": 7, "green_max": 10, "yellow_low": 5, "yellow_high": 6, "red_low": 1, "red_high": 4 }
-      }
+    "exclude_recent_days": 3
+  },
+  "indicators": {
+    "hr_rest_bpm": {
+      "label": {
+        "en": "Resting heart rate",
+        "es": "Frecuencia cardiaca en reposo"
+      },
+      "unit": "bpm",
+      "zone": "chest",
+      "ridge": [
+        "G"
+      ],
+      "direction": "both",
+      "sigma_floor": 4,
+      "absolute": {
+        "yellow_low": 50,
+        "yellow_high": 100,
+        "red_low": 40,
+        "red_high": 120
+      },
+      "hrp_risk": {
+        "name": "Risk of Cardiovascular Adaptations",
+        "url": "https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/"
+      },
+      "sources": [
+        "Kusumoto et al. 2019, Circulation 140:e382 (bradycardia < 50 bpm)",
+        "Clinical definition of tachycardia > 100 bpm",
+        "40/120 red limits: operational"
+      ]
     },
-    "LunarBase": {
-      "name": "Base de Superficie Lunar (Artemis Base Camp)",
-      "gravity_g": 0.166,
-      "radiation_nominal_uSv_day": 700,
-      "metrics": {
-        "heart_rate_bpm": { "green_min": 52, "green_max": 95, "yellow_low": 48, "yellow_high": 110, "red_low": 42, "red_high": 125 },
-        "blood_pressure_systolic": { "green_min": 95, "green_max": 135, "yellow_low": 90, "yellow_high": 145, "red_low": 85, "red_high": 165 },
-        "blood_pressure_diastolic": { "green_min": 60, "green_max": 88, "yellow_low": 55, "yellow_high": 92, "red_low": 50, "red_high": 105 },
-        "body_temperature_celsius": { "green_min": 36.1, "green_max": 37.3, "yellow_low": 35.8, "yellow_high": 37.8, "red_low": 35.0, "red_high": 38.5 },
-        "glucose_mg_dl": { "green_min": 70, "green_max": 140, "yellow_low": 60, "yellow_high": 180, "red_low": 50, "red_high": 250 },
-        "sleep_hours": { "green_min": 7.0, "green_max": 9.5, "yellow_low": 5.5, "yellow_high": 7.0, "red_low": 0.0, "red_high": 5.5 },
-        "mood_score": { "green_min": 7, "green_max": 10, "yellow_low": 5, "yellow_high": 6, "red_low": 1, "red_high": 4 }
+    "spo2_pct": {
+      "label": {
+        "en": "Blood oxygen (SpO2)",
+        "es": "Oxigenación (SpO2)"
+      },
+      "unit": "%",
+      "zone": "chest",
+      "ridge": [
+        "E"
+      ],
+      "direction": "low",
+      "sigma_floor": 1,
+      "absolute": {
+        "yellow_low": 94,
+        "red_low": 90
+      },
+      "requires_signal_quality": true,
+      "hrp_risk": {
+        "name": "Risk of Hypoxia",
+        "url": "https://www.nasa.gov/reference/risk-of-hypoxia/"
+      },
+      "sources": [
+        "O'Driscoll et al. 2017, Thorax 72:ii1 (BTS target 94-98%)",
+        "Finger PPG (MAX30102) is not clinical grade: show only when signal quality q=1"
+      ],
+      "note": "GREEN >= 94, YELLOW 90-93, RED < 90",
+      "use_z": false
+    },
+    "skin_temp_c": {
+      "label": {
+        "en": "Skin temperature",
+        "es": "Temperatura cutánea"
+      },
+      "unit": "°C",
+      "zone": "head",
+      "ridge": [
+        "E"
+      ],
+      "direction": "high",
+      "sigma_floor": 0.25,
+      "delta_from_baseline": {
+        "yellow": 0.5,
+        "red": 1.0
+      },
+      "absolute": {
+        "red_high": 38.5
+      },
+      "hrp_risk": {
+        "name": "Risk of Altered Immune System Responses",
+        "url": "https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/"
+      },
+      "sources": [
+        "Stahn et al. 2017, Sci Rep 7:16180 (core temperature rises ~1 °C on long missions -> fixed fever cut-offs fail; use personal delta)",
+        "Smarr et al. 2020, Sci Rep 10:21640 (fever detection with wearables)",
+        "Sensor measures SKIN, not core temperature"
+      ]
+    },
+    "sleep_h": {
+      "label": {
+        "en": "Sleep",
+        "es": "Sueño"
+      },
+      "unit": "h",
+      "zone": "head",
+      "ridge": [
+        "I",
+        "E"
+      ],
+      "direction": "low",
+      "sigma_floor": 0.6,
+      "delta_from_baseline": {
+        "yellow": -1.0
+      },
+      "absolute": {
+        "yellow_low": 6.0,
+        "red_low": 5.0
+      },
+      "consecutive_rule": {
+        "red_if_nights_below": 6.0,
+        "nights": 3
+      },
+      "hrp_risk": {
+        "name": "Risk from Inadequate Sleep and Irregular Schedules",
+        "url": "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/"
+      },
+      "sources": [
+        "Watson et al. 2015, Sleep 38:843 (adults >= 7 h)",
+        "Barger et al. 2014, Lancet Neurol 13:904 (ISS mean 6.09 h; only 24% of nights >= 7 h)",
+        "Van Dongen et al. 2003, Sleep 26:117 (cumulative sleep debt)",
+        "Yellow < 6 h / red < 5 h or 3 nights < 6 h: operational (tip R1 below 7 h)"
+      ],
+      "tip_below": 7.0,
+      "note": "Tip (R1) < 7 h · YELLOW < 6 h or > 1 h below baseline · RED < 5 h or 3 nights < 6 h"
+    },
+    "mood_1_5": {
+      "label": {
+        "en": "Mood (1-5)",
+        "es": "Ánimo (1-5)"
+      },
+      "unit": "score 1-5",
+      "zone": "head",
+      "ridge": [
+        "I"
+      ],
+      "direction": "low",
+      "sigma_floor": 0.7,
+      "delta_from_baseline": {
+        "yellow": -2
+      },
+      "absolute": {
+        "yellow_low": 2,
+        "red_low": 1
+      },
+      "consecutive_rule": {
+        "red_if_value_at_or_below": 1,
+        "days": 2
+      },
+      "hrp_risk": {
+        "name": "Risk of Behavioral Conditions and Psychiatric Disorders",
+        "url": "https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/"
+      },
+      "sources": [
+        "NASA HRP behavioral risk",
+        "Basner et al. 2013, PNAS 110:2635 (Mars-500 isolation)",
+        "Cut-offs: operational"
+      ]
+    },
+    "pvt_lapses": {
+      "label": {
+        "en": "Reaction test lapses (PVT-B, 3 min)",
+        "es": "Fallos en test de reacción (PVT-B, 3 min)"
+      },
+      "unit": "lapses (RT > 355 ms)",
+      "zone": "head",
+      "ridge": [
+        "I"
+      ],
+      "direction": "high",
+      "optional": true,
+      "sigma_floor": 1,
+      "delta_from_baseline": {
+        "yellow": 3,
+        "red": 6
+      },
+      "hrp_risk": {
+        "name": "Risk from Inadequate Sleep and Irregular Schedules",
+        "url": "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/"
+      },
+      "sources": [
+        "Basner, Mollicone & Dinges 2011, Acta Astronaut 69:949 (PVT-B; lapse = RT > 355 ms)",
+        "Basner et al. 2015, Aerosp Med Hum Perform 86:942 (NASA Cognition battery)",
+        "Cut-offs: operational"
+      ]
+    },
+    "intake_pct": {
+      "label": {
+        "en": "Food intake (% of plan)",
+        "es": "Ingesta (% del plan)"
+      },
+      "unit": "% of planned kcal",
+      "zone": "abdomen",
+      "ridge": [
+        "E"
+      ],
+      "direction": "low",
+      "sigma_floor": 8,
+      "absolute": {
+        "yellow_low": 80
+      },
+      "consecutive_rule": {
+        "red_if_below": 70,
+        "days": 3,
+        "rule_R3_if_below": 80,
+        "rule_R3_days": 2
+      },
+      "hrp_risk": {
+        "name": "Risk of Inadequate Food and Nutrition",
+        "url": "https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/"
+      },
+      "sources": [
+        "NASA HRP nutrition risk",
+        "Smith et al. 2005, J Nutr 135:437 (ISS crews eat below requirement; ~80% — VERIFY exact figure)",
+        "ESA 2017 EveryWear diet tracker; NASA ISS FIT app",
+        "Cut-offs: operational"
+      ],
+      "note": "GREEN >= 80 · YELLOW < 80 · RED < 70 for 3 consecutive days"
+    },
+    "exercise_pct": {
+      "label": {
+        "en": "Exercise (% of prescription)",
+        "es": "Ejercicio (% de la prescripción)"
+      },
+      "unit": "% of prescribed minutes",
+      "zone": "legs",
+      "ridge": [
+        "G"
+      ],
+      "direction": "low",
+      "sigma_floor": 10,
+      "absolute": {
+        "yellow_low": 75
+      },
+      "consecutive_rule": {
+        "red_if_below": 50,
+        "days": 3
+      },
+      "hrp_risk": {
+        "name": "Risk of Spaceflight-Induced Bone Changes",
+        "url": "https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/"
+      },
+      "sources": [
+        "NASA HRP bone risk (1-1.5% bone density loss per month without countermeasures)",
+        "ISS daily exercise prescription ~2 h incl. setup — VERIFY",
+        "Cut-offs: operational"
+      ],
+      "note": "GREEN >= 75 · YELLOW < 75 · RED < 50 for 3 consecutive days"
+    },
+    "glucose_mg_dl": {
+      "label": {
+        "en": "Blood glucose (manual entry)",
+        "es": "Glucosa (entrada manual)"
+      },
+      "unit": "mg/dL",
+      "zone": "abdomen",
+      "ridge": [
+        "E"
+      ],
+      "direction": "both",
+      "optional": true,
+      "alerts_enabled": false,
+      "reference_range": [
+        65,
+        99
+      ],
+      "real_data_example": "data/nasa/osdr/inspiration4-crew-labs.json (NASA OSDR OSD-575, real crew values)",
+      "hrp_risk": {
+        "name": "Risk of Inadequate Food and Nutrition",
+        "url": "https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/"
+      },
+      "sources": [
+        "Lab reference range from NASA OSDR OSD-575 CMP (65-99 mg/dL fasting)",
+        "Informational only in the MVP: no alerts (needs proper measurement device)"
+      ]
+    },
+    "blood_pressure": {
+      "label": {
+        "en": "Blood pressure",
+        "es": "Presión arterial"
+      },
+      "status": "FUTURE — not measured and not alerted in the MVP (requires a cuff/BLE device)",
+      "hrp_risk": {
+        "name": "Risk of Cardiovascular Adaptations",
+        "url": "https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/"
       }
     }
-  }
+  },
+  "radiation": "See data/reference/radiation.json (NOAA S-scale + background dose per environment)",
+  "environments": "See data/reference/environments.json (ISS / MOON / MARS)"
 }
