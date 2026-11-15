@@ -1,0 +1,5 @@
+# Wokwi VS Code extension / wokwi-cli. Build first with ./build.sh
+[wokwi]
+version = 1
+firmware = "build/galley_node.ino.bin"
+elf = "build/galley_node.ino.elf"

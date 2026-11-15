@@ -34,7 +34,7 @@ Dirección I²C: `0x57`.
 |---|---|---|---|
 | **HR** (por defecto) | `pio run -e esp32dev -t upload` | `hr` (promedio de 4 latidos, detector de SparkFun) | Hay dedo (IR ≥ 50000), un latido en los últimos 3 s y FC entre 25 y 240 |
 | **HR + SpO₂** | `pio run -e esp32dev_spo2 -t upload` | `hr` + `spo2` (algoritmo de Maxim) | Hay dedo y el algoritmo marca FC y SpO₂ como válidas y en rango |
-| **Sin sensor** | (automático) | Valores simulados con `"src":"sim"` | Siempre; la app debe mostrar que son simulados |
+| **Sin sensor de pulso** | (automático) | Pulso y SpO₂ simulados con `"src":"sim"`. Si hay sensor de temperatura, `temp` es real; si no, también se simula | Siempre; la app debe mostrar que son simulados |
 
 Reglas que cumplen los tres modos:
 - **Nunca se inventan ni se recortan valores.** Lo inválido o fuera de rango se omite.
@@ -42,6 +42,10 @@ Reglas que cumplen los tres modos:
 - **`temp` se envía solo si hay un MAX30205 o DS18B20 con lectura válida.** La temperatura interna del MAX30102 no es temperatura corporal y nunca se envía.
 
 Con Arduino IDE o arduino-cli: instala las librerías `SparkFun MAX3010x`, `OneWire` y `DallasTemperature`. Copia `src/main.cpp` como `galley_node/galley_node.ino`, junto con `src/frame.h` y `src/temp.h`, y compila para la placa `esp32:esp32:esp32`. Para el modo SpO₂ agrega `--build-property "compiler.cpp.extra_flags=-DGALLEY_SPO2=1"`.
+
+## Simulación y diagrama
+- Diagrama de conexiones: [`../../pcb-schematics/galley-wiring.png`](../../pcb-schematics/galley-wiring.png).
+- Simulación en Wokwi: [`../../simulation-wokwi/README.md`](../../simulation-wokwi/README.md).
 
 ## Pruebas en la laptop (sin placa)
 ```bash
