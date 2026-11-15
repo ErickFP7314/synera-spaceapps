@@ -1,0 +1,160 @@
+{
+ "engine": "Kokoro-82M via hyperframes tts",
+ "voices": {
+  "en": "af_heart",
+  "es": "ef_dora"
+ },
+ "note": "AI-generated voice clips; number-free sentences.",
+ "lines": [
+  {
+   "lang": "en",
+   "key": "start",
+   "text": "Starting your check-up."
+  },
+  {
+   "lang": "en",
+   "key": "ind_hr_rest_bpm_low",
+   "text": "Chest. Your resting heart rate is below your normal. Sit down, breathe slowly and measure again in 5 minutes."
+  },
+  {
+   "lang": "en",
+   "key": "ind_hr_rest_bpm_high",
+   "text": "Chest. Your resting heart rate is above your normal. Rest for 10 minutes, drink water and measure again."
+  },
+  {
+   "lang": "en",
+   "key": "ind_spo2_pct_low",
+   "text": "Chest. Your blood oxygen is below your normal. Sit upright, breathe slowly and re-check the sensor on a warm finger."
+  },
+  {
+   "lang": "en",
+   "key": "ind_skin_temp_c_low",
+   "text": "Head. Your skin temperature is below your normal. Add a layer and re-check in 30 minutes."
+  },
+  {
+   "lang": "en",
+   "key": "ind_skin_temp_c_high",
+   "text": "Head. Your skin temperature is above your normal. Rest, drink water and re-check your temperature in 1 hour."
+  },
+  {
+   "lang": "en",
+   "key": "ind_sleep_h_low",
+   "text": "Head. Your sleep is below your normal. Plan an earlier bedtime and dim the lights before sleep."
+  },
+  {
+   "lang": "en",
+   "key": "ind_mood_1_5_low",
+   "text": "Head. Your mood is below your normal. Take a short break and talk to a crewmate or the support team."
+  },
+  {
+   "lang": "en",
+   "key": "ind_pvt_lapses_high",
+   "text": "Head. Your reaction test lapses is above your normal. Avoid critical tasks for now and plan extra rest."
+  },
+  {
+   "lang": "en",
+   "key": "ind_intake_pct_low",
+   "text": "Abdomen. Your food intake is below your normal. Eat your next meal in full and keep snacks at hand."
+  },
+  {
+   "lang": "en",
+   "key": "ind_exercise_pct_low",
+   "text": "Legs. Your exercise is below your normal. Schedule your exercise session; it protects bones and muscles."
+  },
+  {
+   "lang": "en",
+   "key": "level_1",
+   "text": "Self-care. Follow the tip. Next check-up in 24 h."
+  },
+  {
+   "lang": "en",
+   "key": "level_2",
+   "text": "Tell the crew. Tell a crewmate (buddy check) and repeat the check in 4-12 h."
+  },
+  {
+   "lang": "en",
+   "key": "level_3",
+   "text": "Flight surgeon. Send the S-B-A-R report to the flight surgeon. Postpone spacewalks (recommendation)."
+  },
+  {
+   "lang": "en",
+   "key": "level_4",
+   "text": "Urgent. Tell the commander now. Priority link to Earth. Open the emergency medical checklist."
+  },
+  {
+   "lang": "es",
+   "key": "start",
+   "text": "Iniciando tu chequeo."
+  },
+  {
+   "lang": "es",
+   "key": "ind_hr_rest_bpm_low",
+   "text": "Pecho. Tu frecuencia cardiaca en reposo está por debajo de tu normal. Siéntate, respira lento y vuelve a medir en 5 minutos."
+  },
+  {
+   "lang": "es",
+   "key": "ind_hr_rest_bpm_high",
+   "text": "Pecho. Tu frecuencia cardiaca en reposo está por encima de tu normal. Descansa 10 minutos, toma agua y vuelve a medir."
+  },
+  {
+   "lang": "es",
+   "key": "ind_spo2_pct_low",
+   "text": "Pecho. Tu oxigenación está por debajo de tu normal. Siéntate derecho, respira lento y revisa el sensor con el dedo tibio."
+  },
+  {
+   "lang": "es",
+   "key": "ind_skin_temp_c_low",
+   "text": "Cabeza. Tu temperatura cutánea está por debajo de tu normal. Abrígate y vuelve a medir en 30 minutos."
+  },
+  {
+   "lang": "es",
+   "key": "ind_skin_temp_c_high",
+   "text": "Cabeza. Tu temperatura cutánea está por encima de tu normal. Descansa, toma agua y vuelve a medir la temperatura en 1 hora."
+  },
+  {
+   "lang": "es",
+   "key": "ind_sleep_h_low",
+   "text": "Cabeza. Tu sueño está por debajo de tu normal. Acuéstate más temprano y baja las luces antes de dormir."
+  },
+  {
+   "lang": "es",
+   "key": "ind_mood_1_5_low",
+   "text": "Cabeza. Tu ánimo está por debajo de tu normal. Haz una pausa corta y habla con un compañero o con el equipo de apoyo."
+  },
+  {
+   "lang": "es",
+   "key": "ind_pvt_lapses_high",
+   "text": "Cabeza. Tu fallos en test de reacción está por encima de tu normal. Evita tareas críticas por ahora y planifica más descanso."
+  },
+  {
+   "lang": "es",
+   "key": "ind_intake_pct_low",
+   "text": "Abdomen. Tu ingesta está por debajo de tu normal. Come completa tu próxima comida y ten snacks a mano."
+  },
+  {
+   "lang": "es",
+   "key": "ind_exercise_pct_low",
+   "text": "Piernas. Tu ejercicio está por debajo de tu normal. Agenda tu sesión de ejercicio; protege huesos y músculos."
+  },
+  {
+   "lang": "es",
+   "key": "level_1",
+   "text": "Autocuidado. Sigue el consejo. Próximo chequeo en 24 h."
+  },
+  {
+   "lang": "es",
+   "key": "level_2",
+   "text": "Avisar a la tripulación. Avisa a un compañero (supervisión cruzada) y repite el chequeo en 4-12 h."
+  },
+  {
+   "lang": "es",
+   "key": "level_3",
+   "text": "Cirujano de vuelo. Envía el reporte S-B-A-R al cirujano de vuelo. Pospón caminatas espaciales (recomendación)."
+  },
+  {
+   "lang": "es",
+   "key": "level_4",
+   "text": "Urgente. Avisa ya al comandante. Enlace prioritario con la Tierra. Abre la lista médica de emergencia."
+  }
+ ]
+}

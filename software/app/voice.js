@@ -101,6 +101,12 @@ function playClip(key, my) {
   });
 }
 
+/** read ranges and units out loud ("4-12 h" -> "4 to 12 hours") */
+export function speakable(text, lang = LANG) {
+  const to = lang === "es" ? " a " : " to ", hours = lang === "es" ? " horas" : " hours";
+  return String(text).replace(/(\d+)\s*[-–]\s*(\d+)\s*h\b/g, `$1${to}$2${hours}`).replace(/(\d)\s*h\b/g, `$1${hours}`).replace(/S-B-A-R/g, "S B A R");
+}
+
 const readingTime = (text) => Math.min(6000, 900 + text.length * 45);
 
 /**
@@ -115,7 +121,7 @@ export async function say(text, clipKey, clipText) {
   if (!enabled) { captionCb(text, "off"); return; }
   const voice = await pickVoice(LANG);
   if (my !== token) return;
-  if (voice) { captionCb(text, "speech"); await speakWebSpeech(text, voice, my); return; }
+  if (voice) { captionCb(text, "speech"); await speakWebSpeech(speakable(text), voice, my); return; }
   captionCb(clipText || text, "clips");
   const ok = await playClip(clipKey, my);
   if (!ok && my === token) { captionCb(clipText || text, "captions"); await new Promise((r) => setTimeout(r, readingTime(clipText || text))); }

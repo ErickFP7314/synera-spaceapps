@@ -553,7 +553,7 @@ async function ensure3d() {
   if (fig3d) return fig3d;
   try {
     const m = await import("./body-3d.js");
-    fig3d = m.createBody3d($("#figure3d"), { names: { head: t("zone_head"), chest: t("zone_chest"), abdomen: t("zone_abdomen"), legs: t("zone_legs") } });
+    fig3d = m.createBody3d($("#figure3d"), { hint: t("b3d_hint"), names: { head: t("zone_head"), chest: t("zone_chest"), abdomen: t("zone_abdomen"), legs: t("zone_legs") } });
     fig3d.onSelect && fig3d.onSelect((z) => { const el = document.querySelector(`.zone[data-zone="${z}"]`); if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
   } catch (e) { console.warn("3D view unavailable", e); fig3d = null; }
   return fig3d;
