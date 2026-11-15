@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  {"id":"showSensorPip","type":"boolean","label":"Show Wokwi sensor clip (picture-in-picture) during the scan","default":true}
+]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Galley demo video (≤30 s)</title>
+<!--
+  Galley · Team Synera · NASA Space Apps 2026 — demo video, 29.5 s, 1920x1080.
+  Shot list: submission/video-script.md (Bio). Recordings: Software → assets/rec-0N-*.mp4 (same names).
+  Concept: a crew-health telemetry console. Palette = the Galley app tokens (software/app/index.html),
+  so the recordings and the graphics read as one product. Fonts: Montserrat + JetBrains Mono (embedded).
+  No NASA logos, no people under 18, no AI-generated media (everything here is code-rendered).
+-->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+  :root {
+    --bg:#070d18; --panel:#0e1626; --line:#22324f; --text:#e8eefc; --muted:#8fa2c7;
+    --accent:#22d3ee; --ok:#2ecc71; --warn:#f5b301; --crit:#ff4d4f;
+    --sans:"Montserrat", "Arial", sans-serif; --mono:"JetBrains Mono", "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); }
+  #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+
+  /* ---------- background (whole video) ---------- */
+  #bg { position: absolute; inset: 0; }
+  #bg .grid { position: absolute; inset: -80px; background-image:
+      linear-gradient(rgba(34,50,79,.55) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(34,50,79,.55) 2px, transparent 2px);
+    background-size: 80px 80px; }
+  #bg .glow { position: absolute; width: 1400px; height: 1400px; left: 260px; top: -260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,211,238,.20) 0%, rgba(34,211,238,0) 62%); }
+
+  /* ---------- recordings: inset "monitor" ---------- */
+  .rec { position: absolute; left: 240px; top: 104px; width: 1440px; height: 810px; object-fit: cover; background: var(--panel); }
+  #recframe { position: absolute; left: 236px; top: 100px; width: 1448px; height: 818px; border: 3px solid var(--line); }
+  #recframe i { position: absolute; width: 34px; height: 34px; border-color: var(--accent); border-style: solid; }
+  #recframe .tl { left: -3px; top: -3px; border-width: 5px 0 0 5px; }
+  #recframe .tr { right: -3px; top: -3px; border-width: 5px 5px 0 0; }
+  #recframe .bl { left: -3px; bottom: -3px; border-width: 0 0 5px 5px; }
+  #recframe .br { right: -3px; bottom: -3px; border-width: 0 5px 5px 0; }
+
+  /* ---------- HUD (whole video) ---------- */
+  #hud { position: absolute; inset: 0; pointer-events: none; }
+  .bar { position: absolute; left: 60px; right: 60px; top: 30px; height: 50px; display: flex; align-items: center; gap: 22px; }
+  .mark { width: 40px; height: 40px; border: 3px solid var(--accent); border-radius: 10px; display: grid; place-items: center; }
+  .mark b { display: block; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; }
+  .brand { font-weight: 900; font-size: 30px; letter-spacing: 6px; }
+  .sep { width: 2px; height: 30px; background: var(--line); }
+  .beat { font-family: var(--mono); font-size: 22px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+          position: relative; height: 30px; width: 640px; overflow: hidden; }
+  .beat span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  .right { margin-left: auto; display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 22px; color: var(--muted); }
+  .rec-dot { display: block; width: 14px; height: 14px; border-radius: 50%; background: var(--crit); }
+  #met { color: var(--text); font-weight: 700; min-width: 220px; }
+  .tag { border: 2px solid var(--line); border-radius: 999px; padding: 4px 14px; color: var(--accent); font-size: 19px; }
+  .reg { position: absolute; width: 28px; height: 28px; border-color: var(--muted); border-style: solid; opacity: .7; }
+  .reg.a { left: 24px; top: 24px; border-width: 3px 0 0 3px; } .reg.b { right: 24px; top: 24px; border-width: 3px 3px 0 0; }
+  .reg.c { left: 24px; bottom: 24px; border-width: 0 0 3px 3px; } .reg.d { right: 24px; bottom: 24px; border-width: 0 3px 3px 0; }
+  .side { position: absolute; left: 70px; top: 540px; transform-origin: 0 0; transform: rotate(-90deg) translate(-50%, 0);
+          font-family: var(--mono); font-size: 18px; letter-spacing: 6px; color: var(--muted); white-space: nowrap; }
+  .ticks { position: absolute; right: 74px; top: 140px; width: 26px; height: 760px; overflow: hidden; }
+  .ticks div { position: absolute; left: 0; top: 0; width: 26px; height: 1600px; background:
+      repeating-linear-gradient(180deg, var(--line) 0 3px, transparent 3px 40px); }
+  .ticks div::after { content: ""; position: absolute; inset: 0; background:
+      repeating-linear-gradient(180deg, var(--muted) 0 3px, transparent 3px 200px); }
+
+  /* ---------- subtitles ---------- */
+  .sub { position: absolute; left: 0; right: 0; top: 942px; display: flex; justify-content: center; }
+  .sub p { margin: 0; max-width: 1500px; padding: 14px 38px; background: rgba(7,13,24,.88); border: 2px solid var(--line);
+           border-radius: 14px; font-weight: 700; font-size: 38px; line-height: 1.25; text-align: center; }
+
+  /* ---------- full-frame cards ---------- */
+  .card { position: absolute; inset: 0; background: var(--bg); }
+  .card .grid { position: absolute; inset: -80px; background-image:
+      linear-gradient(rgba(34,50,79,.55) 2px, transparent 2px), linear-gradient(90deg, rgba(34,50,79,.55) 2px, transparent 2px);
+    background-size: 80px 80px; }
+  .content { position: absolute; inset: 0; padding: 150px 160px 130px; display: flex; gap: 80px; align-items: center; }
+  .kicker { font-family: var(--mono); font-size: 24px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; }
+  .ghost { position: absolute; right: -40px; bottom: -70px; font-weight: 900; font-size: 380px; letter-spacing: 10px;
+           color: rgba(34,211,238,.10); white-space: nowrap; }
+
+  /* title */
+  #title .left { flex: 1.2; display: flex; flex-direction: column; gap: 22px; }
+  #title h1 { margin: 0; font-weight: 900; font-size: 210px; line-height: .9; letter-spacing: 14px; }
+  #title h2 { margin: 0; font-weight: 700; font-size: 58px; line-height: 1.15; max-width: 980px; }
+  #title .strip { margin-top: 26px; font-family: var(--mono); font-size: 22px; color: var(--muted); border-top: 3px solid var(--line);
+                  padding-top: 18px; max-width: 1000px; }
+  #title .orbit { flex: .8; position: relative; height: 640px; }
+  .ring { position: absolute; left: 50%; top: 50%; border: 3px solid var(--line); border-radius: 50%; }
+  .ring.r1 { width: 560px; height: 560px; margin: -280px 0 0 -280px; }
+  .ring.r2 { width: 380px; height: 380px; margin: -190px 0 0 -190px; border-style: dashed; }
+  .planet { position: absolute; left: 50%; top: 50%; width: 170px; height: 170px; margin: -85px 0 0 -85px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ff8a7a 0%, var(--crit) 45%, #8a1f2a 100%); }
+  .sat { position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; }
+  .sat b { position: absolute; left: 50%; top: -13px; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%; background: var(--accent); }
+  .orbit .lbl { position: absolute; right: 0; bottom: 0; font-family: var(--mono); font-size: 20px; color: var(--muted); text-align: right; }
+
+  /* mars delay */
+  #mars .left { flex: 0 0 640px; }
+  #mars .num { font-weight: 900; font-size: 300px; line-height: .85; color: var(--warn); display: flex; align-items: baseline; gap: 18px; }
+  #mars .num small { font-size: 86px; color: var(--text); }
+  #mars .cap { margin-top: 26px; font-weight: 700; font-size: 44px; line-height: 1.2; max-width: 620px; }
+  #mars .diagram { flex: 1; position: relative; height: 520px; }
+  .body { position: absolute; top: 200px; border-radius: 50%; }
+  .earth { left: 0; width: 150px; height: 150px; background: radial-gradient(circle at 35% 35%, #9be7f5 0%, var(--accent) 45%, #0b5566 100%); }
+  .mars { right: 0; top: 225px; width: 100px; height: 100px; background: radial-gradient(circle at 35% 35%, #ff8a7a 0%, var(--crit) 45%, #8a1f2a 100%); }
+  .path { position: absolute; left: 150px; right: 100px; top: 274px; height: 4px;
+          background: repeating-linear-gradient(90deg, var(--muted) 0 18px, transparent 18px 34px); }
+  .pulse { position: absolute; left: 150px; top: 262px; width: 28px; height: 28px; border-radius: 50%; background: var(--warn); }
+  .bname { position: absolute; top: 380px; font-family: var(--mono); font-size: 26px; letter-spacing: 4px; color: var(--text); }
+  .bname.e { left: 18px; } .bname.m { right: 0; }
+  .leg { position: absolute; left: 150px; right: 100px; top: 150px; text-align: center; font-family: var(--mono); font-size: 26px; color: var(--muted); }
+  .leg b { color: var(--warn); }
+  .foot { position: absolute; left: 160px; right: 160px; bottom: 150px; font-family: var(--mono); font-size: 22px; color: var(--muted);
+          border-top: 3px solid var(--line); padding-top: 18px; }
+
+  /* end card */
+  #end .left { flex: 1.1; display: flex; flex-direction: column; gap: 26px; }
+  #end h1 { margin: 0; font-weight: 900; font-size: 150px; line-height: .9; letter-spacing: 12px; }
+  #end h2 { margin: 0; font-weight: 700; font-size: 56px; line-height: 1.15; max-width: 900px; }
+  #end .right { flex: .9; margin: 0; display: flex; flex-direction: column; gap: 14px; font-family: var(--mono); color: var(--text); }
+  #end .right .kicker { margin-bottom: 6px; }
+  .src { font-size: 26px; padding: 14px 20px; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); display: block; }
+  .src em { font-style: normal; color: var(--accent); }
+  #end .foot { bottom: 120px; }
+
+  /* ---------- overlays on recordings ---------- */
+  .chip { position: absolute; background: rgba(7,13,24,.92); border: 3px solid var(--line); border-radius: 16px; padding: 18px 24px; }
+  .chip .k { font-family: var(--mono); font-size: 20px; letter-spacing: 2px; color: var(--muted); }
+  #hrchip { right: 268px; top: 132px; width: 400px; border-color: var(--crit); }
+  #hrchip .v { font-weight: 900; font-size: 84px; color: var(--crit); line-height: 1; margin-top: 6px; }
+  #hrchip .v small { font-size: 34px; }
+  #hrchip .n { font-size: 26px; font-weight: 700; margin-top: 6px; }
+  #donkichip { left: 268px; bottom: 196px; width: 780px; border-color: var(--warn); }
+  #donkichip .v { font-weight: 700; font-size: 32px; margin-top: 6px; line-height: 1.2; }
+  #pip { position: absolute; left: 1212px; top: 642px; width: 448px; height: 252px; object-fit: cover; }
+  #piplabel { position: absolute; left: 1212px; top: 600px; width: 448px; font-family: var(--mono); font-size: 19px; color: var(--accent);
+              background: rgba(7,13,24,.92); padding: 8px 12px; border: 2px solid var(--line); border-bottom: 0; }
+  #pipframe { position: absolute; left: 1209px; top: 639px; width: 454px; height: 258px; border: 3px solid var(--accent); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-duration="29.5">
+
+  <!-- track 0: background -->
+  <div id="bg" class="clip" data-start="0" data-duration="29.5" data-track-index="0">
+    <div class="grid"></div><div class="glow"></div>
+  </div>
+
+  <!-- track 1: Software screen recordings (direct root children; same file names when the real ones arrive) -->
+  <video id="rec1" class="clip rec" src="assets/rec-01-login.mp4"             data-start="7"    data-duration="3"   data-media-start="0" data-track-index="1" muted playsinline></video>
+  <video id="rec2" class="clip rec" src="assets/rec-02-bradycardia-day13.mp4" data-start="10"   data-duration="9"   data-media-start="0" data-track-index="1" muted playsinline></video>
+  <video id="rec3" class="clip rec" src="assets/rec-03-mars-sbar.mp4"         data-start="19"   data-duration="3"   data-media-start="0" data-track-index="1" muted playsinline></video>
+  <video id="rec4" class="clip rec" src="assets/rec-04-solar-storm-donki.mp4" data-start="22"   data-duration="2.5" data-media-start="0" data-track-index="1" muted playsinline></video>
+  <video id="rec5" class="clip rec" src="assets/rec-05-trends-14d.mp4"        data-start="24.5" data-duration="2.5" data-media-start="0" data-track-index="1" muted playsinline></video>
+
+  <!-- track 2: monitor frame around the recordings -->
+  <div id="recframe" class="clip" data-start="7" data-duration="20" data-track-index="2"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+
+  <!-- track 3: hardware B-roll picture-in-picture (real firmware output in the Wokwi simulator) -->
+  <video id="pip" class="clip" src="assets/hw-clip-data-arriving-5s.mp4" data-start="10" data-duration="2" data-media-start="0" data-track-index="3" muted playsinline></video>
+  <div id="pipframe" class="clip" data-start="10" data-duration="2" data-track-index="4"></div>
+  <div id="piplabel" class="clip" data-start="10" data-duration="2" data-track-index="5">● SENSOR NODE · WOKWI SIMULATION</div>
+
+  <!-- track 6: overlay chips -->
+  <div id="hrchip" class="clip chip" data-start="12.1" data-duration="6.9" data-track-index="6">
+    <div class="k">RESTING HR · DAY 13</div>
+    <div class="v">46 <small>bpm</small></div>
+    <div class="n">your normal: 62 bpm</div>
+  </div>
+  <div id="donkichip" class="clip chip" data-start="22.2" data-duration="2.3" data-track-index="6">
+    <div class="k">SOURCE · NASA DONKI</div>
+    <div class="v">Real solar particle event · 10–11 May 2024</div>
+  </div>
+
+  <!-- track 7: full-frame cards -->
+  <section id="title" class="clip card" data-start="0" data-duration="3.25" data-track-index="7">
+    <div class="grid"></div>
+    <div class="ghost" aria-hidden="true">SYNERA</div>
+    <div class="content">
+      <div class="left">
+        <div class="kicker">Team Synera · NASA Space Apps 2026</div>
+        <h1>GALLEY</h1>
+        <h2>Health Monitoring Software for Astronauts</h2>
+        <div class="strip">CHALLENGE // CREATE HEALTH MONITORING SOFTWARE FOR ASTRONAUTS ON SPACE MISSIONS</div>
+      </div>
+      <div class="orbit">
+        <div class="ring r1"></div><div class="ring r2"></div><div class="planet"></div>
+        <div class="sat"><b></b></div>
+        <div class="lbl">ISS · MOON · MARS</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mars" class="clip card" data-start="3" data-duration="4.25" data-track-index="8">
+    <div class="grid"></div>
+    <div class="ghost" aria-hidden="true">DELAY</div>
+    <div class="content">
+      <div class="left">
+        <div class="kicker">Earth ↔ Mars · signal round trip</div>
+        <div class="num"><span id="count">0</span><small>min</small></div>
+        <div class="cap">until a doctor's answer can arrive from Earth.</div>
+      </div>
+      <div class="diagram">
+        <div class="leg">up to <b>22 min</b> each way</div>
+        <div class="path"></div>
+        <div class="body earth"></div><div class="body mars"></div>
+        <div class="pulse"></div>
+        <div class="bname e">EARTH</div><div class="bname m">MARS</div>
+      </div>
+    </div>
+    <div class="foot">ONE-WAY LIGHT DELAY 3–22 MIN · ~2-WEEK BLACKOUT AT SOLAR CONJUNCTION · SOURCE: data/reference/environments.json</div>
+  </section>
+
+  <section id="end" class="clip card" data-start="27" data-duration="2.5" data-track-index="9">
+    <div class="grid"></div>
+    <div class="ghost" aria-hidden="true">ARTEMIS</div>
+    <div class="content">
+      <div class="left">
+        <div class="kicker">Built on NASA science</div>
+        <h1>GALLEY</h1>
+        <h2>Ready for Artemis — and for remote clinics on Earth.</h2>
+      </div>
+      <div class="right">
+        <div class="kicker">Data &amp; evidence</div>
+        <span class="src"><em>NASA HRP</em> · human research risks</span>
+        <span class="src"><em>NASA OSDR</em> · Inspiration4 crew labs</span>
+        <span class="src"><em>NASA DONKI</em> · NOAA GOES · space weather</span>
+        <span class="src"><em>ASI</em> LIDAL · <em>CSA</em> radiation</span>
+      </div>
+    </div>
+    <div class="foot">github.com/ErickFP7314/synera-spaceapps · Decision support, not a medical device · Crew data simulated, calibrated on published spaceflight studies</div>
+  </section>
+
+  <!-- track 10: HUD (on top of everything) -->
+  <div id="hud" class="clip" data-start="0" data-duration="29.5" data-track-index="10">
+    <div class="bar">
+      <div class="mark"><b></b></div>
+      <div class="brand">GALLEY</div>
+      <div class="sep"></div>
+      <div class="beat">
+        <span id="b0">00 · Mission brief</span><span id="b1">01 · Signal delay</span><span id="b2">02 · Crew check-in</span>
+        <span id="b3">03 · Baseline scan</span><span id="b4">04 · Mars mode</span><span id="b5">05 · Space weather</span>
+        <span id="b6">06 · 14-day trends</span><span id="b7">07 · Evidence</span>
+      </div>
+      <div class="right">
+        <span class="rec-dot"></span><span id="met">MET 00:00:00.0</span><span class="tag">CREW HEALTH TELEMETRY</span>
+      </div>
+    </div>
+    <i class="reg a"></i><i class="reg b"></i><i class="reg c"></i><i class="reg d"></i>
+    <div class="side">TEAM SYNERA // NASA SPACE APPS 2026 // GALLEY</div>
+    <div class="ticks"><div></div></div>
+  </div>
+
+  <!-- track 11: subtitles (EN) — the voice line from submission/video-script.md -->
+  <div id="s1" class="clip sub" data-start="3.3"  data-duration="3.7" data-track-index="11"><p>On Mars, a doctor's answer can take 44 minutes. Astronauts must check themselves.</p></div>
+  <div id="s2" class="clip sub" data-start="7"    data-duration="3"   data-track-index="11"><p>Galley: the check-up that does itself. Private, on-device.</p></div>
+  <div id="s3" class="clip sub" data-start="10"   data-duration="4.5" data-track-index="11"><p>It compares you to your own normal…</p></div>
+  <div id="s4" class="clip sub" data-start="14.5" data-duration="4.5" data-track-index="11"><p>…and tells you what to do.</p></div>
+  <div id="s5" class="clip sub" data-start="19"   data-duration="3"   data-track-index="11"><p>Mars mode guides you on board and queues a report for Earth.</p></div>
+  <div id="s6" class="clip sub" data-start="22"   data-duration="2.5" data-track-index="11"><p>Real NASA space-weather data.</p></div>
+  <div id="s7" class="clip sub" data-start="24.5" data-duration="2.5" data-track-index="11"><p>Built on NASA science.</p></div>
+</div>
+
+<script>
+  window.__timelines = window.__timelines || {};
+  const D = 29.5;
+  const tl = gsap.timeline({ paused: true });
+  const vars = (window.__hyperframes && window.__hyperframes.getVariables) ? window.__hyperframes.getVariables() : {};
+  if (vars.showSensorPip === false) tl.set(["#pip", "#pipframe", "#piplabel"], { opacity: 0 }, 10);
+
+  // ---- ambient (whole video): glow breath, grid drift, REC blink, side ticks scroll, MET clock
+  tl.fromTo("#bg .glow", { scale: 0.92, opacity: 0.8 }, { scale: 1.08, opacity: 1, duration: 3, ease: "sine.inOut",
+    yoyo: true, repeat: Math.max(0, Math.floor(D / 3) - 1) }, 0);
+  tl.fromTo("#bg .grid", { x: 0, y: 0 }, { x: -80, y: -40, duration: D, ease: "none" }, 0);
+  tl.fromTo(".rec-dot", { opacity: 1 }, { opacity: 0.2, duration: 0.5, ease: "steps(1)", yoyo: true,
+    repeat: Math.max(0, Math.floor(D / 0.5) - 1) }, 0);
+  tl.fromTo(".ticks div", { y: -800 }, { y: 0, duration: D, ease: "none" }, 0);
+  const clock = { t: 0 }, met = document.getElementById("met");
+  const fmt = s => { const m = Math.floor(s / 60), r = s - m * 60; return `MET 00:${String(m).padStart(2, "0")}:${r.toFixed(1).padStart(4, "0")}`; };
+  tl.to(clock, { t: D, duration: D, ease: "none", onUpdate: () => { met.textContent = fmt(clock.t); } }, 0);
+
+  // ---- HUD beat label (slides up at each beat)
+  const beats = [0, 3, 7, 10, 19, 22, 24.5, 27];
+  tl.set(".beat span", { y: 40, opacity: 0 }, 0);
+  beats.forEach((t0, i) => {
+    tl.to(`#b${i}`, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, t0 + 0.05);
+    if (i + 1 < beats.length) tl.to(`#b${i}`, { y: -40, opacity: 0, duration: 0.25, ease: "power2.in" }, beats[i + 1] - 0.2);
+  });
+
+  // ---- 00 title (0–3.25)
+  tl.from("#title .kicker", { x: -60, opacity: 0, duration: 0.45, ease: "power3.out" }, 0.15);
+  tl.from("#title h1", { y: 90, opacity: 0, duration: 0.6, ease: "expo.out" }, 0.25);
+  tl.from("#title h2", { y: 40, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.55);
+  tl.from("#title .strip", { scaleX: 0, transformOrigin: "0 50%", opacity: 0, duration: 0.6, ease: "power4.out" }, 0.8);
+  tl.from("#title .ring", { scale: 0.6, opacity: 0, duration: 0.7, ease: "back.out(1.6)", stagger: 0.12 }, 0.2);
+  tl.from("#title .planet", { scale: 0, duration: 0.6, ease: "back.out(2)" }, 0.35);
+  tl.fromTo("#title .sat", { rotation: -40 }, { rotation: 140, duration: 3.25, ease: "none" }, 0);
+  tl.fromTo("#title .ghost", { x: 80 }, { x: -40, duration: 3.25, ease: "none" }, 0);
+  tl.to("#title", { opacity: 0, duration: 0.25, ease: "power1.in" }, 3.0);
+
+  // ---- 01 Mars delay (3–7.25): count-up to 44, signal pulse Earth -> Mars -> Earth
+  tl.from("#mars .kicker", { y: -30, opacity: 0, duration: 0.4, ease: "power3.out" }, 3.15);
+  tl.from("#mars .num", { x: -80, opacity: 0, duration: 0.5, ease: "expo.out" }, 3.2);
+  tl.from("#mars .cap", { y: 30, opacity: 0, duration: 0.45, ease: "power2.out" }, 3.45);
+  tl.from("#mars .earth, #mars .mars", { scale: 0, duration: 0.5, ease: "back.out(2)", stagger: 0.15 }, 3.25);
+  tl.from("#mars .path", { scaleX: 0, transformOrigin: "0 50%", duration: 0.6, ease: "power4.out" }, 3.4);
+  tl.from("#mars .leg, #mars .bname", { opacity: 0, y: 14, duration: 0.4, ease: "power2.out", stagger: 0.08 }, 3.55);
+  tl.from("#mars .foot", { opacity: 0, duration: 0.4 }, 3.7);
+  const counter = { v: 0 }, countEl = document.getElementById("count");
+  tl.to(counter, { v: 44, duration: 2.4, ease: "power2.out", onUpdate: () => { countEl.textContent = Math.round(counter.v); } }, 3.4);
+  tl.set("#mars .pulse", { x: 0, opacity: 0 }, 3);
+  tl.to("#mars .pulse", { opacity: 1, duration: 0.15 }, 3.7);
+  tl.to("#mars .pulse", { x: 640, duration: 1.3, ease: "sine.inOut" }, 3.7);   // diagram width minus bodies (~640px)
+  tl.to("#mars .pulse", { x: 0, duration: 1.3, ease: "sine.inOut" }, 5.1);
+  tl.fromTo("#mars .ghost", { x: 60 }, { x: -60, duration: 4.25, ease: "none" }, 3);
+  tl.to("#mars", { opacity: 0, duration: 0.25, ease: "power1.in" }, 7.0);
+
+  // ---- recordings frame + overlays
+  tl.from("#recframe i", { scale: 0.4, opacity: 0, duration: 0.4, ease: "back.out(2)", stagger: 0.05 }, 7.0);
+  tl.from(["#pipframe", "#pip"], { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, 10.2);
+  tl.from("#piplabel", { opacity: 0, x: 30, duration: 0.35, ease: "power2.out" }, 10.35);
+  tl.to(["#pipframe", "#pip", "#piplabel"], { opacity: 0, duration: 0.25 }, 11.75);
+  tl.from("#hrchip", { x: 60, opacity: 0, duration: 0.45, ease: "expo.out" }, 12.1);
+  tl.from("#hrchip .v", { scale: 1.25, transformOrigin: "0 50%", duration: 0.5, ease: "back.out(2.2)" }, 12.25);
+  tl.fromTo("#hrchip", { borderColor: "#ff4d4f" }, { borderColor: "#22324f", duration: 0.45, ease: "sine.inOut",
+    yoyo: true, repeat: 7 }, 12.9);
+  tl.from("#donkichip", { y: 40, opacity: 0, duration: 0.4, ease: "power3.out" }, 22.2);
+
+  // ---- subtitles: each line rises in
+  ["#s1", "#s2", "#s3", "#s4", "#s5", "#s6", "#s7"].forEach((id, i) => {
+    const t0 = [3.3, 7, 10, 14.5, 19, 22, 24.5][i];
+    tl.from(`${id} p`, { y: 16, opacity: 0, duration: 0.25, ease: "power2.out" }, t0);
+  });
+
+  // ---- 07 end card (27–29.5)
+  tl.from("#end", { opacity: 0, duration: 0.25 }, 27.0);
+  tl.from("#end .left > *", { x: -50, opacity: 0, duration: 0.45, ease: "power3.out", stagger: 0.1 }, 27.1);
+  tl.from("#end .src", { x: 50, opacity: 0, duration: 0.4, ease: "expo.out", stagger: 0.08 }, 27.3);
+  tl.from("#end .foot", { opacity: 0, duration: 0.4 }, 27.6);
+  tl.fromTo("#end .ghost", { x: 60 }, { x: -20, duration: 2.5, ease: "none" }, 27);
+
+  window.__timelines["main"] = tl;
+</script>
+</body>
+</html>
