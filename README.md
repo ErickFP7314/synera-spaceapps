@@ -10,6 +10,7 @@ Team: Erick Flores · Luana Ojopi (Hardware) · Katherine Meneces · Brenda Cali
 - **App (no login):** https://erickfp7314.github.io/synera-spaceapps/
 - **Sensor firmware in the Wokwi simulator:** https://wokwi.com/projects/480771036190862337
 - **Run it locally:** `cd software && npm start`, then open http://127.0.0.1:5174
+- **Works without internet:** everything (engine, NASA data snapshots, face models, voice) is in the repo. After the first visit, the public link also opens offline (service worker).
 
 | Check-in (day lighting) | Body scan, 3D scanner (pre-sleep lighting) | Earth link on Mars |
 |---|---|---|

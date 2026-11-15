@@ -20,6 +20,7 @@ let clipBase = "voice";
 let voicesReady = null;
 let current = null; /* currently playing <audio> */
 let token = 0;
+let networkVoiceFailed = false; /* set when a network voice errors: no internet */
 
 export function setVoiceLang(lang) { LANG = lang === "es" ? "es" : "en"; }
 export function setVoiceEnabled(on) { enabled = !!on; if (!on) stopVoice(); }
@@ -49,7 +50,9 @@ function loadVoices() {
 /** best voice for a language: local voices first (network voices cut out after ~15 s in Chrome) */
 async function pickVoice(lang) {
   const all = await loadVoices();
-  const mine = all.filter((v) => v.lang && v.lang.toLowerCase().replace("_", "-").startsWith(lang));
+  let mine = all.filter((v) => v.lang && v.lang.toLowerCase().replace("_", "-").startsWith(lang));
+  /* network voices (e.g. Chrome's "Google …") need internet: offline, use local voices or the recorded clips */
+  if (!navigator.onLine || networkVoiceFailed) mine = mine.filter((v) => v.localService);
   if (!mine.length) return null;
   const pref = lang === "es" ? ["es-es", "es-mx", "es-us"] : ["en-us", "en-gb"];
   mine.sort((a, b) => (b.localService - a.localService) || (pref.indexOf(a.lang.toLowerCase()) === -1) - (pref.indexOf(b.lang.toLowerCase()) === -1));
@@ -67,16 +70,17 @@ function speakWebSpeech(text, voice, my) {
     const synth = window.speechSynthesis;
     /* split into sentences: long utterances get cut in Chrome */
     const parts = text.match(/[^.!?]+[.!?]*/g) || [text];
-    let i = 0, keep = null;
-    const finish = () => { clearInterval(keep); resolve(); };
+    let i = 0, keep = null, failed = false;
+    const finish = () => { clearInterval(keep); resolve(!failed); };
     const next = () => {
       if (my !== token || i >= parts.length) return finish();
       const u = new SpeechSynthesisUtterance(parts[i++].trim());
       u.voice = voice; u.lang = voice.lang; u.rate = 0.95; u.pitch = 1;
       let ended = false;
       const end = () => { if (!ended) { ended = true; next(); } };
-      u.onend = end; u.onerror = end;
-      setTimeout(end, 9000); /* safety: never block the scan */
+      u.onend = end;
+      u.onerror = (ev) => { if (!voice.localService && ev && ev.error !== "interrupted" && ev.error !== "canceled") { networkVoiceFailed = true; failed = true; i = parts.length; } end(); };
+      setTimeout(() => { if (!ended && !voice.localService && !window.speechSynthesis.speaking) { networkVoiceFailed = true; failed = true; i = parts.length; } end(); }, 9000); /* safety: never block the scan */
       synth.speak(u);
     };
     synth.cancel();
@@ -121,7 +125,12 @@ export async function say(text, clipKey, clipText) {
   if (!enabled) { captionCb(text, "off"); return; }
   const voice = await pickVoice(LANG);
   if (my !== token) return;
-  if (voice) { captionCb(text, "speech"); await speakWebSpeech(speakable(text), voice, my); return; }
+  if (voice) {
+    captionCb(text, "speech");
+    const ok = await speakWebSpeech(speakable(text), voice, my);
+    if (ok || my !== token) return;
+    /* the network voice failed (offline): say it again with the recorded clip */
+  }
   captionCb(clipText || text, "clips");
   const ok = await playClip(clipKey, my);
   if (!ok && my === token) { captionCb(clipText || text, "captions"); await new Promise((r) => setTimeout(r, readingTime(clipText || text))); }
