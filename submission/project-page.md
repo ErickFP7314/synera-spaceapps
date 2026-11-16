@@ -4,7 +4,7 @@
 Galley: the check-up that does itself
 
 ## High-level summary
-On the ISS, a crew member with a strange symptom can talk to a flight surgeon within minutes. On Mars the answer can take up to 44 minutes, so astronauts will have to check on themselves. Galley is a daily check-in that takes about a minute. The astronaut looks at the station screen, Galley recognizes their face on the device and turns the camera off, and then it walks through eight daily readings: resting heart rate, blood oxygen, skin temperature, sleep, mood, reaction-test lapses, food intake and exercise. Each reading is compared with that person's own last 14 days, not with a population average, because spaceflight shifts what "normal" looks like (core temperature rises about 1 °C on long missions). Seven written rules, each with a cited source, turn the result into one next step: rest and re-check, tell a crewmate, call the flight surgeon, or act now. On the ISS the report goes to Earth at once. On Mars, Galley guides the crew on board and queues the report. It runs offline and uses real NASA data from DONKI and OSDR. It is decision support, not a medical device.
+On the ISS, a crew member who feels off can talk to a flight surgeon within minutes. On Mars a reply can take up to 44 minutes, so the crew will have to look after themselves much more. Galley is a short daily check-in for that situation. The astronaut stands at the station screen, Galley recognizes their face on the device, and the camera turns off. Then it goes through eight readings (resting heart rate, blood oxygen, skin temperature, sleep, mood, reaction-test lapses, food intake and exercise) and compares each one with that person's own last two weeks. A population average would mislead here, because spaceflight changes the body; core temperature rises about 1 °C on long missions. Seven rules, each backed by a published source, turn the result into one next step, anywhere from "rest and measure again" to "act now". On the ISS the report goes to Earth right away. On Mars, Galley walks the crew through what to do on board and queues the report. It works offline and uses real NASA data from DONKI and OSDR. It is decision support and does not diagnose anything.
 
 ## Demo link
 <paste the unlisted YouTube link here, after testing it in a private window>
@@ -17,59 +17,49 @@ On the ISS, a crew member with a strange symptom can talk to a flight surgeon wi
 ## Detailed description
 
 ### What it does
-Galley replaces the daily health form with a short routine at a screen. Face login takes a few seconds and the camera switches off as soon as it finds a match. Then a figure of the body lights up zone by zone while the readings appear next to it.
+Galley replaces the daily health form with about a minute at a screen. Face login takes a few seconds, and the camera switches off once it finds a match. After that, a drawing of the body lights up one zone at a time and the readings show up next to it.
 
-We want to be clear about what that figure is. It is not a body scanner and it does not image anything. It is a way to group eight daily numbers so a tired person can read them at a glance:
+That drawing is easy to misread, so to be clear: it is not a body scanner and nothing gets imaged. We use it to group eight daily numbers so someone who just woke up can read them quickly. The head zone holds sleep, mood (1 to 5), reaction-test lapses and skin temperature. The chest has resting heart rate and blood oxygen (SpO₂). The abdomen shows food intake as a share of the planned calories, and the legs show exercise as a share of the prescribed minutes. We put exercise on the legs because microgravity wears down leg muscle and bone, and exercise is how crews fight it. Nothing is actually measured on the legs or feet.
 
-- Head: sleep, mood (1 to 5), reaction-test lapses and skin temperature.
-- Chest: resting heart rate and blood oxygen (SpO₂).
-- Abdomen: food intake, as a share of the planned calories.
-- Legs: exercise, as a share of the prescribed minutes. Muscle and bone loss in the legs is one of the main risks in microgravity, and exercise is the countermeasure. Nothing is measured on the legs or feet themselves.
+Three of the readings come from a small wearable: an ESP32 with a MAX30102 sensor on the fingertip and a skin-temperature probe, sending one line of data per second over USB. We never got a physical board during the hackathon, which was frustrating, so the demo runs on a 14-day simulated dataset and the firmware runs in the Wokwi simulator. Sleep, mood, reaction-test lapses, food and exercise come from the daily log. Galley does not measure blood glucose. The data format has an optional field for a typed-in value, but it never raises an alert and the app doesn't ask for it yet.
 
-Where the numbers come from matters too. Pulse, SpO₂ and skin temperature come from a small wearable: an ESP32 with a MAX30102 sensor on the fingertip and a skin-temperature probe. It sends one line of data per second over USB. We did not have a physical board for the hackathon, so the demo uses a 14-day simulated dataset, and the firmware runs in the Wokwi simulator. Sleep, mood, reaction-test lapses, food and exercise come from the daily log. Galley does not measure blood glucose. The data format has an optional field for a hand-entered value, but it never raises an alert and the app does not ask for it yet.
+When something looks wrong, Galley gives one next step. In the serious cases it also writes an S-B-A-R report (Situation, Background, Assessment, Recommendation) for the flight surgeon. On the ISS and the Moon the report goes out right away. On Mars it waits in a queue with the expected reply time, and meanwhile the crew gets steps they can follow on board.
 
-After the readings, Galley gives one next step and, when it is serious, writes an S-B-A-R report (Situation, Background, Assessment, Recommendation) for the flight surgeon. On the ISS and the Moon the report is sent at once. On Mars it is queued with the expected reply time, and the crew gets on-board steps in the meantime.
-
-The app also has:
-
-- a space-weather card that replays the real solar particle events of the May 2024 storm from NASA DONKI;
-- 14-day charts for every reading, with the person's normal band and a day-by-day map of which readings left it;
-- a card with real blood tests from the four Inspiration4 crew members (NASA OSDR);
-- a "What does this mean?" panel on every reading. It explains what the reading measures, which spaceflight hazard affects it, what is normal for this person and what to do now, with a link to the NASA Human Research Program risk page.
+There is more further down the page. A space-weather card replays the real solar particle events of the May 2024 storm from NASA DONKI. The 14-day charts show every reading against the person's normal band, plus a day-by-day map of when each one drifted out. Another card has real blood tests from the four Inspiration4 crew members (NASA OSDR). Every reading also has a "What does this mean?" panel that explains what it measures, which spaceflight hazard affects it, what is normal for this person and what to do now, with a link to the NASA Human Research Program risk page.
 
 ### How it works
-Each person's normal is the median of their last 14 days, leaving out the 3 most recent so a problem that is building up does not hide itself. A reading is compared with that median using a robust z-score (median and MAD). Fixed safety limits always win over the personal baseline. On top of that, seven rules combine readings:
+A person's normal is the median of their last 14 days. We leave out the 3 most recent days, so a problem that is slowly building doesn't drag the baseline along with it. Each reading is compared with that median using a robust z-score (median and MAD), and the fixed safety limits win whenever they are crossed. Seven rules then look at combinations of readings:
 
 - R1 flags short sleep.
 - R2 flags acute fatigue: short sleep, plus reaction-test lapses or low mood, plus a heart rate above the baseline.
 - R3 flags eating less than planned.
 - R4 is an early infection warning: resting heart rate up for 2 days and temperature above the baseline, a pattern that wearable studies on Earth have used.
 - R5 flags deconditioning.
-- R6 flags a solar radiation storm (NASA DONKI solar particle event, or GOES flux of 10 pfu or more).
+- R6 flags a solar radiation storm (a NASA DONKI solar particle event, or GOES flux of 10 pfu or more).
 - R7 escalates to the S-B-A-R report.
 
-The result is one of four action levels: self-care, tell the crew, flight surgeon, urgent. What happens at each level depends on where the crew is (ISS, Moon or Mars).
-
-The app runs the same TypeScript engine that our tests check, compiled for the browser.
+The output is one of four action levels: self-care, tell the crew, flight surgeon, urgent. What each level triggers depends on whether the crew is on the ISS, the Moon or Mars. The browser runs the same TypeScript engine our tests check, compiled to JavaScript.
 
 ### Designed for the crew's day
-The app has a day theme and a dim, warm "pre-sleep" theme without blue light, similar to the lighting modes the station already uses before sleep. It works in English and Spanish and uses a typeface built for legibility (Atkinson Hyperlegible). A colour is never the only signal: every status also has a shape and a word. If the browser has no built-in voice, Galley plays its own recorded clips and always shows the text on screen.
+There is a day theme and a dim, warm "pre-sleep" theme with no blue light. The station already switches its own lights to a warmer setting before sleep, and we borrowed that idea. The app works in English and Spanish, and it uses Atkinson Hyperlegible, a typeface designed for readers with low vision. Colour is never the only signal; each status also has an icon and a word. If the browser has no built-in voice (Brave, for example), Galley plays recorded clips, and the text always appears on screen as well.
 
 ### How is our project creative? What factors did our team consider?
-A lot of health apps compare you with a textbook range. We kept asking a narrower question: what is normal for this one person, after weeks in orbit? That is why every colour in Galley is measured against the astronaut's own last 14 days, with the fixed safety limits underneath as a floor. Before building on the idea we looked for it in real data. In the Inspiration4 blood tests from NASA OSDR, the four crew members' pre-flight glucose averages go from 71 to 80 mg/dL. Same flight, same lab, four different normals.
+Health apps usually compare you with a textbook range. We wanted to know what normal looks like for one specific person after weeks in orbit, and that question drove most of the design. Every colour in Galley comes from the astronaut's own last 14 days, with the fixed safety limits underneath as a backstop.
 
-The second idea came from putting two facts side by side. On the ISS, a sick crew member can be brought home within days; Crew-11 was, in January 2026. On Mars, an answer from Earth can take 44 minutes and nobody is coming home early. So the same low heart rate means "call the flight surgeon now" on the ISS and "here are the steps on board, the report is already queued" on Mars. The app has to carry more of the load the farther away the crew is.
+Before building on that idea we checked whether it held up on real data. In the Inspiration4 blood tests from NASA OSDR, the four crew members' average glucose before flight ranged from 71 to 80 mg/dL. They flew together and were tested by the same study, and each one still had a different baseline. Seeing that spread in actual numbers convinced us more than any paper did.
 
-We also wanted it to feel like it belongs on the station, not like a phone app someone brought along. The screen borrows the ISS interior: labelled panels, readings on small inventory tags. The night theme copies the warm pre-sleep light the crew already uses to protect their sleep.
+The Mars part is probably what we are proudest of. On the ISS a sick crew member can be brought home within days, which is what happened with Crew-11 in January 2026. On Mars a reply from Earth takes up to 44 minutes and there is no early ride home. So the same low heart rate leads to "call the flight surgeon now" on the ISS, and to step-by-step instructions plus a queued report on Mars. The farther away the crew is, the more the app has to handle by itself.
 
-A few things shaped almost every decision. Crews have packed days, so the check-in had to fit in about a minute and end with one next step, not a list. People read it tired, so every status has a colour, a shape and a word, and the voice only speaks about what needs attention (it never says "danger"). There is no internet on Mars, so everything runs offline, face models and voice included. The camera only turns on to match a face, and nothing leaves the device.
+We also wanted the screen to look like it was made for the station. It borrows from the ISS interior, with labelled panels and readings shown like small inventory tags, and the night theme copies the station's pre-sleep lighting. We honestly don't know if everyone will like the inventory-tag look, but it made the readings easier for us to scan.
 
-We tried hard not to overclaim. Galley is decision support. Every rule cites a source, simulated data is labelled as simulated, and blood pressure and glucose never raise alerts because we cannot measure them well. Cost mattered too: the wearable is an ESP32 and a pulse sensor that cost a few dollars, and when we could not get a board in time we switched to a simulator instead of faking sensor readings. The app speaks English and Spanish, because our team does, and so do the clinics we have in mind on Earth.
+Most of our decisions came back to a handful of constraints. Crew days are tightly scheduled, so the check-in had to fit in about a minute and end with one next step. A minute seems realistic to us, though we could not test it with astronauts. People will often read it tired, which is why the voice only mentions readings that need attention and never uses the word "danger". There is no internet on Mars, so everything runs offline, face models and voice included. And the camera is only on while it matches a face. Nothing leaves the device.
+
+We tried not to promise more than we can back up. Galley is decision support. Every rule cites a source. Simulated data is labelled as simulated, and blood pressure and glucose never raise alerts because we can't measure them reliably. The wearable parts, an ESP32 and a pulse sensor, cost a few dollars, and when we couldn't get a board in time we switched to a simulator rather than make up sensor readings. The app is in English and Spanish because that's what our team speaks, and it's what the clinics we have in mind on Earth speak too.
 
 ### Why we think it helps
-Astronauts get a usable answer when Earth is far away or out of contact. Every colour can be explained: you can see the baseline, the reading and the rule that fired, and no black-box model makes the call. Nothing leaves the device, and Galley keeps working without internet. The engine, the NASA data snapshots, the face models and the voice clips are all local, and after the first visit the web app is cached on the screen.
+When Earth is far away or out of contact, astronauts still get an answer they can act on. Anyone can check why a reading turned yellow by looking at the baseline next to it and the rule that fired; there is no hidden model making the call. Nothing leaves the device, and Galley keeps working without internet because the engine, the NASA data snapshots, the face models and the voice clips are stored locally. After the first visit, the browser keeps a full copy of the app.
 
-We are from Bolivia, and the same problem shows up close to home. Across Latin America, many rural clinics and small hospitals work with a weak connection and no specialist nearby. It happens in the Bolivian Altiplano and in rural Paraguay alike. In the Andes there is an extra twist: at 3,600 m, a resting SpO₂ in the low 90s can be perfectly normal, and a generic alarm would get it wrong. A tool that compares people with their own baseline and keeps working offline makes sense there, and in polar stations too.
+We're from Bolivia, and we see a version of this problem at home. Rural clinics and small hospitals across Latin America often have a weak connection and no specialist nearby. That's true in the Bolivian Altiplano, and it's true in rural Paraguay. The Andes add one more complication. At 3,600 m a resting SpO₂ in the low 90s can be normal for the people who live there, and an alarm set for sea level would keep going off. A tool that compares people with their own baseline and works offline would fit there, and probably in polar stations as well.
 
 ### Tools
 - Software: HTML, CSS and JavaScript without a framework, SVG, Web Speech and Web Audio, face-api (TensorFlow.js), the Web Serial API, and a TypeScript domain engine tested with node:test. Hosted on GitHub Pages.
