@@ -55,6 +55,23 @@ The app runs the same TypeScript engine that our tests check, compiled for the b
 ### Designed for the crew's day
 The app has a day theme and a dim, warm "pre-sleep" theme without blue light, similar to the lighting modes the station already uses before sleep. It works in English and Spanish and uses a typeface built for legibility (Atkinson Hyperlegible). A colour is never the only signal: every status also has a shape and a word. If the browser has no built-in voice, Galley plays its own recorded clips and always shows the text on screen.
 
+### How is our project creative? What factors did our team consider?
+Most health apps compare you with a textbook range. We started from a different question: what is normal for this one person, up here, after weeks in orbit? So every colour in Galley is measured against the astronaut's own last 14 days, and the fixed safety limits only act as a floor. We checked the idea against real data before building on it. In the Inspiration4 blood tests from NASA OSDR, the four crew members' pre-flight glucose averages range from 71 to 80 mg/dL. Each person has their own level, and a population range hides that.
+
+The second idea is that the same reading should lead to a different action depending on where the crew is. A low heart rate on the ISS means "call the flight surgeon now". The same reading on Mars, 44 minutes from an answer, means "here are the steps on board, and the report is already queued". On the ISS a crew member can even be brought home within days, as happened with Crew-11 in January 2026. On Mars that option does not exist, so the app has to be more useful on its own.
+
+We also tried to make it feel like part of the station instead of a phone app. The screen borrows the look of the ISS interior, with labelled panels and readings shown as small inventory tags. The night theme copies the warm pre-sleep lighting the crew already uses to protect their sleep.
+
+These are the factors we kept coming back to:
+
+- Time. Crews have packed schedules, so the check-in has to fit in about a minute and end with a single next step.
+- A tired reader. Each status uses colour, shape and a word, the voice reads only what needs attention, and it never says "danger".
+- No connection. Everything runs offline, including the face models, the NASA data and the voice.
+- Privacy. The camera is on only while matching a face, and nothing leaves the device.
+- Medical honesty. Galley is decision support. Every rule cites a source, simulated data is labelled as simulated, and blood pressure and glucose never raise alerts because we cannot measure them well.
+- Cost and parts we could actually get. The wearable is an ESP32 with a pulse sensor that costs a few dollars. When we had no board, we moved to a simulator instead of faking sensor readings.
+- Language. The app works in English and Spanish, because our own team, and the clinics we have in mind on Earth, speak both.
+
 ### Why we think it helps
 Astronauts get a usable answer when Earth is far away or out of contact. Every colour can be explained: you can see the baseline, the reading and the rule that fired. There is no black-box model making the call. Nothing leaves the device, and Galley keeps working without internet. The engine, the NASA data snapshots, the face models and the voice clips are all local, and after the first visit the web app is cached on the screen.
 
