@@ -8,7 +8,7 @@ Sigue el guion de Bio ([`submission/video-script.md`](../../submission/video-scr
 - ✅ Tarjeta de título, tarjeta de demora a Marte (contador hasta 44 min), HUD de telemetría, subtítulos EN y tarjeta final con fuentes.
 - ✅ Clip del sensor (Wokwi) en miniatura durante los primeros 2 s del escaneo. Se puede quitar con la variable `showSensorPip`.
 - ✅ Chips con datos reales del repo: "46 bpm vs 62" (escenario `bradycardia`, día 13) y "NASA DONKI · 10–11 May 2024".
-- ✅ **Las 5 tomas son grabaciones reales de la app v2** (`assets/rec-0N-*.mp4`), hechas con Chrome automatizado en el tema pre-sueño, a 1920×1080. `rec-01` muestra el ingreso eligiendo al tripulante en la lista. Si alguien mayor de 18, que acepte salir en el video, graba el login con su cara, se reemplaza ese archivo y se renderiza de nuevo.
+- ✅ **Las 5 tomas son grabaciones reales de la app v2** (`assets/rec-0N-*.mp4`), hechas con Chrome automatizado en el tema pre-sueño, a 1920×1080. `rec-01` es el login real con la cara de Erick (mayor de edad, grabado por él con su consentimiento): toca "Identify with camera", aparece el recuadro verde, "MATCH" y la cámara se apaga. Lo recorté para que se vea solo la app, sin el escritorio ni las barras del navegador.
 - Colores del video: tokens del tema pre-sueño de la app, para que gráficos y grabaciones se vean como un solo producto.
 
 ## Cuando lleguen las grabaciones de Software
@@ -38,7 +38,7 @@ Sigue el guion de Bio ([`submission/video-script.md`](../../submission/video-scr
 - [x] Subtítulos en inglés incrustados.
 - [x] Sin logos ni insignias de NASA (solo el nombre en texto). Sin personas en el borrador.
 - [x] Sin imágenes ni video generados con IA: todo se renderiza desde código y datos reales, así que no lleva marca de agua.
-- [x] Sin personas en las tomas actuales (el login usa la lista de tripulantes).
+- [x] La única persona en el video es Erick (mayor de edad, consintió); su cara aparece unos 0,5 s en la toma del login.
 - [ ] Subirlo a YouTube (no listado) o a un Drive público, probar el enlace en una ventana privada y pegarlo en Trello y en la página del proyecto.
 
 ## Diseño
