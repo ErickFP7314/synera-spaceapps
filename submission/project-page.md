@@ -10,13 +10,13 @@ On the ISS, a crew member who feels off can talk to a flight surgeon within minu
 <paste the unlisted YouTube link here, after testing it in a private window>
 
 ## Final project link
-- App (public, no login): https://erickfp7314.github.io/synera-spaceapps/
-- Code: https://github.com/ErickFP7314/synera-spaceapps
-- Sensor firmware running in a simulator (Wokwi): https://wokwi.com/projects/480771036190862337
+https://github.com/ErickFP7314/synera-spaceapps
 
 ## Detailed description
 
 ### What it does
+You can try it in a browser at https://erickfp7314.github.io/synera-spaceapps/ (no login), and the sensor firmware runs in a simulator at https://wokwi.com/projects/480771036190862337. Both links are also at the top of the repository README.
+
 Galley replaces the daily health form with about a minute at a screen. Face login takes a few seconds, and the camera switches off once it finds a match. After that, a drawing of the body lights up one zone at a time and the readings show up next to it.
 
 That drawing is easy to misread, so to be clear: it is not a body scanner and nothing gets imaged. We use it to group eight daily numbers so someone who just woke up can read them quickly. The head zone holds sleep, mood (1 to 5), reaction-test lapses and skin temperature. The chest has resting heart rate and blood oxygen (SpO₂). The abdomen shows food intake as a share of the planned calories, and the legs show exercise as a share of the prescribed minutes. We put exercise on the legs because microgravity wears down leg muscle and bone, and exercise is how crews fight it. Nothing is actually measured on the legs or feet.
