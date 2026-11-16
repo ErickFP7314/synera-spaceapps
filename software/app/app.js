@@ -480,7 +480,7 @@ function renderScience() {
     ["NASA DONKI", S.lang === "es" ? "Eventos de partículas solares, tormenta de mayo 2024" : "Solar energetic particle events, May 2024 storm", "https://ccmc.gsfc.nasa.gov/tools/DONKI/"],
     ["NASA OSDR", "Inspiration4 · OSD-575 (CMP), OSD-569 (CBC)", "https://osdr.nasa.gov/bio/repo/data/studies/OSD-575"],
     ["NASA Human Research Program", S.lang === "es" ? "Riesgos del vuelo espacial humano" : "Risks of human spaceflight", "https://www.nasa.gov/hrp/"],
-    ["NASA-STD-3001 Vol. 1", S.lang === "es" ? "Límite de radiación de carrera" : "Career radiation limit", "https://www.nasa.gov/ochmo/human-spaceflight-standards/"],
+    ["NASA-STD-3001 Vol. 1", S.lang === "es" ? "Límite de radiación de carrera" : "Career radiation limit", "https://www.nasa.gov/ochmo/human-spaceflight-and-aviation-standards/"],
     ["NOAA SWPC", S.lang === "es" ? "Escala de tormentas de radiación solar" : "Solar radiation storm scale", "https://www.swpc.noaa.gov/noaa-scales-explanation"],
     ["ASI · Di Fino et al. 2023", "LIDAL, ISS Columbus 2020–2022 · doi:10.1016/j.lssr.2023.03.007", "https://doi.org/10.1016/j.lssr.2023.03.007"],
     ["Basner et al. 2011", "PVT-B · doi:10.1016/j.actaastro.2011.07.015", "https://doi.org/10.1016/j.actaastro.2011.07.015"],
