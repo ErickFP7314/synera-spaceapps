@@ -56,26 +56,20 @@ The app runs the same TypeScript engine that our tests check, compiled for the b
 The app has a day theme and a dim, warm "pre-sleep" theme without blue light, similar to the lighting modes the station already uses before sleep. It works in English and Spanish and uses a typeface built for legibility (Atkinson Hyperlegible). A colour is never the only signal: every status also has a shape and a word. If the browser has no built-in voice, Galley plays its own recorded clips and always shows the text on screen.
 
 ### How is our project creative? What factors did our team consider?
-Most health apps compare you with a textbook range. We started from a different question: what is normal for this one person, up here, after weeks in orbit? So every colour in Galley is measured against the astronaut's own last 14 days, and the fixed safety limits only act as a floor. We checked the idea against real data before building on it. In the Inspiration4 blood tests from NASA OSDR, the four crew members' pre-flight glucose averages range from 71 to 80 mg/dL. Each person has their own level, and a population range hides that.
+A lot of health apps compare you with a textbook range. We kept asking a narrower question: what is normal for this one person, after weeks in orbit? That is why every colour in Galley is measured against the astronaut's own last 14 days, with the fixed safety limits underneath as a floor. Before building on the idea we looked for it in real data. In the Inspiration4 blood tests from NASA OSDR, the four crew members' pre-flight glucose averages go from 71 to 80 mg/dL. Same flight, same lab, four different normals.
 
-The second idea is that the same reading should lead to a different action depending on where the crew is. A low heart rate on the ISS means "call the flight surgeon now". The same reading on Mars, 44 minutes from an answer, means "here are the steps on board, and the report is already queued". On the ISS a crew member can even be brought home within days, as happened with Crew-11 in January 2026. On Mars that option does not exist, so the app has to be more useful on its own.
+The second idea came from putting two facts side by side. On the ISS, a sick crew member can be brought home within days; Crew-11 was, in January 2026. On Mars, an answer from Earth can take 44 minutes and nobody is coming home early. So the same low heart rate means "call the flight surgeon now" on the ISS and "here are the steps on board, the report is already queued" on Mars. The app has to carry more of the load the farther away the crew is.
 
-We also tried to make it feel like part of the station instead of a phone app. The screen borrows the look of the ISS interior, with labelled panels and readings shown as small inventory tags. The night theme copies the warm pre-sleep lighting the crew already uses to protect their sleep.
+We also wanted it to feel like it belongs on the station, not like a phone app someone brought along. The screen borrows the ISS interior: labelled panels, readings on small inventory tags. The night theme copies the warm pre-sleep light the crew already uses to protect their sleep.
 
-These are the factors we kept coming back to:
+A few things shaped almost every decision. Crews have packed days, so the check-in had to fit in about a minute and end with one next step, not a list. People read it tired, so every status has a colour, a shape and a word, and the voice only speaks about what needs attention (it never says "danger"). There is no internet on Mars, so everything runs offline, face models and voice included. The camera only turns on to match a face, and nothing leaves the device.
 
-- Time. Crews have packed schedules, so the check-in has to fit in about a minute and end with a single next step.
-- A tired reader. Each status uses colour, shape and a word, the voice reads only what needs attention, and it never says "danger".
-- No connection. Everything runs offline, including the face models, the NASA data and the voice.
-- Privacy. The camera is on only while matching a face, and nothing leaves the device.
-- Medical honesty. Galley is decision support. Every rule cites a source, simulated data is labelled as simulated, and blood pressure and glucose never raise alerts because we cannot measure them well.
-- Cost and parts we could actually get. The wearable is an ESP32 with a pulse sensor that costs a few dollars. When we had no board, we moved to a simulator instead of faking sensor readings.
-- Language. The app works in English and Spanish, because our own team, and the clinics we have in mind on Earth, speak both.
+We tried hard not to overclaim. Galley is decision support. Every rule cites a source, simulated data is labelled as simulated, and blood pressure and glucose never raise alerts because we cannot measure them well. Cost mattered too: the wearable is an ESP32 and a pulse sensor that cost a few dollars, and when we could not get a board in time we switched to a simulator instead of faking sensor readings. The app speaks English and Spanish, because our team does, and so do the clinics we have in mind on Earth.
 
 ### Why we think it helps
-Astronauts get a usable answer when Earth is far away or out of contact. Every colour can be explained: you can see the baseline, the reading and the rule that fired. There is no black-box model making the call. Nothing leaves the device, and Galley keeps working without internet. The engine, the NASA data snapshots, the face models and the voice clips are all local, and after the first visit the web app is cached on the screen.
+Astronauts get a usable answer when Earth is far away or out of contact. Every colour can be explained: you can see the baseline, the reading and the rule that fired, and no black-box model makes the call. Nothing leaves the device, and Galley keeps working without internet. The engine, the NASA data snapshots, the face models and the voice clips are all local, and after the first visit the web app is cached on the screen.
 
-We are from Bolivia, and we kept thinking about the same problem at home. A rural clinic on the Altiplano has a weak connection and no specialist nearby, and at 3,600 m a resting SpO₂ in the low 90s can be normal. A tool that compares people with their own baseline and still works offline makes sense there too, and in polar stations.
+We are from Bolivia, and the same problem shows up close to home. Across Latin America, many rural clinics and small hospitals work with a weak connection and no specialist nearby. It happens in the Bolivian Altiplano and in rural Paraguay alike. In the Andes there is an extra twist: at 3,600 m, a resting SpO₂ in the low 90s can be perfectly normal, and a generic alarm would get it wrong. A tool that compares people with their own baseline and keeps working offline makes sense there, and in polar stations too.
 
 ### Tools
 - Software: HTML, CSS and JavaScript without a framework, SVG, Web Speech and Web Audio, face-api (TensorFlow.js), the Web Serial API, and a TypeScript domain engine tested with node:test. Hosted on GitHub Pages.
@@ -87,7 +81,7 @@ We are from Bolivia, and we kept thinking about the same problem at home. A rura
 - Claude and Claude Code (Anthropic): source research, help with code, the interface and documentation.
 - face-api: face matching that runs on the device. It is not generative.
 - Kokoro-82M (an open text-to-speech model): the recorded voice clips the app plays when a browser has no built-in voice. They are AI-generated audio and are used only inside the app.
-- ElevenLabs (voice "Matilda", model eleven_multilingual_v2): the English voiceover of the demo video. It is AI-generated audio. The video says so on screen for its whole length ("AI-generated voice · ElevenLabs"), and the subtitles match the voice word for word.
+- ElevenLabs (voice "Jon - Children's Storyteller", model eleven_multilingual_v2): the English voiceover of the demo video. It is AI-generated audio. The video says so on screen for its whole length ("AI-generated voice · ElevenLabs"), and the subtitles match the voice word for word.
 - We did not use AI-generated images or video. If we add any, they will carry a visible watermark.
 - The idea is the team's, and every medical claim cites a source.
 
