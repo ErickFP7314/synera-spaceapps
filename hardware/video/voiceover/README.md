@@ -1,6 +1,8 @@
 # Voz en off del video (IA, ElevenLabs)
 
-- **Voz:** "Matilda" (voz prediseñada de ElevenLabs), modelo `eleven_multilingual_v2`, en inglés.
+- **Voz:** "Jon - Children's Storyteller" (biblioteca de voces de ElevenLabs), en inglés.
+- **Clips:** generados en la web de ElevenLabs y guardados en [`jon/`](jon/). El plan gratuito no permite usar voces de la biblioteca desde la API.
+- **Armado:** `python3 build_track.py jon <silent.mp4> ../galley-demo.mp4` recorta los clips, los ubica según `lines.json` y normaliza el volumen.
 - **Atribución:** es audio generado con IA. El video lo indica en pantalla durante todo el clip ("AI-generated voice · ElevenLabs"), como piden el plan gratuito de ElevenLabs y las reglas de Space Apps sobre contenido generado con IA.
 - **Guion y tiempos:** [`lines.json`](lines.json). Los subtítulos de `../index.html` dicen exactamente lo mismo que la voz.
 
