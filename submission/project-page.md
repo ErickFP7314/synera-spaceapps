@@ -76,17 +76,28 @@ We're from Bolivia, and we see a version of this problem at home. Rural clinics 
 - The idea is the team's, and every medical claim cites a source.
 
 ## NASA data
-- NASA DONKI: solar energetic particle events (https://api.nasa.gov/DONKI/SEP).
-- NASA OSDR, SpaceX Inspiration4: OSD-575 (comprehensive metabolic panel, glucose) and OSD-569 (complete blood count, white blood cells).
-- NASA Human Research Program: the 5 hazards of human spaceflight (https://www.nasa.gov/hrp/hazards/) and the seven risk pages each "What does this mean?" panel links to: sleep and irregular schedules, cardiovascular adaptations, hypoxia, behavioral conditions, inadequate food and nutrition, altered immune responses, and spaceflight-induced bone changes (https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/ and the matching pages).
-- NASA MSL/RAD radiation measurements (Zeitlin et al. 2013; Hassler et al. 2014).
-- NASA-STD-3001 Vol. 1 (career radiation limit).
-- NASA ISS Research Explorer: ISS internal radiation monitoring.
+- NASA DONKI, solar energetic particle events (offline snapshot of the May 2024 storm): https://ccmc.gsfc.nasa.gov/tools/DONKI/ (API: https://api.nasa.gov/)
+- NASA OSDR, SpaceX Inspiration4 comprehensive metabolic panel (glucose), OSD-575: https://osdr.nasa.gov/bio/repo/data/studies/OSD-575
+- NASA OSDR, SpaceX Inspiration4 complete blood count (white blood cells), OSD-569: https://osdr.nasa.gov/bio/repo/data/studies/OSD-569
+- NASA Human Research Program, the 5 hazards of human spaceflight: https://www.nasa.gov/hrp/hazards/
+- NASA Human Research Program, risks of human spaceflight: https://www.nasa.gov/hrp/risks/
+- NASA HRP risk pages linked from the app's "What does this mean?" panels:
+  - https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/
+  - https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/
+  - https://www.nasa.gov/reference/risk-of-hypoxia/
+  - https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/
+  - https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/
+  - https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/
+  - https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/
+- NASA-STD-3001 Vol. 1, career radiation limit (requirement V1 4030): https://www.nasa.gov/ochmo/human-spaceflight-and-aviation-standards/ and https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf
+- NASA MSL/RAD radiation on the way to Mars and on its surface: https://doi.org/10.1126/science.1235989 and https://doi.org/10.1126/science.1244797
 
 ## Space agency partner data & other references
-- ASI: Di Fino et al. 2023, LIDAL radiation measurements on the ISS (Life Sci Space Res 39:26-42).
-- CSA: Monitoring radiation for astronaut health (2026), Why do we conduct science experiments in space?, and Physical activity in space (ISS crews exercise about two hours a day).
-- NOAA SWPC: GOES integral proton flux (https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json) and the space weather scales.
+- ASI: Di Fino et al. 2023, LIDAL radiation measurements in the ISS Columbus module: https://doi.org/10.1016/j.lssr.2023.03.007
+- CSA: Monitoring radiation for astronaut health (2026): https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp
+- CSA: Why do we conduct science experiments in space?: https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp
+- CSA: Physical activity in space (ISS crews exercise about two hours a day): https://www.asc-csa.gc.ca/eng/astronauts/living-in-space/physical-activity-in-space.asp
+- NOAA SWPC: space weather scales, https://www.swpc.noaa.gov/noaa-scales-explanation, and GOES integral proton flux, https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json
 - Code, fonts and libraries: @vladmandic/face-api (MIT, vendored in software/app/vendor/face-api), the anatomy isometric drawing kit (MIT, software/tools/anatomy-kit), Atkinson Hyperlegible Next and Mono (SIL Open Font License), and the SparkFun MAX3010x library.
 
 ## References (APA 7)
@@ -111,7 +122,7 @@ We're from Bolivia, and we see a version of this problem at home. Rural clinics 
 - Watson, N. F., Badr, M. S., Belenky, G., Bliwise, D. L., Buxton, O. M., Buysse, D., Dinges, D. F., Gangwisch, J., Grandner, M. A., Kushida, C., Malhotra, R. K., Martin, J. L., Patel, S. R., Quan, S., & Tasali, E. (2015). Recommended Amount of Sleep for a Healthy Adult: A Joint Consensus Statement of the American Academy of Sleep Medicine and Sleep Research Society. Sleep. https://doi.org/10.5665/sleep.4716
 - Zeitlin, C., Hassler, D. M., Cucinotta, F. A., Ehresmann, B., Wimmer-Schweingruber, R. F., Brinza, D. E., Kang, S., Weigle, G., Böttcher, S., Böhm, E., Burmeister, S., Guo, J., Köhler, J., Martin, C., Posner, A., Rafkin, S., & Reitz, G. (2013). Measurements of Energetic Particle Radiation in Transit to Mars on the Mars Science Laboratory. Science, 340(6136), 1080–1084. https://doi.org/10.1126/science.1235989
 - Zhang, S., Wimmer-Schweingruber, R. F., Yu, J., Wang, C., Fu, Q., Zou, Y., Sun, Y., Wang, C., Hou, D., Böttcher, S. I., Burmeister, S., Seimetz, L., Schuster, B., Knierim, V., Shen, G., Yuan, B., Lohf, H., Guo, J., Xu, Z., et al. (2020). First measurements of the radiation dose on the lunar surface. Science Advances, 6(39). https://doi.org/10.1126/sciadv.aaz1334
-- National Aeronautics and Space Administration. (2022). *NASA-STD-3001, NASA space flight human-system standard, Volume 1, Revision B: Crew health* (Section 4.8.2, requirement V1 4030, career radiation limit).
+- National Aeronautics and Space Administration. (2022). *NASA-STD-3001, NASA space flight human-system standard, Volume 1, Revision B: Crew health* (Section 4.8.2, requirement V1 4030, career radiation limit). https://www.nasa.gov/ochmo/human-spaceflight-and-aviation-standards/
 - NASA Community Coordinated Modeling Center. (n.d.). *DONKI: Space Weather Database Of Notifications, Knowledge, Information* [Data set]. Retrieved November 15, 2026, from https://ccmc.gsfc.nasa.gov/tools/DONKI/
 - NASA Open Science Data Repository. (n.d.). *OSD-575 and OSD-569: SpaceX Inspiration4 metabolic panel and complete blood count* [Data set]. Retrieved November 15, 2026, from https://osdr.nasa.gov/bio/repo/data/studies/OSD-575
 - National Aeronautics and Space Administration. (n.d.). *Human Research Program: Risks*. Retrieved November 15, 2026, from https://www.nasa.gov/hrp/risks/
